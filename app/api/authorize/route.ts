@@ -2,12 +2,20 @@ import { NextResponse } from 'next/server';
 import { readFile, writeFile, appendFile } from 'fs/promises';
 import { join } from 'path';
 import { generateSignatureHash } from '@/lib/hash';
+import { authenticate } from '@/lib/auth';
+import { packetsRepo, auditLogRepo } from '@/lib/db/repositories';
 
 export async function POST(request: Request) {
   try {
     const { packetId, operatorId, passphrase } = await request.json();
     if (!packetId || !operatorId || !passphrase) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Authenticate user
+    const user = await authenticate(operatorId, passphrase);
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     const packetPath = join(process.cwd(), 'engine', 'out', 'packets', `${packetId}.json`);
@@ -45,7 +53,28 @@ export async function POST(request: Request) {
 
     await writeFile(packetPath, JSON.stringify(packet, null, 2), 'utf-8');
 
-    // Append to audit log
+    // Update database if packet exists there
+    try {
+      const dbPacket = packetsRepo.getById(packetId);
+      if (dbPacket) {
+        const updatedPacket = {
+          ...dbPacket,
+          status: packet.status,
+          approvals: JSON.stringify(packet.approvals)
+        };
+        packetsRepo.upsert(updatedPacket);
+      }
+    } catch (dbError) {
+      console.warn('Failed to update packet in database:', dbError);
+    }
+
+    // Get previous audit hash if packet has audit info
+    let previousAuditHash: string | undefined;
+    if (packet.audit?.lastAuditHash) {
+      previousAuditHash = packet.audit.lastAuditHash;
+    }
+
+    // Append to audit log (both file and database)
     const auditPath = join(process.cwd(), 'engine', 'out', 'audit.jsonl');
     const auditEntry = {
       action: 'authorize',
@@ -53,7 +82,23 @@ export async function POST(request: Request) {
       ts: timestamp,
       packetId,
       hash: signatureHash,
+      previousHash: previousAuditHash,
     };
+
+    // Update packet audit info
+    const newAuditHash = await generateSignatureHash(
+      JSON.stringify(auditEntry),
+      operatorId,
+      passphrase,
+      timestamp
+    );
+    
+    packet.audit = {
+      lastAuditHash: newAuditHash,
+      previousAuditHash: previousAuditHash,
+    };
+    
+    // File-based audit log (for compatibility)
     try {
       await appendFile(auditPath, JSON.stringify(auditEntry) + '\n', 'utf-8');
     } catch (error: any) {
@@ -65,6 +110,19 @@ export async function POST(request: Request) {
       } else {
         throw error;
       }
+    }
+
+    // Database audit log
+    try {
+      auditLogRepo.insert({
+        action: 'authorize',
+        actor: operatorId,
+        ts: new Date(timestamp),
+        packetId,
+        hash: signatureHash
+      });
+    } catch (dbError) {
+      console.warn('Failed to write audit log to database:', dbError);
     }
 
     return NextResponse.json({ success: true, packet });

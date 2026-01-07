@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Node, Edge, Incident, HandshakePacket } from './types';
+import { Node, Edge, Incident, HandshakePacket, DeploymentMode, ConnectivityState } from './types';
 
 interface AppState {
   selectedNodeId: string | null;
@@ -9,6 +9,12 @@ interface AppState {
   simulationTime: number | null;
   region: string;
   mode: 'live' | 'replay';
+  warRoomMode: boolean;
+  showShadowLinksOnly: boolean;
+  blastRadiusDepth: number;
+  deploymentMode: DeploymentMode;
+  connectivityState: ConnectivityState;
+  sensorDegradationMode: string | null;
   
   setSelectedNode: (nodeId: string | null) => void;
   setSelectedEdge: (edgeId: string | null) => void;
@@ -17,6 +23,12 @@ interface AppState {
   setSimulationTime: (time: number | null) => void;
   setRegion: (region: string) => void;
   setMode: (mode: 'live' | 'replay') => void;
+  setWarRoomMode: (enabled: boolean) => void;
+  setShowShadowLinksOnly: (enabled: boolean) => void;
+  setBlastRadiusDepth: (depth: number) => void;
+  setDeploymentMode: (mode: DeploymentMode) => void;
+  setConnectivityState: (state: ConnectivityState) => void;
+  setSensorDegradationMode: (mode: string | null) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -27,6 +39,12 @@ export const useAppStore = create<AppState>((set) => ({
   simulationTime: null,
   region: 'all',
   mode: 'live',
+  warRoomMode: false,
+  showShadowLinksOnly: false,
+  blastRadiusDepth: 1,
+  deploymentMode: 'lab_demo',
+  connectivityState: 'connected',
+  sensorDegradationMode: null,
   
   setSelectedNode: (nodeId) => set({ selectedNodeId: nodeId }),
   setSelectedEdge: (edgeId) => set({ selectedEdgeId: edgeId }),
@@ -35,5 +53,11 @@ export const useAppStore = create<AppState>((set) => ({
   setSimulationTime: (time) => set({ simulationTime: time }),
   setRegion: (region) => set({ region }),
   setMode: (mode) => set({ mode }),
+  setWarRoomMode: (enabled) => set({ warRoomMode: enabled }),
+  setShowShadowLinksOnly: (enabled) => set({ showShadowLinksOnly: enabled }),
+  setBlastRadiusDepth: (depth) => set({ blastRadiusDepth: depth }),
+  setDeploymentMode: (mode) => set({ deploymentMode: mode }),
+  setConnectivityState: (state) => set({ connectivityState: state }),
+  setSensorDegradationMode: (mode) => set({ sensorDegradationMode: mode }),
 }));
 

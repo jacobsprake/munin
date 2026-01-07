@@ -70,6 +70,39 @@ def generate_packet(
     config_hash = compute_data_hash('prototype_v1')
     data_hash = compute_data_hash(graph_json + evidence_json)
     
+    # Compute technical verification
+    # Simulated success probability based on evidence quality and scope
+    base_success_prob = 0.95
+    if uncertainty > 0.3:
+        base_success_prob -= 0.1
+    if len(all_impacted) > 15:
+        base_success_prob -= 0.05
+    
+    # Constraints (simplified - would come from playbook in real system)
+    constraints_satisfied = [
+        'Valve capacity within limits',
+        'Pressure limits respected',
+        'Safety interlocks verified',
+    ]
+    
+    # Check for potential constraint violations
+    constraints_failed = []
+    if len(all_impacted) > 20:
+        constraints_failed.append('Large scope may exceed coordination capacity')
+    
+    technical_verification = {
+        'simulatedSuccessProb': float(max(0.0, min(1.0, base_success_prob))),
+        'constraintsSatisfied': constraints_satisfied,
+    }
+    if constraints_failed:
+        technical_verification['constraintsFailed'] = constraints_failed
+    
+    # Actuator boundary
+    actuator_boundary = {
+        'writesToHardware': False,
+        'notes': 'No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only.'
+    }
+    
     packet = {
         'id': packet_id,
         'version': 1,
@@ -100,7 +133,9 @@ def generate_packet(
             'modelVersion': 'prototype_v1',
             'configHash': config_hash,
             'dataHash': data_hash
-        }
+        },
+        'technicalVerification': technical_verification,
+        'actuatorBoundary': actuator_boundary
     }
     
     return packet

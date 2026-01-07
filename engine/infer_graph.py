@@ -60,10 +60,101 @@ def compute_correlation_with_lag(
     lag_seconds = abs(best_lag) * 60  # Convert to seconds
     return best_corr, lag_seconds
 
+def compute_stability_score(
+    df: pd.DataFrame,
+    source: str,
+    target: str,
+    window_hours: int = 24,
+    num_windows: int = 5
+) -> float:
+    """Compute stability score by checking correlation across multiple windows."""
+    if source not in df.columns or target not in df.columns:
+        return 0.0
+    
+    source_series = df[source]
+    target_series = df[target]
+    
+    # Split data into windows
+    total_hours = (df.index.max() - df.index.min()).total_seconds() / 3600
+    if total_hours < window_hours:
+        return 0.0
+    
+    window_size = int(len(df) / num_windows)
+    correlations = []
+    
+    for i in range(num_windows):
+        start_idx = i * window_size
+        end_idx = min((i + 1) * window_size, len(df))
+        if end_idx - start_idx < 10:
+            continue
+        
+        window_df = df.iloc[start_idx:end_idx]
+        s1 = window_df[source].dropna()
+        s2 = window_df[target].dropna()
+        
+        common_idx = s1.index.intersection(s2.index)
+        if len(common_idx) < 10:
+            continue
+        
+        corr = s1.loc[common_idx].corr(s2.loc[common_idx])
+        if pd.notna(corr):
+            correlations.append(abs(corr))
+    
+    if len(correlations) < 2:
+        return 0.0
+    
+    # Stability is inverse of variance across windows
+    mean_corr = np.mean(correlations)
+    std_corr = np.std(correlations)
+    
+    if mean_corr == 0:
+        return 0.0
+    
+    # Normalize: higher mean and lower std = higher stability
+    stability = mean_corr * (1 - min(std_corr / mean_corr, 1.0))
+    return float(np.clip(stability, 0.0, 1.0))
+
+def is_shadow_link(
+    source: str,
+    target: str,
+    registry_edges: List[Dict] = None
+) -> bool:
+    """Check if edge is a shadow link (not in registry)."""
+    if registry_edges is None:
+        # If no registry provided, mark cross-sector edges as shadow links
+        # This is a heuristic: cross-sector dependencies are often undocumented
+        source_sector = 'other'
+        target_sector = 'other'
+        
+        if 'substation' in source.lower() or 'power' in source.lower():
+            source_sector = 'power'
+        elif 'reservoir' in source.lower() or 'pump' in source.lower():
+            source_sector = 'water'
+        elif 'tower' in source.lower():
+            source_sector = 'telecom'
+        
+        if 'substation' in target.lower() or 'power' in target.lower():
+            target_sector = 'power'
+        elif 'reservoir' in target.lower() or 'pump' in target.lower():
+            target_sector = 'water'
+        elif 'tower' in target.lower():
+            target_sector = 'telecom'
+        
+        return source_sector != target_sector and source_sector != 'other' and target_sector != 'other'
+    
+    # Check against registry
+    for reg_edge in registry_edges:
+        if (reg_edge.get('source') == source and reg_edge.get('target') == target) or \
+           (reg_edge.get('source') == target and reg_edge.get('target') == source):
+            return False
+    
+    return True
+
 def infer_edges(
     df: pd.DataFrame,
     min_confidence: float = 0.5,
-    max_edges_per_node: int = 3
+    max_edges_per_node: int = 3,
+    registry_edges: List[Dict] = None
 ) -> List[Dict]:
     """Infer edges between nodes based on correlation."""
     edges = []
@@ -79,10 +170,15 @@ def infer_edges(
             corr, lag = compute_correlation_with_lag(source_series, target_series)
             
             if abs(corr) >= min_confidence:
+                stability = compute_stability_score(df, source, target)
+                is_shadow = is_shadow_link(source, target, registry_edges)
+                
                 correlations.append({
                     'target': target,
                     'correlation': corr,
                     'lag': lag,
+                    'stability': stability,
+                    'is_shadow': is_shadow,
                 })
         
         # Sort by absolute correlation and take top N
@@ -94,6 +190,16 @@ def infer_edges(
             # Determine direction based on correlation sign and lag
             # Positive correlation with lag suggests source -> target
             if corr_data['correlation'] > 0:
+                # Count evidence windows (simplified: use data length)
+                window_count = max(1, len(df) // (24 * 60))  # Approximate windows per day
+                
+                # Generate confounder notes
+                confounder_notes = []
+                if corr_data['stability'] < 0.5:
+                    confounder_notes.append("Low stability across windows")
+                if abs(corr_data['correlation']) < 0.7:
+                    confounder_notes.append("Moderate correlation strength")
+                
                 edges.append({
                     'id': edge_id,
                     'source': source,
@@ -101,7 +207,11 @@ def infer_edges(
                     'confidenceScore': abs(corr_data['correlation']),
                     'inferredLagSeconds': int(corr_data['lag']),
                     'condition': None,
-                    'evidenceRefs': [f"ev_{edge_id_counter}"]
+                    'evidenceRefs': [f"ev_{edge_id_counter}"],
+                    'isShadowLink': corr_data['is_shadow'],
+                    'stabilityScore': corr_data['stability'],
+                    'evidenceWindowCount': window_count,
+                    'confounderNotes': confounder_notes if confounder_notes else None
                 })
     
     return edges
@@ -176,12 +286,19 @@ def create_nodes_from_data(df: pd.DataFrame) -> List[Dict]:
     
     return nodes
 
-def build_graph(input_path: Path, output_path: Path):
+def build_graph(input_path: Path, output_path: Path, registry_path: Path = None):
     """Build dependency graph from normalized time-series."""
     df = pd.read_csv(input_path, index_col=0, parse_dates=True)
     
+    # Load registry if provided
+    registry_edges = None
+    if registry_path and registry_path.exists():
+        with open(registry_path, 'r') as f:
+            registry_data = json.load(f)
+            registry_edges = registry_data.get('edges', [])
+    
     nodes = create_nodes_from_data(df)
-    edges = infer_edges(df)
+    edges = infer_edges(df, registry_edges=registry_edges)
     
     graph = {
         'nodes': nodes,
@@ -191,7 +308,8 @@ def build_graph(input_path: Path, output_path: Path):
     with open(output_path, 'w') as f:
         json.dump(graph, f, indent=2)
     
-    print(f"Graph saved to {output_path}: {len(nodes)} nodes, {len(edges)} edges")
+    shadow_count = sum(1 for e in edges if e.get('isShadowLink', False))
+    print(f"Graph saved to {output_path}: {len(nodes)} nodes, {len(edges)} edges ({shadow_count} shadow links)")
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent
