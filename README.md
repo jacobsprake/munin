@@ -189,7 +189,7 @@ This generates:
 Add CSV files to `engine/sample_data/` with format:
 ```csv
 timestamp,node_id,value
-2024-01-01T00:00:00Z,node_01,123.45
+2026-01-01T00:00:00Z,node_01,123.45
 ```
 
 ### Modifying Playbooks

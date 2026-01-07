@@ -49,12 +49,12 @@ actions:
         flow_instability: 5%
 
 regulatory_compliance:
-  - act: "2024 Drought Resilience Act"
+  - act: "2026 Drought Resilience Act"
     section: "Section 4"
     requirement: "Maintain minimum service levels during declared drought conditions"
   
   - act: "Water Resource Management Standards"
-    section: "WRM-2024-03"
+    section: "WRM-2026-03"
     requirement: "Document all diversion actions with evidence and approval chain"
 
 approval_required:

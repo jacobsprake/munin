@@ -32,8 +32,8 @@ def generate_packet(
     
     # Map incident type to playbook and regulatory basis
     regulatory_map = {
-        'flood': 'Complies with 2024 Flood Resilience Act, Section 4.2',
-        'drought': 'Complies with 2024 Drought Resilience Act, Section 4',
+        'flood': 'Complies with 2026 Flood Resilience Act, Section 4.2',
+        'drought': 'Complies with 2026 Drought Resilience Act, Section 4',
         'power_instability': 'Complies with NERC Reliability Standards, EOP-011',
     }
     

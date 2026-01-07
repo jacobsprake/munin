@@ -69,7 +69,7 @@ regulatory_compliance:
     requirement: "Maintain frequency within operational limits and coordinate with regional operators"
   
   - act: "Grid Stability Protocols"
-    section: "GSP-2024-02"
+    section: "GSP-2026-02"
     requirement: "Document all load shedding actions and restoration procedures"
 
 approval_required:

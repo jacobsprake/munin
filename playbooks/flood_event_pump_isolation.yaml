@@ -62,12 +62,12 @@ actions:
         - contamination_detected
 
 regulatory_compliance:
-  - act: "2024 Flood Resilience Act"
+  - act: "2026 Flood Resilience Act"
     section: "Section 4.2"
     requirement: "Maintain service continuity during declared flood emergencies"
   
   - act: "Water Quality Protection Standards"
-    section: "WQP-2024-01"
+    section: "WQP-2026-01"
     requirement: "Isolate affected systems to prevent contamination spread"
 
 approval_required:

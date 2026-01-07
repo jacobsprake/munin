@@ -68,11 +68,11 @@ def build_incidents(graph_path: Path, output_path: Path):
     
     # Flood Event
     flood_nodes = [n['id'] for n in nodes if 'pump' in n['id'].lower() or 'reservoir' in n['id'].lower()][:2]
-    flood_start = datetime(2024, 1, 1, 0, 0, 0)
+    flood_start = datetime(2026, 1, 1, 0, 0, 0)
     flood_timeline = simulate_cascade(graph, flood_nodes, flood_start)
     
     incidents.append({
-        'id': 'incident_flood_20240101',
+        'id': 'incident_flood_20260101',
         'title': 'Flood Event - Regional Water Infrastructure',
         'type': 'flood',
         'startTs': flood_start.isoformat(),
@@ -81,11 +81,11 @@ def build_incidents(graph_path: Path, output_path: Path):
     
     # Power Instability
     power_nodes = [n['id'] for n in nodes if 'substation' in n['id'].lower()][:1]
-    power_start = datetime(2024, 1, 1, 2, 0, 0)
+    power_start = datetime(2026, 1, 1, 2, 0, 0)
     power_timeline = simulate_cascade(graph, power_nodes, power_start, cascade_delay_minutes=3)
     
     incidents.append({
-        'id': 'incident_power_20240101',
+        'id': 'incident_power_20260101',
         'title': 'Power Frequency Instability - North Grid',
         'type': 'power_instability',
         'startTs': power_start.isoformat(),
@@ -94,11 +94,11 @@ def build_incidents(graph_path: Path, output_path: Path):
     
     # Drought Event
     drought_nodes = [n['id'] for n in nodes if 'reservoir' in n['id'].lower()][:1]
-    drought_start = datetime(2024, 1, 1, 4, 0, 0)
+    drought_start = datetime(2026, 1, 1, 4, 0, 0)
     drought_timeline = simulate_cascade(graph, drought_nodes, drought_start, cascade_delay_minutes=10)
     
     incidents.append({
-        'id': 'incident_drought_20240101',
+        'id': 'incident_drought_20260101',
         'title': 'Drought Conditions - Reservoir Alpha',
         'type': 'drought',
         'startTs': drought_start.isoformat(),
