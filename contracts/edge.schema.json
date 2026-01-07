@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "source": { "type": "string" },
+    "target": { "type": "string" },
+    "confidenceScore": { "type": "number", "minimum": 0, "maximum": 1 },
+    "inferredLagSeconds": { "type": "number", "minimum": 0 },
+    "condition": { "type": "string" },
+    "evidenceRefs": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["id", "source", "target", "confidenceScore", "inferredLagSeconds", "evidenceRefs"]
+}
+

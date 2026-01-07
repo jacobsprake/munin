@@ -1,0 +1,94 @@
+id: power_frequency_instability
+title: Power Frequency Instability - Grid Stabilization Protocol
+version: 1.0
+type: power_instability
+
+description: |
+  Protocol for responding to power grid frequency instability events, including
+  automatic load shedding, frequency stabilization, and coordination with regional
+  grid operators.
+
+triggers:
+  - condition: frequency_deviation > threshold
+    threshold: 0.5
+    unit: Hz
+    direction: below_nominal
+  
+  - condition: frequency_rate_of_change > threshold
+    threshold: 0.1
+    unit: Hz_per_minute
+
+actions:
+  - step: 1
+    action: assess_frequency_stability
+    target_nodes:
+      - substation_north_01
+      - substation_south_01
+    parameters:
+      measurement_window: 1m
+      stability_criteria:
+        nominal: 60.0
+        tolerance: 0.2
+        critical_deviation: 0.5
+    
+  - step: 2
+    action: initiate_stabilization
+    parameters:
+      method: automatic_load_shedding
+      priority_levels:
+        - critical_infrastructure: maintain
+        - non_essential: shed_first
+        - commercial: shed_second
+    
+  - step: 3
+    action: coordinate_with_grid_operators
+    parameters:
+      communication_protocol: NERC_EOP_011
+      reporting_interval: 5m
+      escalation_threshold: 0.8
+    
+  - step: 4
+    action: monitor_recovery
+    parameters:
+      check_interval: 30s
+      recovery_criteria:
+        frequency_stable: 59.8-60.2
+        duration_stable: 5m
+        rate_of_change: < 0.05
+    
+  - step: 5
+    action: gradual_load_restoration
+    parameters:
+      restoration_rate: 10%_per_5min
+      monitoring_mode: continuous
+      rollback_trigger: frequency_deviation > 0.3
+
+regulatory_compliance:
+  - act: "NERC Reliability Standards"
+    section: "EOP-011"
+    requirement: "Maintain frequency within operational limits and coordinate with regional operators"
+  
+  - act: "Grid Stability Protocols"
+    section: "GSP-2024-02"
+    requirement: "Document all load shedding actions and restoration procedures"
+
+approval_required:
+  - role: Senior Operator
+    authority: grid_operations
+  
+  - role: Regulatory Compliance Officer
+    authority: regulatory_approval
+
+expected_outcomes:
+  - Frequency stabilized within 5 minutes
+  - Critical infrastructure maintained
+  - Grid coordination successful
+  - Full service restoration within 30 minutes
+
+risks:
+  - risk: Insufficient load shedding capacity
+    mitigation: Pre-validated load shedding tiers with automatic activation
+  
+  - risk: Cascading failure to adjacent regions
+    mitigation: Regional coordination protocols and automatic isolation
+

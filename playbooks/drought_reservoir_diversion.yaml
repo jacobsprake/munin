@@ -1,0 +1,78 @@
+id: drought_reservoir_diversion
+title: Drought Conditions - Reservoir Diversion Protocol
+version: 1.0
+type: drought
+
+description: |
+  Protocol for managing water resources during drought conditions by diverting
+  flow from primary reservoirs to secondary reservoirs to maintain service levels.
+
+triggers:
+  - condition: reservoir_level < threshold_low
+    threshold_low: 0.4
+    unit: capacity_ratio
+
+actions:
+  - step: 1
+    action: assess_current_levels
+    target_nodes:
+      - reservoir_alpha
+      - reservoir_beta
+    parameters:
+      measurement_window: 24h
+    
+  - step: 2
+    action: calculate_diversion_rate
+    parameters:
+      source_reservoir: reservoir_alpha
+      target_reservoir: reservoir_beta
+      diversion_percentage: 40
+      max_diversion_rate: 1000
+      unit: gallons_per_minute
+    
+  - step: 3
+    action: initiate_diversion
+    target_nodes:
+      - pump_station_01
+      - pump_station_02
+    parameters:
+      flow_rate: calculated
+      duration: until_recovery
+      monitoring_interval: 5m
+    
+  - step: 4
+    action: monitor_impact
+    parameters:
+      check_interval: 15m
+      alert_thresholds:
+        pressure_drop: 10%
+        flow_instability: 5%
+
+regulatory_compliance:
+  - act: "2024 Drought Resilience Act"
+    section: "Section 4"
+    requirement: "Maintain minimum service levels during declared drought conditions"
+  
+  - act: "Water Resource Management Standards"
+    section: "WRM-2024-03"
+    requirement: "Document all diversion actions with evidence and approval chain"
+
+approval_required:
+  - role: Senior Operator
+    authority: operational_control
+  
+  - role: Regulatory Compliance Officer
+    authority: regulatory_approval
+
+expected_outcomes:
+  - reservoir_beta level increases to target
+  - service continuity maintained across affected regions
+  - regulatory reporting requirements met
+
+risks:
+  - risk: Over-diversion leading to source depletion
+    mitigation: Continuous monitoring with automatic cutoff at 20% capacity
+  
+  - risk: Pump failure during diversion
+    mitigation: Backup pump activation protocol
+

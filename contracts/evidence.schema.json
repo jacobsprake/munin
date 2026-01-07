@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "edgeId": { "type": "string" },
+    "startTs": { "type": "string" },
+    "endTs": { "type": "string" },
+    "correlation": { "type": "number", "minimum": -1, "maximum": 1 },
+    "lagSeconds": { "type": "number", "minimum": 0 },
+    "robustness": { "type": "number", "minimum": 0, "maximum": 1 },
+    "notes": { "type": "string" }
+  },
+  "required": ["id", "edgeId", "startTs", "endTs", "correlation", "lagSeconds", "robustness"]
+}
+

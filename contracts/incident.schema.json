@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "type": { "type": "string", "enum": ["flood", "drought", "power_instability", "unknown"] },
+    "startTs": { "type": "string" },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ts": { "type": "string" },
+          "impactedNodeIds": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "required": ["ts", "impactedNodeIds", "confidence"]
+      }
+    }
+  },
+  "required": ["id", "title", "type", "startTs", "timeline"]
+}
+

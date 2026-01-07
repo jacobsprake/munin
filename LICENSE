@@ -1,0 +1,31 @@
+Copyright (c) 2024 Munin
+
+All Rights Reserved.
+
+This software and associated documentation files (the "Software") are proprietary 
+and confidential. Unauthorized copying, modification, distribution, or use of this 
+Software, via any medium, is strictly prohibited.
+
+EVALUATION LICENSE
+------------------
+
+This Software is provided for evaluation and demonstration purposes only. 
+Commercial use, production deployment, or integration into operational systems 
+requires explicit written authorization from the copyright holder.
+
+SOVEREIGN INFRASTRUCTURE NOTICE
+--------------------------------
+
+Munin is designed for deployment in sovereign and national security environments. 
+The core inference logic and dependency graph algorithms are proprietary assets 
+protected as critical infrastructure technology.
+
+By accessing this repository, you acknowledge that:
+- The Software contains proprietary algorithms and trade secrets
+- Reverse engineering or decompilation of the core inference engine is prohibited
+- The Software is intended for evaluation of the user interface and architectural 
+  design only
+- Production deployment requires a commercial license
+
+For licensing inquiries, contact: [LICENSING CONTACT]
+

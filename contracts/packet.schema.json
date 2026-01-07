@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "version": { "type": "number" },
+    "createdTs": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready", "authorized", "executed", "verified", "closed"]
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "regions": { "type": "array", "items": { "type": "string" } },
+        "nodeIds": { "type": "array", "items": { "type": "string" } },
+        "services": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["regions", "nodeIds"]
+    },
+    "situationSummary": { "type": "string" },
+    "proposedAction": { "type": "string" },
+    "regulatoryBasis": { "type": "string" },
+    "playbookId": { "type": "string" },
+    "evidenceRefs": { "type": "array", "items": { "type": "string" } },
+    "uncertainty": {
+      "type": "object",
+      "properties": {
+        "overall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["overall", "notes"]
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string" },
+          "signerId": { "type": "string" },
+          "signedTs": { "type": "string" },
+          "signatureHash": { "type": "string" }
+        },
+        "required": ["role"]
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "modelVersion": { "type": "string" },
+        "configHash": { "type": "string" },
+        "dataHash": { "type": "string" }
+      },
+      "required": ["modelVersion", "configHash", "dataHash"]
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "createdTs",
+    "status",
+    "scope",
+    "situationSummary",
+    "proposedAction",
+    "regulatoryBasis",
+    "playbookId",
+    "evidenceRefs",
+    "uncertainty",
+    "approvals",
+    "provenance"
+  ]
+}
+
