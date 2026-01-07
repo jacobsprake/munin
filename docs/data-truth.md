@@ -79,7 +79,7 @@ qualityContext: {
 }
 ```
 
-This allows reviewers to assess evidence quality, not just correlation strength.
+This allows users to assess evidence quality, not just correlation strength.
 
 ## Sensor Degradation Modes (Demo)
 
@@ -106,7 +106,7 @@ The Protocol Deep-Dive screen shows:
 - Packet timing and retries
 - Dirty data showcase toggles
 
-This proves Munin understands the plumbing, not just high-level abstractions.
+This shows Munin understands the plumbing, not just high-level abstractions.
 
 ## Example: Handling Missing Data
 

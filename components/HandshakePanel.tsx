@@ -4,6 +4,7 @@ import { HandshakePacket } from '@/lib/types';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { generateSignatureHash } from '@/lib/hash';
+import Badge from '@/components/ui/Badge';
 
 interface HandshakePanelProps {
   packet: HandshakePacket;
@@ -151,6 +152,54 @@ export default function HandshakePanel({ packet, onAuthorize }: HandshakePanelPr
             Nodes: {packet.scope.nodeIds.length}
           </div>
         </div>
+        {packet.pqc && (
+          <div>
+            <div className="text-xs text-slate-500 font-mono mb-1">POST-QUANTUM CRYPTOGRAPHY</div>
+            <div className="p-2 bg-base-800 rounded border border-safety-emerald/30">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono text-text-secondary">Algorithm:</span>
+                <Badge status="ok" className="text-[10px]">{packet.pqc.algorithm}</Badge>
+              </div>
+              <div className="text-xs font-mono text-safety-emerald mb-1">
+                QUANTUM-RESISTANT (NIST FIPS 203)
+              </div>
+              <div className="text-xs font-mono text-text-muted break-all mt-2">
+                Public Key: {packet.pqc.publicKey.substring(0, 32)}...
+              </div>
+              {packet.pqc.signature && (
+                <div className="text-xs font-mono text-text-muted break-all mt-1">
+                  Signature: {packet.pqc.signature.substring(0, 32)}...
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {packet.tee && (
+          <div>
+            <div className="text-xs text-slate-500 font-mono mb-1">TRUSTED EXECUTION ENVIRONMENT</div>
+            <div className="p-2 bg-base-800 rounded border border-safety-emerald/30">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono text-text-secondary">Platform:</span>
+                <Badge status="ok" className="text-[10px]">{packet.tee.platform}</Badge>
+              </div>
+              <div className="text-xs font-mono text-safety-emerald mb-1">
+                HARDWARE-ROOTED TRUTH
+              </div>
+              <div className="text-xs font-mono text-text-muted mb-1">
+                Even root access cannot forge signatures or alter audit logs
+              </div>
+              <div className="text-xs font-mono text-text-muted break-all mt-2">
+                Enclave ID: {packet.tee.enclaveId.substring(0, 32)}...
+              </div>
+              <div className="text-xs font-mono text-text-muted break-all mt-1">
+                Quote: {packet.tee.quote.substring(0, 32)}...
+              </div>
+              <div className="text-xs font-mono text-text-muted break-all mt-1">
+                Measurement: {packet.tee.measurement.substring(0, 32)}...
+              </div>
+            </div>
+          </div>
+        )}
         {packet.audit && (
           <div>
             <div className="text-xs text-slate-500 font-mono mb-1">AUDIT TRAIL</div>

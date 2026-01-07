@@ -1,7 +1,7 @@
-# Munin Demo Sequence: "Thiel Objection Crusher"
+# Munin Demo Sequence
 
 **Target Duration**: 90 seconds  
-**Goal**: Make reviewer stop thinking "startup product" and start thinking "inevitable national layer"
+**Goal**: Demonstrate Munin as a critical infrastructure orchestration layer
 
 ## Pre-Demo Setup
 
@@ -75,7 +75,7 @@
 - Show signature hash
 - Show audit log
 
-**Say**: *"This is not a dashboard. This is a command system. The handshake converts inference into permission. Technical verification shows 94% simulated success. Actuator boundary: no direct OT writes—human authorization required. The signature hash is immutable."*
+**Say**: *"This is a command system. The handshake converts inference into permission. Technical verification shows 94% simulated success. Actuator boundary: no direct OT writes—human authorization required. The signature hash is immutable."*
 
 **Key Point**: Permission engine, not advice.
 
@@ -100,7 +100,7 @@
 - Flash through three steps: Water → Power → Telecom
 - Point to concrete data sources and coverage targets
 
-**Say**: *"This is not a vague pivot. This is a monopoly plan. Step 1: Water. Step 2: Power. Step 3: Telecom. Each step has exact data sources, inference coverage targets, and regulatory frameworks. This is execution reality."*
+**Say**: *"This is a strategic roadmap. Step 1: Water. Step 2: Power. Step 3: Telecom. Each step has exact data sources, inference coverage targets, and regulatory frameworks. This is execution reality."*
 
 **Key Point**: Definite plan, not slides.
 

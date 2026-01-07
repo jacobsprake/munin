@@ -13,6 +13,19 @@ import { GraphData, EvidenceData, Node, Edge } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
 import { format } from 'date-fns';
 import { Search, Filter, Map } from 'lucide-react';
+import ZeroTrustIndicator from '@/components/ZeroTrustIndicator';
+import ShadowLinkDiscovery from '@/components/ShadowLinkDiscovery';
+import EmergencyModeToggle from '@/components/EmergencyModeToggle';
+import AuthoritativeHandshakePanel from '@/components/AuthoritativeHandshakePanel';
+import SovereignAuditTrail from '@/components/SovereignAuditTrail';
+import ZKPCompliancePanel from '@/components/ZKPCompliancePanel';
+import AirGapStatusDiode from '@/components/AirGapStatusDiode';
+import TEEStatusPanel from '@/components/TEEStatusPanel';
+import AcousticRFFingerprint from '@/components/AcousticRFFingerprint';
+import AssetDependencyIngest from '@/components/AssetDependencyIngest';
+import PrioritySheddingPanel from '@/components/PrioritySheddingPanel';
+import CausalInferenceSimulator from '@/components/CausalInferenceSimulator';
+import ByzantineMultiSigModal from '@/components/ByzantineMultiSigModal';
 
 export default function GraphPage() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -21,12 +34,14 @@ export default function GraphPage() {
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [activeTab, setActiveTab] = useState('Edge Evidence');
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
+  const [showMultiSigModal, setShowMultiSigModal] = useState(false);
   const { 
     setSelectedNode: setStoreNode, 
     setSelectedEdge: setStoreEdge,
     showShadowLinksOnly,
     setShowShadowLinksOnly,
     warRoomMode,
+    emergencyMode,
   } = useAppStore();
 
   useEffect(() => {
@@ -116,6 +131,10 @@ export default function GraphPage() {
                 </div>
               </div>
             )}
+            <div>
+              <div className="text-label mono text-text-muted mb-1">ZERO-TRUST STATUS</div>
+              <ZeroTrustIndicator node={selectedNode} showDetails={true} />
+            </div>
           </div>
         )}
 
@@ -195,8 +214,11 @@ export default function GraphPage() {
               <Button variant="secondary" className="flex-1">
                 Export Evidence Pack (JSON)
               </Button>
-              <Button variant="ghost">
-                Open Supporting Signals
+              <Button 
+                variant="ghost"
+                onClick={() => setShowMultiSigModal(true)}
+              >
+                Authorize (Multi-Sig)
               </Button>
             </div>
           </div>
@@ -262,6 +284,51 @@ export default function GraphPage() {
           </button>
         </div>
 
+        {/* Sovereign OS Features - Right Side */}
+        <div className="absolute top-20 right-4 z-10 w-96 space-y-3 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          {/* 1. Shadow Link Discovery */}
+          <ShadowLinkDiscovery />
+          
+          {/* 2. CMI Toggle */}
+          <EmergencyModeToggle />
+          
+          {/* 3. Authoritative Handshake */}
+          <AuthoritativeHandshakePanel />
+          
+          {/* 4. ZKP Compliance */}
+          <ZKPCompliancePanel />
+          
+          {/* 5. Air-Gap Status */}
+          <AirGapStatusDiode />
+          
+          {/* 6. TEE Status */}
+          <TEEStatusPanel />
+        </div>
+
+        {/* Sovereign OS Features - Left Side */}
+        <div className="absolute top-20 left-80 z-10 space-y-3">
+          {/* Sovereign Audit Trail */}
+          <SovereignAuditTrail />
+          
+          {/* Priority Shedding (only in CMI mode) */}
+          {emergencyMode && <PrioritySheddingPanel />}
+        </div>
+
+        {/* Bottom Right: Asset Dependency Ingest */}
+        <div className="absolute bottom-4 right-4 z-10 w-96">
+          <AssetDependencyIngest />
+        </div>
+
+        {/* Bottom Left: Causal Inference Simulator */}
+        <div className="absolute bottom-4 left-80 z-10 w-80">
+          <CausalInferenceSimulator />
+        </div>
+
+        {/* Bottom Center: Acoustic/RF Fingerprinting */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 w-80">
+          <AcousticRFFingerprint />
+        </div>
+
         {/* Legend */}
         <div className="absolute top-20 left-4 z-10 bg-base-900/90 overlay-glass border border-base-700 rounded p-3">
           <div className="text-label mono text-text-primary mb-2">LEGEND</div>
@@ -309,6 +376,16 @@ export default function GraphPage() {
           </div>
         )}
       </div>
+
+      {/* Byzantine Multi-Sig Modal */}
+      <ByzantineMultiSigModal
+        isOpen={showMultiSigModal}
+        onClose={() => setShowMultiSigModal(false)}
+        onAuthorize={() => {
+          console.log('Command authorized via Byzantine quorum');
+          setShowMultiSigModal(false);
+        }}
+      />
     </CommandShell>
   );
 }

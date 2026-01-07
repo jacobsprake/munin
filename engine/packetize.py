@@ -1,13 +1,64 @@
 """Generate Authoritative Handshake packets from incidents."""
 import json
 import hashlib
+import yaml
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
+from liability_shield import LiabilityShield
+from byzantine_resilience import ByzantineResilienceEngine, integrate_byzantine_multi_sig_into_packet
 
 def compute_data_hash(data: str) -> str:
     """Compute SHA-256 hash of data."""
     return hashlib.sha256(data.encode()).hexdigest()
+
+def generate_merkle_receipt(packet_content: str, previous_hash: Optional[str] = None) -> Dict:
+    """Generate Merkle-proof receipt for a packet, chaining to previous packet."""
+    packet_hash = compute_data_hash(packet_content)
+    
+    if previous_hash:
+        combined = f"{previous_hash}:{packet_hash}"
+    else:
+        combined = packet_hash
+    
+    receipt_hash = compute_data_hash(combined)
+    
+    return {
+        'previousHash': previous_hash,
+        'packetHash': packet_hash,
+        'receiptHash': receipt_hash
+    }
+
+def determine_multi_sig_requirements(playbook: Dict, incident: Dict) -> Dict:
+    """Determine multi-sig requirements based on playbook risk level and incident scope."""
+    # High-risk indicators
+    high_risk_indicators = [
+        len(incident.get('timeline', [])) > 5,  # Complex timeline
+        any('critical' in str(e).lower() for e in incident.get('timeline', [])),  # Critical events
+        playbook.get('type') in ['power_instability', 'flood'],  # High-impact playbooks
+    ]
+    
+    is_high_risk = any(high_risk_indicators)
+    
+    # Get approval requirements from playbook
+    approval_roles = playbook.get('approval_required', [])
+    num_required = len(approval_roles)
+    
+    # For high-risk operations, require 2-of-3 (or M-of-N)
+    if is_high_risk and num_required >= 2:
+        # Add a third agency (e.g., Defense/National Security) for high-risk
+        threshold = 2
+        required = 3
+    else:
+        # Standard: all required signers must sign
+        threshold = num_required
+        required = num_required
+    
+    return {
+        'required': required,
+        'threshold': threshold,
+        'currentSignatures': 0
+    }
 
 def generate_packet(
     incident: Dict,
@@ -147,7 +198,7 @@ def packetize_incidents(
     playbooks_dir: Path,
     output_dir: Path
 ):
-    """Generate packets for all incidents."""
+    """Generate packets for all incidents with Merkle-proof receipts."""
     with open(incidents_path, 'r') as f:
         incidents_data = json.load(f)
     
@@ -166,21 +217,69 @@ def packetize_incidents(
     
     output_dir.mkdir(exist_ok=True)
     
+    # Get existing packets to chain from (for Merkle receipts)
+    existing_packets = []
+    if output_dir.exists():
+        for packet_file in output_dir.glob('*.json'):
+            try:
+                with open(packet_file, 'r') as f:
+                    existing_packet = json.load(f)
+                    if existing_packet.get('merkle', {}).get('receiptHash'):
+                        existing_packets.append(existing_packet)
+            except:
+                pass
+    
+    # Sort by creation time to get latest
+    existing_packets.sort(key=lambda p: p.get('createdTs', ''), reverse=True)
+    previous_hash = existing_packets[0].get('merkle', {}).get('receiptHash') if existing_packets else None
+    
     for incident in incidents_data['incidents']:
         playbook_id = playbook_map.get(incident['type'], 'default.yaml')
         playbook_path = playbooks_dir / playbook_id
         
-        if not playbook_path.exists():
+        # Load playbook to determine multi-sig requirements
+        playbook = {}
+        if playbook_path.exists():
+            with open(playbook_path, 'r') as f:
+                playbook = yaml.safe_load(f)
+        else:
             print(f"Warning: Playbook {playbook_id} not found, using default")
             playbook_id = 'default.yaml'
         
         packet = generate_packet(incident, playbook_id, graph, evidence)
         
+        # Determine multi-sig requirements
+        multi_sig = determine_multi_sig_requirements(playbook, incident)
+        packet['multiSig'] = multi_sig
+        
+        # Add Byzantine multi-sig for high-consequence actions (treason-proofing)
+        byzantine_engine = ByzantineResilienceEngine()
+        packet = integrate_byzantine_multi_sig_into_packet(packet, byzantine_engine)
+        
+        # Add statutory compliance (Liability Shield)
+        shield = LiabilityShield(jurisdiction='national')
+        packet = shield.enhance_handshake_with_compliance(packet, playbook)
+        
+        # Update approvals list if multi-sig requires more signers
+        if multi_sig['required'] > len(packet['approvals']):
+            # Add additional required roles for high-risk operations
+            additional_roles = ['Defense Coordination Officer', 'National Security Liaison']
+            for role in additional_roles[:multi_sig['required'] - len(packet['approvals'])]:
+                packet['approvals'].append({'role': role})
+        
+        # Generate Merkle receipt (chain to previous packet)
+        packet_json = json.dumps(packet, sort_keys=True)
+        merkle_receipt = generate_merkle_receipt(packet_json, previous_hash)
+        packet['merkle'] = merkle_receipt
+        
+        # Update previous_hash for next iteration
+        previous_hash = merkle_receipt['receiptHash']
+        
         packet_path = output_dir / f"{packet['id']}.json"
         with open(packet_path, 'w') as f:
             json.dump(packet, f, indent=2)
         
-        print(f"Packet generated: {packet['id']}")
+        print(f"Packet generated: {packet['id']} (Merkle: {merkle_receipt['receiptHash'][:16]}...)")
     
     # Initialize audit log if it doesn't exist
     audit_path = output_dir.parent / 'audit.jsonl'

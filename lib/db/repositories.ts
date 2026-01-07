@@ -347,26 +347,34 @@ export const packetsRepo = {
           version = ?, created_ts = ?, status = ?, scope = ?, situation_summary = ?,
           proposed_action = ?, regulatory_basis = ?, playbook_id = ?, evidence_refs = ?,
           uncertainty = ?, approvals = ?, provenance = ?, technical_verification = ?,
-          actuator_boundary = ?, audit = ?, updated_at = CURRENT_TIMESTAMP
+          actuator_boundary = ?, audit = ?, merkle_previous_hash = ?, merkle_receipt_hash = ?,
+          multi_sig_required = ?, multi_sig_threshold = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `);
+      const merkle = (packet as any).merkle ? JSON.parse(JSON.stringify((packet as any).merkle)) : null;
+      const multiSig = (packet as any).multiSig ? JSON.parse(JSON.stringify((packet as any).multiSig)) : null;
       stmt.run(
         packet.version, packet.createdTs.toISOString(), packet.status, packet.scope,
         packet.situationSummary, packet.proposedAction, packet.regulatoryBasis,
         packet.playbookId, packet.evidenceRefs, packet.uncertainty, packet.approvals,
         packet.provenance, packet.technicalVerification || null, packet.actuatorBoundary || null,
-        packet.audit || null, packet.id
+        packet.audit || null, merkle?.previousHash || null, merkle?.receiptHash || null,
+        multiSig?.required || null, multiSig?.threshold || null, packet.id
       );
     } else {
       const stmt = db.prepare(`
-        INSERT INTO handshake_packets (id, version, created_ts, status, scope, situation_summary, proposed_action, regulatory_basis, playbook_id, evidence_refs, uncertainty, approvals, provenance, technical_verification, actuator_boundary, audit)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO handshake_packets (id, version, created_ts, status, scope, situation_summary, proposed_action, regulatory_basis, playbook_id, evidence_refs, uncertainty, approvals, provenance, technical_verification, actuator_boundary, audit, merkle_previous_hash, merkle_receipt_hash, multi_sig_required, multi_sig_threshold)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
+      const merkle = (packet as any).merkle ? JSON.parse(JSON.stringify((packet as any).merkle)) : null;
+      const multiSig = (packet as any).multiSig ? JSON.parse(JSON.stringify((packet as any).multiSig)) : null;
       stmt.run(
         packet.id, packet.version, packet.createdTs.toISOString(), packet.status, packet.scope,
         packet.situationSummary, packet.proposedAction, packet.regulatoryBasis, packet.playbookId,
         packet.evidenceRefs, packet.uncertainty, packet.approvals, packet.provenance,
-        packet.technicalVerification || null, packet.actuatorBoundary || null, packet.audit || null
+        packet.technicalVerification || null, packet.actuatorBoundary || null, packet.audit || null,
+        merkle?.previousHash || null, merkle?.receiptHash || null,
+        multiSig?.required || null, multiSig?.threshold || null
       );
     }
     return this.getById(packet.id)!;
@@ -386,7 +394,7 @@ export const packetsRepo = {
   },
 
   mapRowToPacket(row: any): HandshakePacket {
-    return {
+    const packet: any = {
       id: row.id,
       version: row.version,
       createdTs: new Date(row.created_ts),
@@ -406,6 +414,20 @@ export const packetsRepo = {
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at)
     };
+    
+    // Add Merkle fields if present
+    if (row.merkle_previous_hash || row.merkle_receipt_hash) {
+      packet.merklePreviousHash = row.merkle_previous_hash;
+      packet.merkleReceiptHash = row.merkle_receipt_hash;
+    }
+    
+    // Add multi-sig fields if present
+    if (row.multi_sig_required || row.multi_sig_threshold) {
+      packet.multiSigRequired = row.multi_sig_required;
+      packet.multiSigThreshold = row.multi_sig_threshold;
+    }
+    
+    return packet;
   }
 };
 

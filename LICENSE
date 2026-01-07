@@ -26,5 +26,49 @@ By accessing this repository, you acknowledge that:
 - The Software is intended for evaluation of the user interface and architectural 
   design only
 - Production deployment requires a commercial license
+- All source code, documentation, schemas, and related materials are covered by 
+  this license
+- No warranty or support is provided under this evaluation license
 
-For licensing inquiries, contact: [LICENSING CONTACT]
+INTELLECTUAL PROPERTY
+---------------------
+
+This Software includes:
+- Source code (TypeScript, Python, and related files)
+- Documentation and specifications
+- Data schemas and contracts
+- Configuration files and examples
+- All associated intellectual property
+
+All rights, title, and interest in and to the Software remain the exclusive 
+property of the copyright holder.
+
+RESTRICTIONS
+------------
+
+You may NOT:
+- Use the Software for production or commercial purposes without authorization
+- Reverse engineer, decompile, or disassemble the Software
+- Remove or alter any copyright, trademark, or proprietary notices
+- Distribute, sublicense, or transfer the Software to third parties
+- Use the Software in any manner that violates applicable laws or regulations
+- Extract or use proprietary algorithms for competitive purposes
+
+TERMINATION
+-----------
+
+This license is effective until terminated. The copyright holder may terminate 
+this license at any time. Upon termination, you must destroy all copies of the 
+Software.
+
+DISCLAIMER
+----------
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT 
+HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For licensing inquiries, contact the copyright holder through appropriate channels.

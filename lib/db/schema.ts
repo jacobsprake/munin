@@ -88,6 +88,10 @@ export interface HandshakePacket {
   technicalVerification?: string; // JSON string
   actuatorBoundary?: string; // JSON string
   audit?: string; // JSON string
+  merklePreviousHash?: string; // Links to previous packet in chain
+  merkleReceiptHash?: string; // Hash of this packet's receipt
+  multiSigRequired?: number; // Total number of required signers
+  multiSigThreshold?: number; // Minimum signatures needed (M-of-N)
   createdAt: Date;
   updatedAt: Date;
 }

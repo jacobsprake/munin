@@ -92,7 +92,7 @@ export default function ExpansionPage() {
             <h1 className="text-display-title font-mono text-text-primary">Expansion Map</h1>
           </div>
           <p className="text-body text-text-secondary">
-            Three-step conquest plan: Water → Power → Telecom
+            Three-step expansion roadmap: Water → Power → Telecom
           </p>
         </div>
 

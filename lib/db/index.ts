@@ -133,8 +133,14 @@ function initializeSchema(database: Database.Database) {
       technical_verification TEXT,
       actuator_boundary TEXT,
       audit TEXT,
+      merkle_previous_hash TEXT,
+      merkle_receipt_hash TEXT,
+      multi_sig_required INTEGER DEFAULT 1,
+      multi_sig_threshold INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_merkle_previous (merkle_previous_hash),
+      INDEX idx_merkle_receipt (merkle_receipt_hash)
     )
   `);
 

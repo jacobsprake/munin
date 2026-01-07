@@ -5,6 +5,8 @@ import GraphCanvas from '@/components/GraphCanvas';
 import SimulationScrubber from '@/components/SimulationScrubber';
 import LatencyImpactWidget from '@/components/LatencyImpactWidget';
 import CommandShell from '@/components/CommandShell';
+import DigitalTwinShadow from '@/components/DigitalTwinShadow';
+import AgenticReasoningPanel from '@/components/AgenticReasoningPanel';
 import RightPanel from '@/components/RightPanel';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -25,6 +27,10 @@ export default function SimulationPage() {
     simulationTime, 
     setSimulationTime,
     warRoomMode,
+    shadowGraph,
+    setShadowGraph,
+    shadowModeActive,
+    setShadowModeActive,
   } = useAppStore();
   const router = useRouter();
 
@@ -200,6 +206,18 @@ export default function SimulationPage() {
             : undefined
         }
       />
+
+      <DigitalTwinShadow
+        graphData={graphData}
+        onShadowChange={(shadow) => {
+          setShadowGraph(shadow);
+          setShadowModeActive(true);
+        }}
+      />
+
+      {selectedIncident && (
+        <AgenticReasoningPanel incidentId={selectedIncident.id} />
+      )}
 
       <Card>
         <div className="text-label mono text-text-muted mb-2">PRE-VALIDATION LOGIC</div>

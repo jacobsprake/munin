@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { format } from 'date-fns';
 import { Monitor, Clock, Activity, Server } from 'lucide-react';
+import SecurityStatusPanel from '@/components/SecurityStatusPanel';
 
 export default function TopBar() {
-  const { region, mode, deploymentMode, connectivityState, setWarRoomMode, warRoomMode } = useAppStore();
+  const { region, mode, deploymentMode, connectivityState, setWarRoomMode, warRoomMode, emergencyMode, setEmergencyMode, setEmergencyLevel } = useAppStore();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -35,7 +36,11 @@ export default function TopBar() {
   };
 
   return (
-    <div className="h-12 bg-base-900 border-b border-base-700 flex items-center justify-between px-6 text-label text-text-secondary mono">
+    <div className={`h-12 border-b flex items-center justify-between px-6 text-label text-text-secondary mono transition-colors ${
+      emergencyMode 
+        ? 'bg-red-950/50 border-red-500/50' 
+        : 'bg-base-900 border-base-700'
+    }`}>
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2">
           <Monitor className="w-4 h-4" />
@@ -64,9 +69,50 @@ export default function TopBar() {
         </div>
       </div>
       <div className="flex items-center gap-6">
+        <SecurityStatusPanel />
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4" />
           <span className="text-text-primary">{format(currentTime, 'HH:mm:ss')}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-text-muted text-xs font-mono">CMI:</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={emergencyMode}
+              onChange={async (e) => {
+                const newMode = e.target.checked;
+                try {
+                  const response = await fetch(newMode ? '/api/cmi/activate' : '/api/cmi/deactivate', { method: 'POST' });
+                  const data = await response.json();
+                  if (data.success) {
+                    setEmergencyMode(newMode);
+                    if (newMode) {
+                      setEmergencyLevel('national_emergency');
+                    } else {
+                      setEmergencyLevel('peacetime');
+                    }
+                    window.location.reload();
+                  }
+                } catch (error) {
+                  console.error('Failed to toggle CMI:', error);
+                  // Fallback to local state
+                  setEmergencyMode(newMode);
+                  if (newMode) {
+                    setEmergencyLevel('national_emergency');
+                  } else {
+                    setEmergencyLevel('peacetime');
+                  }
+                }
+              }}
+              className="sr-only peer"
+            />
+            <div className={`w-12 h-6 rounded-full transition-all ${
+              emergencyMode 
+                ? 'bg-red-600 peer-focus:ring-2 peer-focus:ring-red-500' 
+                : 'bg-base-800 peer-focus:ring-2 peer-focus:ring-safety-cobalt'
+            } peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
+          </label>
         </div>
         <button
           onClick={() => setWarRoomMode(!warRoomMode)}

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Node, Edge, Incident, HandshakePacket, DeploymentMode, ConnectivityState } from './types';
+import { Node, Edge, Incident, HandshakePacket, DeploymentMode, ConnectivityState, GraphData } from './types';
 
 interface AppState {
   selectedNodeId: string | null;
@@ -15,6 +15,10 @@ interface AppState {
   deploymentMode: DeploymentMode;
   connectivityState: ConnectivityState;
   sensorDegradationMode: string | null;
+  shadowModeActive: boolean;
+  shadowGraph: GraphData | null;
+  emergencyMode: boolean;
+  emergencyLevel: 'peacetime' | 'minor_incident' | 'major_incident' | 'national_emergency' | 'war' | 'existential_threat';
   
   setSelectedNode: (nodeId: string | null) => void;
   setSelectedEdge: (edgeId: string | null) => void;
@@ -29,6 +33,10 @@ interface AppState {
   setDeploymentMode: (mode: DeploymentMode) => void;
   setConnectivityState: (state: ConnectivityState) => void;
   setSensorDegradationMode: (mode: string | null) => void;
+  setShadowModeActive: (active: boolean) => void;
+  setShadowGraph: (graph: GraphData | null) => void;
+  setEmergencyMode: (enabled: boolean) => void;
+  setEmergencyLevel: (level: 'peacetime' | 'minor_incident' | 'major_incident' | 'national_emergency' | 'war' | 'existential_threat') => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -45,6 +53,10 @@ export const useAppStore = create<AppState>((set) => ({
   deploymentMode: 'lab_demo',
   connectivityState: 'connected',
   sensorDegradationMode: null,
+  shadowModeActive: false,
+  shadowGraph: null,
+  emergencyMode: false,
+  emergencyLevel: 'peacetime',
   
   setSelectedNode: (nodeId) => set({ selectedNodeId: nodeId }),
   setSelectedEdge: (edgeId) => set({ selectedEdgeId: edgeId }),
@@ -59,5 +71,9 @@ export const useAppStore = create<AppState>((set) => ({
   setDeploymentMode: (mode) => set({ deploymentMode: mode }),
   setConnectivityState: (state) => set({ connectivityState: state }),
   setSensorDegradationMode: (mode) => set({ sensorDegradationMode: mode }),
+  setShadowModeActive: (active) => set({ shadowModeActive: active }),
+  setShadowGraph: (graph) => set({ shadowGraph: graph }),
+  setEmergencyMode: (enabled) => set({ emergencyMode: enabled }),
+  setEmergencyLevel: (level) => set({ emergencyLevel: level }),
 }));
 

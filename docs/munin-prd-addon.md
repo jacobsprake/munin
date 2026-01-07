@@ -1,4 +1,4 @@
-# Munin PRD Add-on: "Thiel Objection Crusher" Expansion
+# Munin PRD Add-on: Expansion
 
 **"Munin is not software that explains infrastructure. It is software that grants permission for infrastructure to survive. The moat is Shadow Links inferred from ugly OT telemetry. The differentiator is the Authoritative Handshake that collapses liability paralysis into a signed, auditable packet. The deployment posture is sovereign by default."**
 
@@ -55,7 +55,7 @@ This add-on transforms Munin from a graph inference tool into a **sovereign orch
 - Sensor health impact visualization
 
 ### Expansion Map
-- Three-step conquest plan: Water → Power → Telecom
+- Three-step expansion roadmap: Water → Power → Telecom
 - Exact data sources required
 - Inference coverage targets
 - Expected shadow link types

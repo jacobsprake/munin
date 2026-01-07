@@ -37,7 +37,7 @@
 - Highlight the recommended playbook
 
 **Key Points**:
-- "This proves pre-validation - we see cascading failures before they happen"
+- "Pre-validation enables us to see cascading failures before they happen"
 - "The scrub bar shows the timeline of predicted impacts"
 - "Each timeline entry shows confidence and affected nodes"
 - "The system recommends a playbook based on the incident type"
@@ -57,7 +57,7 @@
   - Required approvals
 
 **Key Points**:
-- "This is not a simple submit button - this is an execution packet"
+- "This is an execution packet, not a simple submit button"
 - "Every packet includes regulatory compliance basis"
 - "Evidence links back to the dependency graph edges"
 - "Uncertainty is explicitly quantified"

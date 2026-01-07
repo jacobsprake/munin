@@ -131,7 +131,7 @@ export async function syncPacketsToDb(): Promise<void> {
         const contents = await readFile(filePath, 'utf-8');
         const packet: HandshakePacketType = JSON.parse(contents);
 
-        packetsRepo.upsert({
+        const packetData: any = {
           id: packet.id,
           version: packet.version,
           createdTs: new Date(packet.createdTs),
@@ -148,7 +148,17 @@ export async function syncPacketsToDb(): Promise<void> {
           technicalVerification: packet.technicalVerification ? JSON.stringify(packet.technicalVerification) : undefined,
           actuatorBoundary: packet.actuatorBoundary ? JSON.stringify(packet.actuatorBoundary) : undefined,
           audit: packet.audit ? JSON.stringify(packet.audit) : undefined
-        });
+        };
+        
+        // Add Merkle and multi-sig fields if present
+        if ((packet as any).merkle) {
+          packetData.merkle = (packet as any).merkle;
+        }
+        if ((packet as any).multiSig) {
+          packetData.multiSig = (packet as any).multiSig;
+        }
+        
+        packetsRepo.upsert(packetData);
       }
     } catch (error: any) {
       if (error.code !== 'ENOENT') {

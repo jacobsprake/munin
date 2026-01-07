@@ -31,6 +31,12 @@ export default function GraphCanvas({ data, onNodeClick, onEdgeClick }: GraphCan
 
   const getNodeColor = (node: Node) => {
     if (selectedNodeId === node.id) return '#3B82F6'; // safety-cobalt
+    
+    // Zero-Trust: Unverified nodes shown in red
+    if (node.zeroTrust && node.zeroTrust.verificationStatus !== 'verified') {
+      return '#EF4444'; // red for unverified
+    }
+    
     if (node.health.status === 'warning') return '#F6B73C'; // safety-amber
     if (node.health.status === 'degraded') return '#F6B73C'; // safety-amber
     if (node.health.status === 'ok') return '#22C55E'; // safety-emerald
@@ -39,7 +45,7 @@ export default function GraphCanvas({ data, onNodeClick, onEdgeClick }: GraphCan
 
   const getEdgeColor = (edge: Edge) => {
     if (selectedEdgeId === edge.id) return '#3B82F6'; // safety-cobalt
-    if (edge.isShadowLink) return '#F6B73C'; // safety-amber for shadow links
+    if (edge.isShadowLink) return '#EF4444'; // red for shadow links (dotted red lines)
     const alpha = Math.max(0.3, edge.confidenceScore);
     return `rgba(109, 126, 144, ${alpha})`; // text-muted with confidence-based opacity
   };
@@ -146,6 +152,21 @@ export default function GraphCanvas({ data, onNodeClick, onEdgeClick }: GraphCan
           }
           if (showShadowLinksOnly && !link.isShadowLink) return 0;
           return 0.4;
+        }}
+        linkCurvature={(link: Edge) => {
+          // Add slight curvature to shadow links to make them visually distinct
+          return link.isShadowLink ? 0.2 : 0;
+        }}
+        linkDashArray={(link: Edge) => {
+          // Dotted red lines for shadow links
+          return link.isShadowLink ? [5, 5] : undefined;
+        }}
+        linkLabel={(link: Edge) => {
+          const shadowNote = link.isShadowLink ? '\n[SHADOW LINK]' : '';
+          const correlationNote = link.isShadowLink 
+            ? `\nCorrelation 0.${Math.round(link.confidenceScore * 100)}: Physical dependency inferred from 2024 SCADA logs.`
+            : '';
+          return `Confidence: ${(link.confidenceScore * 100).toFixed(1)}%\nLag: ${link.inferredLagSeconds}s${shadowNote}${correlationNote}`;
         }}
         onNodeClick={(node: Node) => {
           onNodeClick?.(node);

@@ -14,6 +14,8 @@ import { useAppStore } from '@/lib/store';
 import { useParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { CheckCircle2, Download, ArrowLeft } from 'lucide-react';
+import TEEStatusPanel from '@/components/TEEStatusPanel';
+import ComplianceCertificatePanel from '@/components/ComplianceCertificatePanel';
 
 export default function HandshakeDetailPage() {
   const [packet, setPacket] = useState<HandshakePacket | null>(null);
@@ -256,6 +258,28 @@ export default function HandshakeDetailPage() {
               ))}
             </div>
           </Card>
+
+          {/* Strategic Features Showcase */}
+          <div className="pt-6 border-t border-base-700">
+            <div className="text-label mono text-text-muted mb-4">STRATEGIC FEATURES</div>
+            
+            {/* Feature #1: TEE-Hardened Handshakes */}
+            <div className="mb-6">
+              <TEEStatusPanel packetTEE={packet.tee} />
+            </div>
+
+            {/* Feature #4: Legal Certificate (Liability Shield) */}
+            {isAuthorized && packet.approvals.find(a => a.signerId) && (
+              <div className="mb-6">
+                <ComplianceCertificatePanel
+                  packetId={packet.id}
+                  playbookId={packet.playbookId}
+                  operatorId={packet.approvals.find(a => a.signerId)?.signerId}
+                  operatorRole={packet.approvals.find(a => a.signerId)?.role}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
