@@ -222,4 +222,3 @@ This repository is provided for **evaluation and demonstration purposes only**. 
 Sovereign infrastructure requires absolute integrity. By keeping the core inference logic proprietary, we prevent adversaries from reverse-engineering the national dependency graph while ensuring the system remains a defensible, high-value asset for the state.
 
 For licensing inquiries, see the [LICENSE](./LICENSE) file.
-
