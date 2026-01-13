@@ -437,3 +437,4 @@ if __name__ == "__main__":
     print(json.dumps(authorization, indent=2))
     print(f"\nTablet status: {json.dumps(tablet.get_status(), indent=2)}")
 
+

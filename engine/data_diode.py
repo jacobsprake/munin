@@ -300,3 +300,4 @@ def configure_data_diode_deployment(
     
     return config
 
+

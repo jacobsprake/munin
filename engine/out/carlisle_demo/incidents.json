@@ -1,0 +1,43 @@
+{
+  "incidents": [
+    {
+      "id": "incident_flood_20260101",
+      "title": "Flood Event - Regional Water Infrastructure",
+      "type": "flood",
+      "startTs": "2026-01-01T00:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T00:00:00",
+          "impactedNodeIds": [],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_power_20260101",
+      "title": "Power Frequency Instability - North Grid",
+      "type": "power_instability",
+      "startTs": "2026-01-01T02:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T02:00:00",
+          "impactedNodeIds": [],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_drought_20260101",
+      "title": "Drought Conditions - Reservoir Alpha",
+      "type": "drought",
+      "startTs": "2026-01-01T04:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T04:00:00",
+          "impactedNodeIds": [],
+          "confidence": 0.95
+        }
+      ]
+    }
+  ]
+}

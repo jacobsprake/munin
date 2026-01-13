@@ -1,0 +1,160 @@
+id: carlisle_flood_gate_coordination
+title: Carlisle Flood Gate Coordination Protocol
+version: 1.0
+type: flood
+
+description: |
+  Emergency protocol for coordinating flood gate operations across the River Eden
+  system (Eden, Petteril, Caldew confluence) during flood events. This playbook
+  demonstrates Munin's "coordination latency" thesis: faster authorized execution
+  through pre-validated playbooks and automated tasking.
+
+triggers:
+  - condition: water_level > flood_warning_threshold
+    threshold: 2.5
+    unit: meters
+    node_id: eden_sands_centre
+    operator: ">"
+  
+  - condition: water_level > flood_warning_threshold
+    threshold: 1.8
+    unit: meters
+    node_id: petteril_botcherby
+    operator: ">"
+  
+  - condition: rainfall_rate > threshold
+    threshold: 10.0
+    unit: mm_per_hour
+    node_id: rainfall_carlisle
+    operator: ">"
+
+actions:
+  - step: 1
+    action: assess_flood_severity
+    target_nodes:
+      - eden_sands_centre
+      - petteril_botcherby
+    parameters:
+      check_interval: 15m
+      severity_levels:
+        - warning: 2.5m
+        - alert: 3.0m
+        - critical: 3.5m
+    task_owner: EA Duty Officer
+    auto_assign: true
+    
+  - step: 2
+    action: coordinate_flood_gate_operations
+    target_nodes:
+      - flood_gate_eden_main
+      - flood_gate_petteril_tributary
+    parameters:
+      gate_operation: partial_close
+      closure_percentage: 50
+      monitoring_mode: intensive
+      coordination_required: true
+    task_owner: EA Duty Officer
+    approval_required: true
+    auto_assign: true
+    
+  - step: 3
+    action: notify_local_authorities
+    parameters:
+      recipients:
+        - Council Emergency Officer
+        - Highways Authority
+        - Communications Officer
+      message_template: flood_warning_issued
+      escalation_level: warning
+    task_owner: Communications Officer
+    auto_assign: true
+    
+  - step: 4
+    action: activate_highways_coordination
+    target_nodes:
+      - highway_closure_points
+    parameters:
+      closure_type: partial
+      monitoring_points:
+        - botcherby_bridge
+        - sands_centre_area
+        - caldew_confluence
+      coordination_protocol: real_time_updates
+    task_owner: Highways Authority
+    auto_assign: true
+    
+  - step: 5
+    action: continuous_monitoring
+    parameters:
+      check_interval: 5m
+      alert_conditions:
+        - level_increase_rate > 0.1m_per_15min
+        - gate_operation_failure
+        - communication_loss
+      escalation_threshold: critical
+    task_owner: EA Duty Officer
+    auto_assign: true
+
+regulatory_compliance:
+  - act: "Flood and Water Management Act 2010"
+    section: "Section 9"
+    requirement: "Coordinate flood risk management activities across authorities"
+  
+  - act: "Civil Contingencies Act 2004"
+    section: "Section 2"
+    requirement: "Maintain effective emergency response coordination"
+  
+  - act: "Environment Agency Operational Standards"
+    section: "FLO-2026-01"
+    requirement: "Document all flood gate operations with evidence and approval chain"
+
+approval_required:
+  - role: EA Duty Officer
+    authority: flood_operations
+    minimum_sign_off: true  # Single tick-box approval for demo
+    biometric_handshake: false  # Not required for warning-level actions
+  
+  - role: Council Emergency Officer
+    authority: local_authority
+    minimum_sign_off: false  # Notification only for warning level
+    biometric_handshake: false
+
+expected_outcomes:
+  - Flood gates coordinated across Eden/Petteril system
+  - Local authorities notified within 5 minutes
+  - Highways closures coordinated in real-time
+  - Service continuity maintained
+  - Audit trail complete with append-only log
+
+metrics:
+  - metric: time_to_authorize
+    target: < 2 minutes
+    baseline: 2-6 hours (traditional phone-tree/PDF/email coordination)
+    baseline_note: "Traditional process: incident detection (5-15min) + cross-agency phone calls (30-60min) + legal review (30-90min) + multi-ministry approval (60-120min) + command execution (5-10min) = 2-6 hours total"
+  
+  - metric: time_to_task
+    target: < 1 minute
+    baseline: 30-60 minutes (manual assignment via phone/email)
+    baseline_note: "Traditional: identify responsible parties, make phone calls, send emails, wait for confirmations"
+  
+  - metric: coordination_latency
+    target: < 5 minutes
+    baseline: 1-3 hours (cross-agency coordination)
+    baseline_note: "Traditional: EA → Council → Highways → Comms coordination via phone/email chains"
+
+risks:
+  - risk: Gate operation failure
+    mitigation: Redundant control systems with automated monitoring
+  
+  - risk: Communication breakdown
+    mitigation: Multiple secure channels with fallback protocols
+  
+  - risk: Over-coordination leading to delays
+    mitigation: Pre-validated playbook reduces decision latency
+
+incident_replay:
+  - event: Storm Desmond
+    date: 2015-12-06
+    description: Record flood levels on River Eden system
+    replay_window: 2015-12-05 to 2015-12-07
+    validation: Compare Munin response time vs actual response time

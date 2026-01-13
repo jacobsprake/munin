@@ -7,6 +7,15 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from liability_shield import LiabilityShield
 from byzantine_resilience import ByzantineResilienceEngine, integrate_byzantine_multi_sig_into_packet
+from audit_log import get_audit_log
+
+# Optional: Import decision integration (requires Next.js API to be running)
+try:
+    from decision_integration import integrate_packet_with_decisions
+    DECISION_INTEGRATION_AVAILABLE = True
+except ImportError:
+    DECISION_INTEGRATION_AVAILABLE = False
+    print("Note: Decision integration not available (decision_integration.py not found)")
 
 def compute_data_hash(data: str) -> str:
     """Compute SHA-256 hash of data."""
@@ -31,6 +40,28 @@ def generate_merkle_receipt(packet_content: str, previous_hash: Optional[str] = 
 
 def determine_multi_sig_requirements(playbook: Dict, incident: Dict) -> Dict:
     """Determine multi-sig requirements based on playbook risk level and incident scope."""
+    # Check for minimum_sign_off setting in playbook
+    approval_roles = playbook.get('approval_required', [])
+    
+    # Check if any role has minimum_sign_off: true
+    has_minimum_sign_off = False
+    minimum_sign_off_role = None
+    for role in approval_roles:
+        if isinstance(role, dict) and role.get('minimum_sign_off', False):
+            has_minimum_sign_off = True
+            minimum_sign_off_role = role.get('role', '')
+            break
+    
+    # If minimum_sign_off is enabled, require only 1 signature
+    if has_minimum_sign_off:
+        return {
+            'required': len(approval_roles),
+            'threshold': 1,  # Only need 1 signature (the minimum_sign_off role)
+            'currentSignatures': 0,
+            'minimumSignOff': True,
+            'minimumSignOffRole': minimum_sign_off_role
+        }
+    
     # High-risk indicators
     high_risk_indicators = [
         len(incident.get('timeline', [])) > 5,  # Complex timeline
@@ -39,9 +70,6 @@ def determine_multi_sig_requirements(playbook: Dict, incident: Dict) -> Dict:
     ]
     
     is_high_risk = any(high_risk_indicators)
-    
-    # Get approval requirements from playbook
-    approval_roles = playbook.get('approval_required', [])
     num_required = len(approval_roles)
     
     # For high-risk operations, require 2-of-3 (or M-of-N)
@@ -67,7 +95,8 @@ def generate_packet(
     evidence: Dict
 ) -> Dict:
     """Generate a handshake packet from an incident."""
-    packet_id = f"packet_{incident['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    created_ts = datetime.now()
+    packet_id = f"packet_{incident['id']}_{created_ts.strftime('%Y%m%d%H%M%S')}"
     
     # Determine scope from incident timeline
     all_impacted = set()
@@ -157,7 +186,10 @@ def generate_packet(
     packet = {
         'id': packet_id,
         'version': 1,
-        'createdTs': datetime.now().isoformat(),
+        'createdTs': created_ts.isoformat(),
+        'firstApprovalTs': None,  # Will be set when first approval is received
+        'authorizedTs': None,  # Will be set when authorization threshold is met
+        'timeToAuthorize': None,  # Will be calculated when authorized
         'status': 'ready',
         'scope': {
             'regions': regions,
@@ -209,10 +241,16 @@ def packetize_incidents(
         evidence = json.load(f)
     
     # Map incident types to playbooks
+    # Try Carlisle playbook first, fallback to original if not found
     playbook_map = {
-        'flood': 'flood_event_pump_isolation.yaml',
+        'flood': 'carlisle_flood_gate_coordination.yaml',  # Use Carlisle playbook for flood incidents
         'drought': 'drought_reservoir_diversion.yaml',
         'power_instability': 'power_frequency_instability.yaml',
+    }
+    
+    # Fallback playbooks if primary not found
+    playbook_fallback = {
+        'flood': 'flood_event_pump_isolation.yaml',
     }
     
     output_dir.mkdir(exist_ok=True)
@@ -243,8 +281,22 @@ def packetize_incidents(
             with open(playbook_path, 'r') as f:
                 playbook = yaml.safe_load(f)
         else:
-            print(f"Warning: Playbook {playbook_id} not found, using default")
-            playbook_id = 'default.yaml'
+            # Try fallback playbook
+            fallback_id = playbook_fallback.get(incident['type'])
+            if fallback_id:
+                fallback_path = playbooks_dir / fallback_id
+                if fallback_path.exists():
+                    playbook_id = fallback_id
+                    playbook_path = fallback_path
+                    with open(playbook_path, 'r') as f:
+                        playbook = yaml.safe_load(f)
+                    print(f"Using fallback playbook: {fallback_id}")
+                else:
+                    print(f"Warning: Playbook {playbook_id} and fallback {fallback_id} not found, using default")
+                    playbook_id = 'default.yaml'
+            else:
+                print(f"Warning: Playbook {playbook_id} not found, using default")
+                playbook_id = 'default.yaml'
         
         packet = generate_packet(incident, playbook_id, graph, evidence)
         
@@ -280,11 +332,41 @@ def packetize_incidents(
             json.dump(packet, f, indent=2)
         
         print(f"Packet generated: {packet['id']} (Merkle: {merkle_receipt['receiptHash'][:16]}...)")
+        
+        # Integrate with decision system (if available)
+        if DECISION_INTEGRATION_AVAILABLE:
+            try:
+                decision_id = integrate_packet_with_decisions(
+                    packet, 
+                    incident['id'], 
+                    playbook_id,
+                    output_dir.parent  # Pass parent dir to create decisions/ subdirectory
+                )
+                if decision_id:
+                    print(f"   Decision created: {decision_id}")
+            except Exception as e:
+                print(f"   ⚠️  Decision integration failed: {e}")
+        
+        # Log packet creation to audit log
+        audit_log.append(
+            action='create',
+            actor='system',
+            packet_id=packet['id'],
+            metadata={
+                'playbook_id': playbook_id,
+                'incident_type': incident['type'],
+                'merkle_receipt_hash': merkle_receipt['receiptHash'],
+                'status': packet['status']
+            }
+        )
     
-    # Initialize audit log if it doesn't exist
-    audit_path = output_dir.parent / 'audit.jsonl'
-    if not audit_path.exists():
-        audit_path.touch()
+    # Initialize immutable audit log (for final summary)
+    audit_log = get_audit_log(output_dir.parent)
+    verification = audit_log.verify_chain()
+    if verification['valid']:
+        print(f"\n✅ Audit log chain verified: {verification['entries_checked']} entries")
+    else:
+        print(f"\n⚠️  Audit log verification failed: {verification.get('errors', [])}")
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent

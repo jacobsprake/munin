@@ -21,3 +21,4 @@
   "required": ["id", "sector", "label", "kind", "region", "health"]
 }
 
+

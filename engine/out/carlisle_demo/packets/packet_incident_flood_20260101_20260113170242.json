@@ -1,0 +1,117 @@
+{
+  "id": "packet_incident_flood_20260101_20260113170242",
+  "version": 1,
+  "createdTs": "2026-01-13T17:02:42.410956",
+  "status": "ready",
+  "scope": {
+    "regions": [],
+    "nodeIds": []
+  },
+  "situationSummary": "Flood event detected affecting 0 nodes. Cascading impact predicted across water infrastructure.",
+  "proposedAction": "Isolate affected pump stations and divert flow to backup reservoirs",
+  "regulatoryBasis": "Complies with 2026 Flood Resilience Act, Section 4.2 Statutory compliance: Flood and Water Management Act 2010, Section 9, Civil Contingencies Act 2004, Section 2, Environment Agency Operational Standards, FLO-2026-01.",
+  "playbookId": "carlisle_flood_gate_coordination.yaml",
+  "evidenceRefs": [],
+  "uncertainty": {
+    "overall": 0.3,
+    "notes": [
+      "Limited historical evidence for this scenario"
+    ]
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "6a50b45c0663e85d78ef6d90801e6b278613301ff9ffc25226e78e6f0c94305d"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_flood_20260101_20260113170242",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_flood_20260101_20260113170242_20260113170242",
+    "issued": "2026-01-13T17:02:42.411402",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "full",
+    "certificateStatement": "This action was performed in accordance with Section 9 of the Flood and Water Management Act 2010: Coordinate flood risk management activities across authorities, Section 2 of the Civil Contingencies Act 2004: Maintain effective emergency response coordination. The authorized operator is protected under the statutory framework for emergency response actions during declared flood incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "Flood and Water Management Act 2010",
+        "section": "Section 9",
+        "article": null,
+        "requirement": "Coordinate flood risk management activities across authorities"
+      },
+      {
+        "actName": "Civil Contingencies Act 2004",
+        "section": "Section 2",
+        "article": null,
+        "requirement": "Maintain effective emergency response coordination"
+      },
+      {
+        "actName": "Environment Agency Operational Standards",
+        "section": "FLO-2026-01",
+        "article": null,
+        "requirement": "Document all flood gate operations with evidence and approval chain"
+      },
+      {
+        "actName": "National Water Act",
+        "section": "4.2",
+        "article": null,
+        "requirement": "Authorized personnel may take necessary actions to prevent water system failure during declared emergencies"
+      },
+      {
+        "actName": "National Water Act",
+        "section": "4.3",
+        "article": null,
+        "requirement": "Water authorities must coordinate with emergency services during crisis events"
+      },
+      {
+        "actName": "Flood Resilience Act",
+        "section": "4.2",
+        "article": null,
+        "requirement": "Maintain service continuity during declared flood emergencies"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": null,
+    "packetHash": "0e903db11e2e2743d7d8c6e1fa8cebaf2955e03c63940d1eb7466b8b864babaa",
+    "receiptHash": "8c11ec4da730b8c4082f75d45e5b9fd00b6cfa2f2f4803972a2e636bdddb639f"
+  }
+}

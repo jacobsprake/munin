@@ -253,3 +253,4 @@ export default function CounterfactualPanel({ onRunSimulation }: CounterfactualP
   );
 }
 
+

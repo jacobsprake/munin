@@ -144,20 +144,124 @@ function initializeSchema(database: Database.Database) {
     )
   `);
 
-  // Audit log table
+  // Audit log table (enhanced with hash chaining and signatures)
   database.exec(`
     CREATE TABLE IF NOT EXISTS audit_log (
       id TEXT PRIMARY KEY,
-      action TEXT NOT NULL,
-      actor TEXT NOT NULL,
       ts DATETIME NOT NULL,
-      packet_id TEXT,
-      hash TEXT NOT NULL,
-      metadata TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_actor_ts (actor, ts),
-      INDEX idx_packet (packet_id)
+      event_type TEXT NOT NULL,
+      payload_json TEXT NOT NULL,
+      prev_hash TEXT,
+      entry_hash TEXT NOT NULL,
+      signer_id TEXT,
+      signature TEXT,
+      key_id TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
+  `);
+  
+  // Create indexes (SQLite syntax)
+  database.exec(`
+    CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(ts);
+    CREATE INDEX IF NOT EXISTS idx_audit_event_type ON audit_log(event_type);
+    CREATE INDEX IF NOT EXISTS idx_audit_signer ON audit_log(signer_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_prev_hash ON audit_log(prev_hash);
+    CREATE INDEX IF NOT EXISTS idx_audit_entry_hash ON audit_log(entry_hash);
+    CREATE INDEX IF NOT EXISTS idx_audit_key_id ON audit_log(key_id);
+  `);
+  
+  // Decisions table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS decisions (
+      decision_id TEXT PRIMARY KEY,
+      incident_id TEXT NOT NULL,
+      playbook_id TEXT NOT NULL,
+      step_id TEXT,
+      status TEXT NOT NULL DEFAULT 'PENDING',
+      policy_json TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      authorized_at DATETIME,
+      previous_decision_hash TEXT
+    )
+  `);
+  
+  database.exec(`
+    CREATE INDEX IF NOT EXISTS idx_decisions_incident ON decisions(incident_id);
+    CREATE INDEX IF NOT EXISTS idx_decisions_playbook ON decisions(playbook_id);
+    CREATE INDEX IF NOT EXISTS idx_decisions_status ON decisions(status);
+  `);
+  
+  // Decision signatures table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS decision_signatures (
+      id TEXT PRIMARY KEY,
+      decision_id TEXT NOT NULL,
+      signer_id TEXT NOT NULL,
+      signature TEXT NOT NULL,
+      signed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      key_id TEXT NOT NULL,
+      UNIQUE(decision_id, signer_id),
+      FOREIGN KEY (decision_id) REFERENCES decisions(decision_id) ON DELETE CASCADE
+    )
+  `);
+  
+  database.exec(`
+    CREATE INDEX IF NOT EXISTS idx_decision_sigs_decision ON decision_signatures(decision_id);
+    CREATE INDEX IF NOT EXISTS idx_decision_sigs_signer ON decision_signatures(signer_id);
+    CREATE INDEX IF NOT EXISTS idx_decision_sigs_key ON decision_signatures(key_id);
+  `);
+  
+  // Users table (enhanced with keys)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      user_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      role TEXT NOT NULL,
+      public_key TEXT NOT NULL,
+      key_id TEXT NOT NULL UNIQUE,
+      key_status TEXT NOT NULL DEFAULT 'ACTIVE',
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      revoked_at DATETIME
+    )
+  `);
+  
+  database.exec(`
+    CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+    CREATE INDEX IF NOT EXISTS idx_users_key_id ON users(key_id);
+    CREATE INDEX IF NOT EXISTS idx_users_key_status ON users(key_status);
+  `);
+  
+  // User key history table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS user_key_history (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      key_id TEXT NOT NULL,
+      public_key TEXT NOT NULL,
+      status TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      revoked_at DATETIME,
+      rotated_to_key_id TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )
+  `);
+  
+  // Checkpoints table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS checkpoints (
+      id TEXT PRIMARY KEY,
+      chain_head_hash TEXT NOT NULL,
+      timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      sequence_number INTEGER NOT NULL,
+      checkpoint_hash TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  
+  database.exec(`
+    CREATE INDEX IF NOT EXISTS idx_checkpoints_timestamp ON checkpoints(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_checkpoints_sequence ON checkpoints(sequence_number);
+    CREATE INDEX IF NOT EXISTS idx_checkpoints_head_hash ON checkpoints(chain_head_hash);
   `);
 
   // Engine jobs table

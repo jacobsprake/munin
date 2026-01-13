@@ -1,0 +1,105 @@
+{
+  "id": "packet_incident_power_20260101_20260113170242",
+  "version": 1,
+  "createdTs": "2026-01-13T17:02:42.414693",
+  "status": "ready",
+  "scope": {
+    "regions": [],
+    "nodeIds": []
+  },
+  "situationSummary": "Power frequency instability detected. Grid stability at risk. 0 nodes predicted to be impacted.",
+  "proposedAction": "Initiate frequency stabilization protocol and load shedding",
+  "regulatoryBasis": "Complies with NERC Reliability Standards, EOP-011 Statutory compliance: NERC Reliability Standards, EOP-011, Grid Stability Protocols, GSP-2026-02, NERC Reliability Standards, EOP-011.",
+  "playbookId": "power_frequency_instability.yaml",
+  "evidenceRefs": [],
+  "uncertainty": {
+    "overall": 0.3,
+    "notes": [
+      "Limited historical evidence for this scenario"
+    ]
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "6a50b45c0663e85d78ef6d90801e6b278613301ff9ffc25226e78e6f0c94305d"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_power_20260101_20260113170242",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_power_20260101_20260113170242_20260113170242",
+    "issued": "2026-01-13T17:02:42.415166",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "full",
+    "certificateStatement": "This action was performed in accordance with EOP-011 of the NERC Reliability Standards: Maintain frequency within operational limits and coordinate with regional operators, GSP-2026-02 of the Grid Stability Protocols: Document all load shedding actions and restoration procedures. The authorized operator is protected under the statutory framework for emergency response actions during declared power_instability incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      },
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "8c11ec4da730b8c4082f75d45e5b9fd00b6cfa2f2f4803972a2e636bdddb639f",
+    "packetHash": "c872797cd43320c88e0f9834bce8a6032fc034593280a0523ae2cdd4fe52a9a2",
+    "receiptHash": "28f7c3cd2f2d074deab09f3d6535846a8c15963b145ac85b369b953d1c885b6d"
+  }
+}

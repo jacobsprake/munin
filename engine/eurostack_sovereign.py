@@ -404,3 +404,4 @@ if __name__ == "__main__":
     report = node.get_sovereignty_report()
     print(f"\nSovereignty Report: {json.dumps(report, indent=2)}")
 
+

@@ -355,3 +355,4 @@ if __name__ == "__main__":
     print(f"Encrypted reading 2: {reading2['id']}")
     print(f"\nNetwork status: {json.dumps(network.get_network_status(), indent=2)}")
 
+

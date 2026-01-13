@@ -50,3 +50,4 @@ export default function Table({ headers, rows, onRowClick, selectedRowIndex, cla
   );
 }
 
+

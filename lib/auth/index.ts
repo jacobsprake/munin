@@ -100,3 +100,4 @@ export function getUser(operatorId: string): AuthUser | null {
   };
 }
 
+

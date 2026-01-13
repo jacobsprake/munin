@@ -67,3 +67,4 @@ export default function ZeroTrustIndicator({ node, showDetails = false }: ZeroTr
   );
 }
 
+

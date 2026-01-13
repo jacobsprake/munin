@@ -420,3 +420,4 @@ if __name__ == "__main__":
     print(f"Legal Protection: {certificate.legal_protection_level}")
     print(f"\nCertificate Statement:\n{certificate.certificate_statement}")
 
+

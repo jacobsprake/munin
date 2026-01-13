@@ -17,6 +17,8 @@ interface AuditLogEntry {
   packetId: string;
   hash: string;
   prevHash: string;
+  sequenceNumber?: number;
+  metadata?: Record<string, any>;
 }
 
 export default function AuditPage() {
@@ -26,26 +28,62 @@ export default function AuditPage() {
   const { warRoomMode } = useAppStore();
 
   useEffect(() => {
-    // Mock audit log data
-    const mockLog: AuditLogEntry[] = [
-      {
-        timestamp: '2026-01-07T01:13:22Z',
-        actor: 'OP-0701',
-        action: 'AUTHORIZE',
-        packetId: 'AH-0701-00042',
-        hash: '7c2e8f9a1b3d4e5f6a7b8c9d0e1f2a3b',
-        prevHash: '6b1d7e8f9a0b1c2d3e4f5a6b7c8d9e0f',
-      },
-      {
-        timestamp: '2026-01-07T01:12:15Z',
-        actor: 'OP-0701',
-        action: 'CREATE',
-        packetId: 'AH-0701-00041',
-        hash: '6b1d7e8f9a0b1c2d3e4f5a6b7c8d9e0f',
-        prevHash: '5a0c6d7e8f9a0b1c2d3e4f5a6b7c8d9',
-      },
-    ];
-    setAuditLog(mockLog);
+    // Fetch real audit log data
+    const fetchAuditLog = async () => {
+      try {
+        const response = await fetch('/api/audit/log?limit=100');
+        if (response.ok) {
+          const data = await response.json();
+          const entries: AuditLogEntry[] = data.entries.map((e: any) => ({
+            timestamp: e.timestamp,
+            actor: e.actor,
+            action: e.action.toUpperCase(),
+            packetId: e.packet_id,
+            hash: e.entry_hash,
+            prevHash: e.previous_hash || '',
+            sequenceNumber: e.sequence_number,
+            metadata: e.metadata || {}
+          }));
+          setAuditLog(entries);
+        }
+      } catch (error) {
+        console.error('Error fetching audit log:', error);
+        // Fallback to empty log
+        setAuditLog([]);
+      }
+    };
+
+    fetchAuditLog();
+    
+    // Verify chain integrity
+    const verifyChain = async () => {
+      try {
+        const response = await fetch('/api/audit/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify' })
+        });
+        if (response.ok) {
+          const result = await response.json();
+          setChainIntact(result.valid);
+          if (result.valid) {
+            setLastVerified(new Date());
+          }
+        }
+      } catch (error) {
+        console.error('Error verifying chain:', error);
+      }
+    };
+
+    verifyChain();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchAuditLog();
+      verifyChain();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -91,30 +129,52 @@ export default function AuditPage() {
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-5xl mx-auto space-y-2">
             <div className="text-label mono text-text-muted mb-4">AUDIT LOG STREAM</div>
-            {auditLog.map((entry, idx) => (
-              <div
-                key={idx}
-                className="bg-base-850 border border-base-700 rounded p-4 font-mono text-body-mono"
-              >
-                <div className="flex items-center gap-4 text-text-primary">
-                  <span className="text-text-muted">{format(new Date(entry.timestamp), 'yyyy-MM-dd HH:mm:ss')}Z</span>
-                  <span className="text-text-secondary">|</span>
-                  <span className="text-safety-cobalt">{entry.actor}</span>
-                  <span className="text-text-secondary">|</span>
-                  <span className="text-text-primary">{entry.action}</span>
-                  <span className="text-text-secondary">|</span>
-                  <span className="text-text-primary">{entry.packetId}</span>
-                  <span className="text-text-secondary">|</span>
-                  <span className="text-text-muted">{entry.hash.substring(0, 16)}...</span>
-                  <span className="text-text-secondary">|</span>
-                  <span className="text-text-muted">prev: {entry.prevHash.substring(0, 16)}...</span>
-                </div>
+            {auditLog.length === 0 ? (
+              <div className="bg-base-850 border border-base-700 rounded p-4 text-center text-text-secondary">
+                No audit log entries found. Run the demo to generate entries.
               </div>
-            ))}
+            ) : (
+              auditLog.map((entry, idx) => (
+                <div
+                  key={idx}
+                  className="bg-base-850 border border-base-700 rounded p-4 font-mono text-body-mono"
+                >
+                  <div className="flex items-center gap-4 text-text-primary flex-wrap">
+                    <span className="text-text-muted">#{entry.sequenceNumber || idx + 1}</span>
+                    <span className="text-text-secondary">|</span>
+                    <span className="text-text-muted">{format(new Date(entry.timestamp), 'yyyy-MM-dd HH:mm:ss')}Z</span>
+                    <span className="text-text-secondary">|</span>
+                    <span className="text-safety-cobalt">{entry.actor}</span>
+                    <span className="text-text-secondary">|</span>
+                    <span className="text-text-primary">{entry.action}</span>
+                    <span className="text-text-secondary">|</span>
+                    <span className="text-text-primary">{entry.packetId}</span>
+                    <span className="text-text-secondary">|</span>
+                    <span className="text-text-muted" title={entry.hash}>{entry.hash.substring(0, 16)}...</span>
+                    {entry.prevHash && (
+                      <>
+                        <span className="text-text-secondary">|</span>
+                        <span className="text-text-muted" title={entry.prevHash}>prev: {entry.prevHash.substring(0, 16)}...</span>
+                      </>
+                    )}
+                  </div>
+                  {entry.metadata && Object.keys(entry.metadata).length > 0 && (
+                    <div className="mt-2 text-xs text-text-secondary pl-4 border-l-2 border-base-700">
+                      {Object.entries(entry.metadata).map(([key, value]) => (
+                        <div key={key}>
+                          <span className="text-text-muted">{key}:</span> {String(value)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
     </CommandShell>
   );
 }
+
 

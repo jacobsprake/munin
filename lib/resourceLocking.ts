@@ -426,3 +426,4 @@ export function getLocksForPacket(packetId: string): ResourceLock[] {
 // Initialize on module load
 initializeResourceRegistry();
 
+

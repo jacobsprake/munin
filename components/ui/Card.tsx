@@ -28,3 +28,4 @@ export default function Card({ children, className, title, variant = 'default' }
   );
 }
 
+

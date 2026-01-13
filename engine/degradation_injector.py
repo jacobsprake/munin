@@ -107,3 +107,4 @@ def apply_degradation_mode(
     
     return df_result
 
+
