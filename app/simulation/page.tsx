@@ -79,9 +79,41 @@ export default function SimulationPage() {
     };
   };
 
+  const [decisionCreating, setDecisionCreating] = useState(false);
+  const [decisionId, setDecisionId] = useState<string | null>(null);
+
   const handleGenerateHandshake = () => {
     if (selectedIncident) {
       router.push(`/handshakes?generate=${selectedIncident.id}`);
+    }
+  };
+
+  const handleCreateDecision = async () => {
+    if (!selectedIncident) return;
+    setDecisionCreating(true);
+    setDecisionId(null);
+    try {
+      const res = await fetch('/api/decisions/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          incident_id: selectedIncident.id,
+          playbook_id: 'flood_event_pump_isolation.yaml',
+          step_id: null,
+          policy: { threshold: 1, required: 1, signers: ['ea_duty_officer', 'regulatory_compliance', 'emergency_services'] },
+          previous_decision_hash: null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.decision?.decision_id) {
+        setDecisionId(data.decision.decision_id);
+      } else {
+        console.error('Create decision failed:', data);
+      }
+    } catch (e) {
+      console.error('Create decision error:', e);
+    } finally {
+      setDecisionCreating(false);
     }
   };
 
@@ -194,9 +226,24 @@ export default function SimulationPage() {
             <span className="text-text-primary">5</span>
           </div>
         </div>
-        <Button variant="primary" onClick={handleGenerateHandshake} className="w-full">
-          Generate Handshake
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button variant="primary" onClick={handleGenerateHandshake} className="w-full">
+            Generate Handshake
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleCreateDecision}
+            disabled={decisionCreating}
+            className="w-full"
+          >
+            {decisionCreating ? 'Creating…' : 'Create decision'}
+          </Button>
+          {decisionId && (
+            <p className="text-body-mono mono text-safety-emerald text-center">
+              Decision created: {decisionId.slice(0, 8)}…
+            </p>
+          )}
+        </div>
       </Card>
 
       <LatencyImpactWidget

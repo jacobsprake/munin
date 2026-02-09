@@ -1707,27 +1707,40 @@ Agentic AI reasoning
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm (or npm/yarn)
+- **Node.js 20 LTS** (recommended; `better-sqlite3` may fail on Node 25). Use `nvm use` if you have `.nvmrc`.
+- pnpm (or npm/yarn)
 - Python 3.11+
-- pip
+- pip or venv
 
 ### Installation Steps
 
-1. **Install frontend dependencies**:
+1. **Use Node 20** (if using nvm):
+```bash
+nvm install 20 && nvm use
+# or: nvm use   # if .nvmrc exists
+```
+
+2. **Install frontend dependencies**:
 ```bash
 pnpm install
+# or: npm install
 ```
 
-2. **Install Python dependencies**:
+3. **Install Python dependencies** (use a venv to avoid system Python restrictions):
 ```bash
-cd engine
-pip install -r requirements.txt
-cd ..
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r engine/requirements.txt
 ```
 
-3. **Run the engine pipeline**:
+4. **Run the engine pipeline** (with venv active, or from repo root):
 ```bash
-python engine/run.py
+# With venv active:
+cd engine && python run.py && cd ..
+
+# Or use the script (activates venv if present):
+./scripts/run_engine.sh
+# or: npm run engine
 ```
 
 This generates:
@@ -1737,13 +1750,14 @@ This generates:
 - `engine/out/packets/*.json` - Handshake packets
 - `engine/out/audit.jsonl` - Append-only audit log
 
-4. **Start the Next.js development server**:
+5. **Start the Next.js dev server**:
 ```bash
 pnpm dev
+# or: npm run dev
 ```
 
-5. **Open the application**:
-Navigate to `http://localhost:3000`
+6. **Open the application**:
+Navigate to `http://localhost:3000` (redirects to `/graph`). Then try `/simulation`, `/handshakes`, `/carlisle-dashboard`.
 
 ### Technical Demonstration
 

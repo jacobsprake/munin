@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "engine": "node scripts/run_engine.js",
+    "demo": "node scripts/run_engine.js && echo 'Engine done. Run: npm run dev'"
+  },
+  "engines": {
+    "node": ">=18 <=22"
   },
   "dependencies": {
     "next": "^14.0.0",
