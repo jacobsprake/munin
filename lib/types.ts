@@ -154,6 +154,11 @@ export interface HandshakePacket {
     nonce: string;
   };
   statutoryCompliance?: StatutoryCompliance;
+  // Optional metadata added by engine integrations (e.g. decision linkage)
+  metadata?: {
+    decision_id?: string;
+    [key: string]: any;
+  };
 }
 
 export interface SystemStatus {

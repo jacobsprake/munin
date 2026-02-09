@@ -89,6 +89,14 @@ export default function HandshakesPage() {
         <div className="text-label mono text-text-muted mb-1">PACKET ID</div>
         <div className="text-body-mono mono text-text-primary">{selectedPacket.id}</div>
       </div>
+      {selectedPacket.metadata?.decision_id && (
+        <div>
+          <div className="text-label mono text-text-muted mb-1">DECISION ID</div>
+          <div className="text-body-mono mono text-text-primary">
+            {selectedPacket.metadata.decision_id}
+          </div>
+        </div>
+      )}
       <div>
         <div className="text-label mono text-text-muted mb-1">SITUATION SUMMARY</div>
         <div className="text-body mono text-text-primary">{selectedPacket.situationSummary}</div>
@@ -98,7 +106,11 @@ export default function HandshakesPage() {
         <div className="text-body mono text-text-primary">{selectedPacket.proposedAction}</div>
       </div>
       <div className="flex gap-2">
-        <Button variant="secondary" className="flex-1" onClick={() => router.push(`/handshakes/${selectedPacket.id}`)}>
+        <Button
+          variant="secondary"
+          className="flex-1"
+          onClick={() => router.push(`/handshakes/${selectedPacket.id}`)}
+        >
           Open Packet
         </Button>
         <Button variant="ghost">
