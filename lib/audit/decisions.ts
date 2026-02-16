@@ -312,3 +312,60 @@ export function getDecision(decisionId: string): Decision & { signatures: Decisi
     }))
   };
 }
+
+/**
+ * List decisions with optional filters
+ */
+export function listDecisions(filters?: {
+  status?: Decision['status'];
+  incident_id?: string;
+  playbook_id?: string;
+  limit?: number;
+  offset?: number;
+}): (Decision & { signature_count: number })[] {
+  const db = getDb();
+  const { status, incident_id, playbook_id, limit = 100, offset = 0 } = filters || {};
+  
+  let query = `
+    SELECT 
+      d.*,
+      COUNT(ds.id) as signature_count
+    FROM decisions d
+    LEFT JOIN decision_signatures ds ON d.decision_id = ds.decision_id
+    WHERE 1=1
+  `;
+  const params: any[] = [];
+  
+  if (status) {
+    query += ' AND d.status = ?';
+    params.push(status);
+  }
+  if (incident_id) {
+    query += ' AND d.incident_id = ?';
+    params.push(incident_id);
+  }
+  if (playbook_id) {
+    query += ' AND d.playbook_id = ?';
+    params.push(playbook_id);
+  }
+  
+  query += ' GROUP BY d.decision_id ORDER BY d.created_at DESC LIMIT ? OFFSET ?';
+  params.push(limit, offset);
+  
+  const rows = db.prepare(query).all(...params) as any[];
+  
+  return rows.map(row => ({
+    decision_id: row.decision_id,
+    incident_id: row.incident_id,
+    playbook_id: row.playbook_id,
+    step_id: row.step_id,
+    status: row.status as Decision['status'],
+    policy_json: typeof row.policy_json === 'string'
+      ? JSON.parse(row.policy_json)
+      : row.policy_json,
+    created_at: new Date(row.created_at),
+    authorized_at: row.authorized_at ? new Date(row.authorized_at) : undefined,
+    previous_decision_hash: row.previous_decision_hash,
+    signature_count: row.signature_count || 0
+  }));
+}

@@ -83,3 +83,77 @@ body::before {
   }
 }
 
+/* Mobile/Responsive Improvements */
+@media (max-width: 768px) {
+  /* Stack layout on mobile */
+  .flex-row {
+    flex-direction: column;
+  }
+  
+  /* Adjust padding */
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  /* Smaller text on mobile */
+  .text-display-title {
+    font-size: 1.5rem;
+  }
+  
+  /* Full width tables on mobile */
+  table {
+    font-size: 0.875rem;
+  }
+  
+  /* Stack cards vertically */
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Touch-friendly buttons */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Responsive panels */
+  .right-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100vh;
+    transition: right 0.3s ease;
+    z-index: 50;
+  }
+  
+  .right-panel.open {
+    right: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Tablet adjustments */
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
+

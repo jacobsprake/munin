@@ -1705,14 +1705,30 @@ Agentic AI reasoning
 
 ## Installation & Setup
 
-### Prerequisites
+### Quick Start (Recommended)
 
-- **Node.js 20 LTS** (recommended; `better-sqlite3` may fail on Node 25). Use `nvm use` if you have `.nvmrc`.
-- pnpm (or npm/yarn)
+**One-command demo setup**:
+```bash
+./scripts/setup_demo.sh
+npm run dev
+# Open http://localhost:3000
+```
+
+**Verify demo is ready**:
+```bash
+./scripts/verify_demo.sh
+```
+
+### Manual Setup
+
+#### Prerequisites
+
+- **Node.js 18-22 LTS** (recommended: Node 20). Use `nvm use` if you have `.nvmrc`.
+- npm or pnpm
 - Python 3.11+
 - pip or venv
 
-### Installation Steps
+#### Installation Steps
 
 1. **Use Node 20** (if using nvm):
 ```bash
@@ -1722,8 +1738,8 @@ nvm install 20 && nvm use
 
 2. **Install frontend dependencies**:
 ```bash
-pnpm install
-# or: npm install
+npm install
+# or: pnpm install
 ```
 
 3. **Install Python dependencies** (use a venv to avoid system Python restrictions):
@@ -1750,14 +1766,35 @@ This generates:
 - `engine/out/packets/*.json` - Handshake packets
 - `engine/out/audit.jsonl` - Append-only audit log
 
-5. **Start the Next.js dev server**:
+5. **Configure environment** (optional):
 ```bash
-pnpm dev
-# or: npm run dev
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-6. **Open the application**:
+6. **Start the Next.js dev server**:
+```bash
+npm run dev
+# or: pnpm dev
+```
+
+7. **Open the application**:
 Navigate to `http://localhost:3000` (redirects to `/graph`). Then try `/simulation`, `/handshakes`, `/carlisle-dashboard`.
+
+### Demo Guide
+
+For a perfect demo experience, see **[Perfect Demo Guide](./docs/PERFECT_DEMO_GUIDE.md)**.
+
+### Production Deployment
+
+See **[Production Readiness Roadmap](./docs/PRODUCTION_READINESS_ROADMAP.md)** for complete deployment guide.
+
+**Quick deployment**:
+```bash
+./scripts/deploy.sh production
+# Or use Docker:
+docker-compose up -d
+```
 
 ### Technical Demonstration
 
@@ -1880,7 +1917,7 @@ pnpm test
 
 - **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: The philosophical whitepaper explaining the "Secret" and the thesis
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and algorithms
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Development philosophy and vibe-code disclaimer
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development principles
 - **[TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md)**: Required engineering talent for production hardening
 
 ### Research Papers

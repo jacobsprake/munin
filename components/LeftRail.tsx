@@ -2,12 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Network, Play, Handshake, Radio, Shield, Map } from 'lucide-react';
+import { Network, Play, Handshake, Radio, Shield, Map, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2 } from 'lucide-react';
 
 const navItems = [
   { href: '/graph', label: 'Dependency Graph', icon: Network },
   { href: '/simulation', label: 'Simulation', icon: Play },
   { href: '/handshakes', label: 'Handshakes', icon: Handshake },
+  { href: '/decisions', label: 'Decisions', icon: CheckCircle2 },
+  { href: '/readiness', label: 'Readiness Index', icon: BarChart3 },
+  { href: '/playbooks', label: 'Playbooks', icon: FileText },
+  { href: '/resources', label: 'Resources', icon: Lock },
+  { href: '/shadow', label: 'Shadow Report', icon: Eye },
+  { href: '/replay', label: 'Historical Replay', icon: History },
+  { href: '/metrics', label: 'Metrics', icon: Activity },
+  { href: '/config', label: 'Configuration', icon: Settings },
+  { href: '/tenants', label: 'Tenants', icon: Building2 },
+  { href: '/docs', label: 'API Docs', icon: Book },
+  { href: '/users', label: 'Users', icon: Users },
   { href: '/protocol', label: 'Protocol Deep-Dive', icon: Radio },
   { href: '/sovereign', label: 'Sovereign Runtime', icon: Shield },
   { href: '/expansion', label: 'Expansion Map', icon: Map },

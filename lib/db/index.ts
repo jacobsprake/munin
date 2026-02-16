@@ -288,6 +288,57 @@ function initializeSchema(database: Database.Database) {
       last_login_at DATETIME
     )
   `);
+
+  // Notifications table (internal-only, air-gapped compliant)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      resource_id TEXT,
+      resource_type TEXT,
+      user_id TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      read_at DATETIME,
+      INDEX idx_notifications_user (user_id),
+      INDEX idx_notifications_type (type),
+      INDEX idx_notifications_severity (severity),
+      INDEX idx_notifications_read (read_at),
+      INDEX idx_notifications_created (created_at)
+    )
+  `);
+
+  // Readiness benchmarks table (NATO-Style Readiness Index)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS readiness_benchmarks (
+      id TEXT PRIMARY KEY,
+      overall_score REAL NOT NULL,
+      time_to_authorize_avg REAL NOT NULL,
+      time_to_task_avg REAL NOT NULL,
+      time_to_stabilize_avg REAL NOT NULL,
+      scenario_success_rate REAL NOT NULL,
+      cascade_containment_rate REAL NOT NULL,
+      sector_breakdown TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_readiness_created (created_at)
+    )
+  `);
+
+  // Chaos scenarios table
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS chaos_scenarios (
+      id TEXT PRIMARY KEY,
+      scenario_type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      severity REAL NOT NULL,
+      impact_metrics TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_chaos_type (scenario_type),
+      INDEX idx_chaos_created (created_at)
+    )
+  `);
 }
 
 export function closeDb() {

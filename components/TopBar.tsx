@@ -5,6 +5,8 @@ import { useAppStore } from '@/lib/store';
 import { format } from 'date-fns';
 import { Monitor, Clock, Activity, Server } from 'lucide-react';
 import SecurityStatusPanel from '@/components/SecurityStatusPanel';
+import NotificationBell from '@/components/NotificationBell';
+import GlobalSearch from '@/components/GlobalSearch';
 
 export default function TopBar() {
   const { region, mode, deploymentMode, connectivityState, setWarRoomMode, warRoomMode, emergencyMode, setEmergencyMode, setEmergencyLevel } = useAppStore();
@@ -68,7 +70,9 @@ export default function TopBar() {
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-6 flex-1 justify-end">
+        <GlobalSearch />
+        <NotificationBell />
         <SecurityStatusPanel />
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4" />

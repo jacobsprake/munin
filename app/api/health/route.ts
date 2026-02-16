@@ -1,67 +1,96 @@
 /**
- * GET /api/health
- * System health and status endpoint
+ * GET /api/health - Basic health check
+ * GET /api/health/ready - Readiness probe (checks dependencies)
+ * GET /api/health/live - Liveness probe (checks if app is running)
  */
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { nodesRepo, sensorReadingsRepo } from '@/lib/db/repositories';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const db = getDb();
+    const { pathname } = new URL(request.url);
     
-    // Get node counts
-    const nodes = nodesRepo.getAll();
-    const nodeCount = nodes.length;
-    const healthyNodes = nodes.filter(n => n.healthStatus === 'ok').length;
-    const degradedNodes = nodes.filter(n => n.healthStatus === 'degraded').length;
-    const warningNodes = nodes.filter(n => n.healthStatus === 'warning').length;
-
-    // Get latest sensor reading timestamp
-    let lastSensorUpdate: Date | null = null;
-    if (nodes.length > 0) {
-      const latestReading = sensorReadingsRepo.getLatestByNode(nodes[0].id);
-      if (latestReading) {
-        lastSensorUpdate = latestReading.timestamp;
+    // Basic health check
+    if (pathname === '/api/health' || pathname.endsWith('/health')) {
+      return NextResponse.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        service: 'munin',
+        version: '1.0.0'
+      });
+    }
+    
+    // Readiness probe - checks dependencies
+    if (pathname.includes('/ready')) {
+      const checks: Record<string, boolean> = {};
+      const errors: string[] = [];
+      
+      // Check database
+      try {
+        const db = getDb();
+        db.prepare('SELECT 1').get();
+        checks.database = true;
+      } catch (error: any) {
+        checks.database = false;
+        errors.push(`Database: ${error.message}`);
+      }
+      
+      // Check engine output files
+      const requiredFiles = [
+        'engine/out/graph.json',
+        'engine/out/incidents.json'
+      ];
+      
+      for (const file of requiredFiles) {
+        const exists = existsSync(join(process.cwd(), file));
+        checks[file] = exists;
+        if (!exists) {
+          errors.push(`Missing: ${file}`);
+        }
+      }
+      
+      // Check data directory
+      const dataDirExists = existsSync(join(process.cwd(), 'data'));
+      checks.data_directory = dataDirExists;
+      
+      const allHealthy = Object.values(checks).every(v => v === true);
+      
+      if (allHealthy) {
+        return NextResponse.json({
+          status: 'ready',
+          checks,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        return NextResponse.json({
+          status: 'not_ready',
+          checks,
+          errors,
+          timestamp: new Date().toISOString()
+        }, { status: 503 });
       }
     }
-
-    // Database health check
-    let dbHealthy = true;
-    try {
-      db.prepare('SELECT 1').get();
-    } catch {
-      dbHealthy = false;
+    
+    // Liveness probe - just checks if app is running
+    if (pathname.includes('/live')) {
+      return NextResponse.json({
+        status: 'alive',
+        timestamp: new Date().toISOString()
+      });
     }
-
+    
     return NextResponse.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      database: {
-        healthy: dbHealthy,
-        path: process.env.DATABASE_PATH || 'data/munin.db'
-      },
-      nodes: {
-        total: nodeCount,
-        healthy: healthyNodes,
-        degraded: degradedNodes,
-        warning: warningNodes
-      },
-      sensors: {
-        lastUpdate: lastSensorUpdate?.toISOString() || null
-      },
-      deploymentMode: process.env.DEPLOYMENT_MODE || 'lab_demo'
+      status: 'healthy',
+      timestamp: new Date().toISOString()
     });
   } catch (error: any) {
-    console.error('Error checking health:', error);
-    return NextResponse.json(
-      { 
-        status: 'error',
-        error: error.message 
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      status: 'unhealthy',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
-
-

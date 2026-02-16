@@ -17,6 +17,9 @@ import { GraphData, IncidentsData, Incident, Node } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
 import { parseISO, format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import RiverLevelsPanel from '@/components/RiverLevelsPanel';
+import ChaosScenarioSelector from '@/components/ChaosScenarioSelector';
+import CounterfactualPanel from '@/components/CounterfactualPanel';
 
 export default function SimulationPage() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -183,6 +186,11 @@ export default function SimulationPage() {
         </div>
       </Card>
 
+      <RiverLevelsPanel
+        stationNodeId="carlisle_river_station_01"
+        label="River Eden Level (Live)"
+      />
+
       <div>
         <div className="text-label mono text-text-muted mb-2">PREDICTED CASCADE</div>
         <Table
@@ -265,6 +273,32 @@ export default function SimulationPage() {
       {selectedIncident && (
         <AgenticReasoningPanel incidentId={selectedIncident.id} />
       )}
+
+      <ChaosScenarioSelector
+        onSelectScenario={(scenario) => {
+          // Convert chaos scenario to incident format for simulation
+          const chaosIncident: Incident = {
+            id: scenario.id,
+            title: scenario.title,
+            type: scenario.scenario_type,
+            startTs: new Date().toISOString(),
+            timeline: scenario.impact_metrics ? [{
+              ts: new Date().toISOString(),
+              impactedNodeIds: [],
+              confidence: 0.9
+            }] : []
+          };
+          setSelectedIncident(chaosIncident);
+          setStoreIncident(chaosIncident.id);
+        }}
+      />
+
+      <CounterfactualPanel
+        onRunSimulation={(result) => {
+          console.log('Counterfactual simulation result:', result);
+          // Could integrate with simulation view
+        }}
+      />
 
       <Card>
         <div className="text-label mono text-text-muted mb-2">PRE-VALIDATION LOGIC</div>
