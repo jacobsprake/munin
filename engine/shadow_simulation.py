@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
+from engine.domain_registry import DomainRegistry, default_registry
 
 
 @dataclass
@@ -65,12 +66,19 @@ class ShadowModeEngine:
     from human actions without executing any commands.
     """
     
-    def __init__(self, shadow_mode_duration_days: int = 365):
+    def __init__(
+        self,
+        shadow_mode_duration_days: int = 365,
+        cost_models: Optional[Dict[str, Any]] = None,
+        domain_registry: Optional[DomainRegistry] = None
+    ):
         """
         Initialize shadow mode engine.
         
         Args:
             shadow_mode_duration_days: How long shadow mode runs (default 12 months = 365 days)
+            cost_models: Optional custom cost models for damage estimation
+            domain_registry: Optional domain registry for multi-domain support
         """
         self.shadow_mode_duration_days = shadow_mode_duration_days
         self.shadow_mode_start = datetime.now()
@@ -83,6 +91,10 @@ class ShadowModeEngine:
         self.correlation_history: List[Dict] = []  # Track correlation over time
         self.near_miss_count = 0  # Count of "near-miss" hallucinations
         self.correlation_threshold = 0.99999  # 99.999% correlation required
+        # Cost models for damage estimation
+        self.cost_models = cost_models or self._get_default_cost_models()
+        # Domain registry for multi-domain support
+        self.domain_registry = domain_registry or default_registry
     
     def record_human_action(
         self,
@@ -142,7 +154,7 @@ class ShadowModeEngine:
         
         # Estimate damage prevented
         damage_prevented = self._estimate_damage_prevented(
-            incident_data, predicted_duration, graph
+            incident_data, predicted_duration, graph, self.cost_models
         )
         
         prediction = MuninPrediction(
@@ -250,14 +262,36 @@ class ShadowModeEngine:
         graph: Dict[str, Any],
         evidence: Dict[str, Any]
     ) -> str:
-        """Infer optimal action from incident, graph, and evidence."""
+        """Infer optimal action from incident, graph, and evidence using domain-specific handlers."""
         incident_type = incident_data.get('type', 'unknown')
+        affected_nodes = incident_data.get('impacted_nodes', [])
         
-        # Map incident types to actions (simplified)
+        # Determine domain
+        domain = incident_data.get('domain')
+        if not domain and affected_nodes:
+            node_id = affected_nodes[0]
+            domain = self.domain_registry.classify_node_domain(node_id)
+        
+        # Get domain-specific handler
+        handler = self.domain_registry.get_handler(domain) if domain else None
+        
+        # Use domain-specific playbook recommendations if available
+        if handler and hasattr(handler, 'get_playbook_recommendations'):
+            try:
+                playbooks = handler.get_playbook_recommendations(incident_type)
+                if playbooks:
+                    return f"Execute playbook: {playbooks[0]}"
+            except Exception:
+                pass
+        
+        # Fallback to default action map
         action_map = {
             'flood': 'Isolate affected pump stations and divert flow to backup reservoirs',
             'drought': 'Divert flow from primary reservoir to secondary reservoir',
             'power_instability': 'Initiate frequency stabilization and load shedding',
+            'frequency_instability': 'Initiate frequency response and load shedding',
+            'voltage_instability': 'Initiate voltage control and reactive power management',
+            'traffic_gridlock': 'Implement traffic management and diversion routes',
         }
         
         return action_map.get(incident_type, 'Assess situation and coordinate response')
@@ -312,36 +346,112 @@ class ShadowModeEngine:
         self,
         incident_data: Dict[str, Any],
         predicted_duration: int,
-        graph: Dict[str, Any]
+        graph: Dict[str, Any],
+        cost_models: Optional[Dict[str, Any]] = None
     ) -> Dict[str, float]:
-        """Estimate damage prevented by faster response (in USD)."""
-        # Realistic damage estimation for national infrastructure
+        """Estimate damage prevented by faster response using domain-specific cost models."""
         num_nodes = len(incident_data.get('impacted_nodes', []))
         incident_type = incident_data.get('type', 'unknown')
+        affected_nodes = incident_data.get('impacted_nodes', [])
         
-        # Base damage per minute of delay (scales with incident type)
-        base_damage_per_minute = {
-            'flood': 50000,  # $50k/min for flood events
-            'drought': 30000,  # $30k/min for drought
-            'power_instability': 100000,  # $100k/min for grid instability
-            'unknown': 20000
-        }
+        # Determine domain from incident or nodes
+        domain = incident_data.get('domain')
+        if not domain and affected_nodes:
+            # Classify domain from first affected node
+            node_id = affected_nodes[0]
+            domain = self.domain_registry.classify_node_domain(node_id)
         
-        damage_per_minute = base_damage_per_minute.get(incident_type, 20000) * (1 + num_nodes * 0.1)
+        # Get domain-specific handler
+        handler = self.domain_registry.get_handler(domain) if domain else None
         
-        # Convert duration to minutes
-        human_duration_minutes = incident_data.get('human_duration_minutes', predicted_duration / 60)
-        munin_duration_minutes = predicted_duration / 60
+        # Estimate human response time (hours to seconds)
+        human_response_time = incident_data.get('human_response_time_seconds', 4 * 3600)  # Default 4 hours
+        time_saved = max(0, human_response_time - predicted_duration)
+        duration_hours = time_saved / 3600.0
         
-        # Damage prevented = (human_time - munin_time) * damage_per_minute
-        time_saved_minutes = max(0, human_duration_minutes - munin_duration_minutes)
-        total_damage_prevented = time_saved_minutes * damage_per_minute
+        # Use domain-specific cost computation if available
+        if handler and hasattr(handler, 'compute_damage_cost'):
+            try:
+                damage_costs = handler.compute_damage_cost(
+                    incident_type=incident_type,
+                    affected_nodes=affected_nodes,
+                    duration_hours=duration_hours
+                )
+                damage_costs['total_damage_prevented'] = sum(damage_costs.values())
+                return damage_costs
+            except Exception:
+                # Fall back to default if domain handler fails
+                pass
         
+        # Fallback to default cost models
+        if cost_models is None:
+            cost_models = self._get_default_cost_models()
+        
+        incident_cost_model = cost_models.get(incident_type, cost_models.get('default', {}))
+        
+        # Scale by number of affected nodes (more nodes = more damage potential)
+        scale_factor = 1.0 + (num_nodes - 1) * 0.1
+        
+        damage_prevented = {}
+        for cost_type in ['economic', 'social', 'environmental']:
+            base_rate = incident_cost_model.get(cost_type, {}).get('rate_per_second', 0.0)
+            damage_prevented[cost_type] = base_rate * time_saved * scale_factor
+        
+        # Also include total for backward compatibility
+        damage_prevented['total_damage_prevented'] = sum(damage_prevented.values())
+        
+        return damage_prevented
+    
+    def _get_default_cost_models(self) -> Dict[str, Dict[str, Any]]:
+        """Get default cost models for different incident types."""
         return {
-            'infrastructure_damage': total_damage_prevented * 0.4,  # 40% infrastructure
-            'service_interruption': total_damage_prevented * 0.3,  # 30% service loss
-            'economic_impact': total_damage_prevented * 0.3,  # 30% economic
-            'total_damage_prevented': total_damage_prevented
+            'flood': {
+                'economic': {
+                    'rate_per_second': 100.0,
+                    'description': 'Property damage, infrastructure repair costs'
+                },
+                'social': {
+                    'rate_per_second': 50.0,
+                    'description': 'Displacement, health impacts, service disruption'
+                },
+                'environmental': {
+                    'rate_per_second': 25.0,
+                    'description': 'Ecosystem damage, contamination'
+                }
+            },
+            'drought': {
+                'economic': {
+                    'rate_per_second': 50.0,
+                    'description': 'Agricultural losses, water rationing costs'
+                },
+                'social': {
+                    'rate_per_second': 30.0,
+                    'description': 'Water scarcity impacts, health risks'
+                },
+                'environmental': {
+                    'rate_per_second': 40.0,
+                    'description': 'Ecosystem stress, habitat loss'
+                }
+            },
+            'power_instability': {
+                'economic': {
+                    'rate_per_second': 200.0,
+                    'description': 'Business interruption, grid repair costs'
+                },
+                'social': {
+                    'rate_per_second': 100.0,
+                    'description': 'Service disruption, safety risks'
+                },
+                'environmental': {
+                    'rate_per_second': 10.0,
+                    'description': 'Emissions from backup generators'
+                }
+            },
+            'default': {
+                'economic': {'rate_per_second': 50.0},
+                'social': {'rate_per_second': 25.0},
+                'environmental': {'rate_per_second': 15.0}
+            }
         }
     
     def get_correlation_statistics(self) -> Dict[str, Any]:

@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Schema for shadow-mode counterfactual reports",
+  "properties": {
+    "shadow_mode_status": {
+      "type": "string",
+      "enum": ["active", "completed", "paused"]
+    },
+    "shadow_mode_start": { "type": "string", "format": "date-time" },
+    "shadow_mode_end": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_incidents_observed": { "type": "integer", "minimum": 0 },
+        "total_human_actions": { "type": "integer", "minimum": 0 },
+        "total_munin_predictions": { "type": "integer", "minimum": 0 },
+        "total_time_saved_seconds": { "type": "integer", "minimum": 0 },
+        "total_damage_prevented_estimate": { "type": "number", "minimum": 0 },
+        "average_improvement_ratio": { "type": "number", "minimum": 0 }
+      },
+      "required": [
+        "total_incidents_observed",
+        "total_human_actions",
+        "total_munin_predictions",
+        "total_time_saved_seconds",
+        "total_damage_prevented_estimate",
+        "average_improvement_ratio"
+      ]
+    },
+    "top_improvements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "incident_id": { "type": "string" },
+          "time_saved_seconds": { "type": "integer" },
+          "damage_prevented_estimate": { "type": "number" },
+          "improvement_ratio": { "type": "number" }
+        },
+        "required": ["incident_id", "time_saved_seconds", "damage_prevented_estimate", "improvement_ratio"]
+      }
+    },
+    "cost_models": {
+      "type": "object",
+      "properties": {
+        "economic": {
+          "type": "object",
+          "description": "Economic cost model parameters"
+        },
+        "social": {
+          "type": "object",
+          "description": "Social cost model parameters"
+        },
+        "environmental": {
+          "type": "object",
+          "description": "Environmental cost model parameters"
+        }
+      }
+    }
+  },
+  "required": ["shadow_mode_status", "summary"]
+}

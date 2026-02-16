@@ -18,10 +18,55 @@ import { verifySignature as verifyEd25519 } from './ed25519';
 // PostgreSQL migrations are provided in migrations/ directory
 // In production, use PostgreSQL with the provided migrations
 
+// Expanded event types for sovereign, physics, and CMI events
+export type AuditEventType =
+  // Core events
+  | 'DECISION_CREATED'
+  | 'DECISION_SIGNED'
+  | 'DECISION_AUTHORIZED'
+  | 'DECISION_REJECTED'
+  | 'DECISION_EXECUTED'
+  | 'PACKET_CREATED'
+  | 'PACKET_AUTHORIZED'
+  | 'PACKET_EXECUTED'
+  // Sovereign events
+  | 'TEE_SIGNATURE_GENERATED'
+  | 'TEE_ATTESTATION_VERIFIED'
+  | 'PQC_KEY_ROTATED'
+  | 'PQC_SIGNATURE_GENERATED'
+  | 'BYZANTINE_QUORUM_CREATED'
+  | 'BYZANTINE_SIGNATURE_ADDED'
+  | 'BYZANTINE_QUORUM_MET'
+  | 'BIOMETRIC_HANDSHAKE_VERIFIED'
+  | 'AIR_GAP_VERIFIED'
+  // Physics events
+  | 'PHYSICS_VERIFICATION_PERFORMED'
+  | 'HARDWARE_HACK_DETECTED'
+  | 'PHYSICAL_SIGNAL_MISMATCH'
+  | 'LOGIC_LOCK_VIOLATION'
+  | 'LOGIC_LOCK_COMMAND_BLOCKED'
+  | 'LOGIC_LOCK_COMMAND_ALLOWED'
+  // CMI events
+  | 'CMI_MODE_ACTIVATED'
+  | 'CMI_MODE_DEACTIVATED'
+  | 'CMI_ASSET_PRIORITIZED'
+  | 'CMI_LOAD_SHEDDING_EXECUTED'
+  | 'CMI_TIER_UPDATED'
+  // Shadow mode events
+  | 'SHADOW_ACTION_RECORDED'
+  | 'SHADOW_PREDICTION_GENERATED'
+  | 'SHADOW_COMPARISON_COMPUTED'
+  | 'SHADOW_REPORT_GENERATED'
+  // Other
+  | 'USER_REGISTERED'
+  | 'USER_KEY_ROTATED'
+  | 'CONFIG_UPDATED'
+  | 'SYSTEM_ERROR';
+
 export interface AuditLogEntry {
   id: string;
   ts: Date;
-  event_type: string;
+  event_type: AuditEventType | string; // Allow string for backward compatibility
   payload_json: Record<string, any>;
   prev_hash: string | null;
   entry_hash: string;
@@ -110,7 +155,7 @@ export function getCurrentSequenceNumber(): number {
  * Append entry to audit log (append-only)
  */
 export function appendAuditLogEntry(
-  eventType: string,
+  eventType: AuditEventType | string,
   payload: Record<string, any>,
   signerId?: string,
   signature?: string,

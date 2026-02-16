@@ -6,12 +6,26 @@ from typing import Dict, List
 import json
 
 def detect_missingness(series: pd.Series, threshold: float = 0.1) -> bool:
-    """Detect if series has excessive missing values."""
+    """
+    Detect if series has excessive missing values.
+    
+    Threshold rationale (based on realistic SCADA distributions):
+    - < 5% missing: Normal operational variance (network hiccups, brief outages)
+    - 5-10% missing: Degraded but acceptable (scheduled maintenance windows)
+    - > 10% missing: Significant data loss, may produce false correlations
+    """
     missing_ratio = series.isna().sum() / len(series)
     return missing_ratio > threshold
 
 def detect_stuck_at(series: pd.Series, threshold: float = 0.01) -> bool:
-    """Detect if series variance is near zero (stuck sensor)."""
+    """
+    Detect if series variance is near zero (stuck sensor).
+    
+    Threshold rationale:
+    - CV < 0.01: Sensor likely stuck at constant value
+    - Realistic SCADA sensors show CV > 0.05 even for stable processes
+    - Stuck sensors create spurious correlations with other stuck sensors
+    """
     if len(series.dropna()) < 10:
         return True
     variance = series.var()
@@ -21,8 +35,15 @@ def detect_stuck_at(series: pd.Series, threshold: float = 0.01) -> bool:
     cv = variance / (mean_abs + 1e-10)  # Coefficient of variation
     return cv < threshold
 
-def detect_drift(series: pd.Series, window_size: int = 10) -> bool:
-    """Detect if rolling mean shows significant shift."""
+def detect_drift(series: pd.Series, window_size: int = 10, multiplier: float = 2.0) -> bool:
+    """
+    Detect if rolling mean shows significant shift (calibration drift).
+    
+    Threshold rationale:
+    - 2 * std_pooled: Standard statistical test for significant mean shift
+    - Calibration drift creates time-varying correlations that break graph stability
+    - Realistic SCADA sensors maintain calibration within 1-2 std deviations
+    """
     if len(series.dropna()) < window_size * 2:
         return False
     
@@ -39,8 +60,8 @@ def detect_drift(series: pd.Series, window_size: int = 10) -> bool:
     if std_pooled == 0:
         return False
     
-    # Drift if mean shift is > 2 standard deviations
-    return mean_diff > 2 * std_pooled
+    # Drift if mean shift is > multiplier * standard deviations
+    return mean_diff > multiplier * std_pooled
 
 def compute_observability_score(series: pd.Series) -> Dict:
     """Compute observability score and drivers."""

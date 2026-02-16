@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for normalized time-series CSV output",
+  "type": "object",
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "csv"
+    },
+    "columns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Node IDs (column names)"
+      }
+    },
+    "index": {
+      "type": "string",
+      "const": "timestamp",
+      "description": "First column is timestamp index"
+    },
+    "timestamp_format": {
+      "type": "string",
+      "const": "ISO8601"
+    },
+    "value_type": {
+      "type": "string",
+      "enum": ["float64", "float32"]
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "engine_version": { "type": "string" },
+        "created": { "type": "string" },
+        "config_version": { "type": "string" },
+        "num_rows": { "type": "integer" },
+        "num_columns": { "type": "integer" },
+        "time_range": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string" },
+            "end": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "required": ["format", "columns", "index", "timestamp_format"]
+}

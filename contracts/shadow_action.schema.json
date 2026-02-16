@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Schema for shadow-mode action traces (JSONL format)",
+  "properties": {
+    "id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "incident_id": { "type": "string" },
+    "action_type": {
+      "type": "string",
+      "enum": ["human_action", "munin_prediction", "comparison"]
+    },
+    "human_action": {
+      "type": "object",
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "enum": ["command", "coordination", "decision", "verification"]
+        },
+        "description": { "type": "string" },
+        "target_nodes": { "type": "array", "items": { "type": "string" } },
+        "duration_seconds": { "type": "integer", "minimum": 0 },
+        "outcome": {
+          "type": "string",
+          "enum": ["success", "partial", "failure", "unknown"]
+        },
+        "operator_id": { "type": ["string", "null"] },
+        "coordination_parties": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["action_type", "description", "target_nodes", "duration_seconds", "outcome"]
+    },
+    "munin_prediction": {
+      "type": "object",
+      "properties": {
+        "predicted_action": { "type": "string" },
+        "target_nodes": { "type": "array", "items": { "type": "string" } },
+        "predicted_duration_seconds": { "type": "integer", "minimum": 0 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "counterfactual_proof": { "type": "object" },
+        "damage_prevented": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      },
+      "required": ["predicted_action", "target_nodes", "predicted_duration_seconds", "confidence"]
+    },
+    "comparison": {
+      "type": "object",
+      "properties": {
+        "time_saved_seconds": { "type": "integer" },
+        "damage_prevented_estimate": { "type": "number" },
+        "improvement_ratio": { "type": "number", "minimum": 0 }
+      },
+      "required": ["time_saved_seconds", "damage_prevented_estimate", "improvement_ratio"]
+    }
+  },
+  "required": ["id", "timestamp", "incident_id", "action_type"]
+}

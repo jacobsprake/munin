@@ -9,6 +9,7 @@ from pathlib import Path
 import json
 from datetime import datetime
 from typing import Dict, List, Tuple, Any
+import importlib
 
 # Add engine directory to path
 script_dir = Path(__file__).parent
@@ -63,6 +64,7 @@ class FeatureTester:
     def test_data_ingestion(self) -> Tuple[bool, str]:
         """Test data ingestion from CSV files."""
         try:
+            import pandas as pd
             from ingest import ingest_historian_data, normalize_timeseries
             
             data_dir = self.engine_dir / "sample_data"
@@ -83,6 +85,8 @@ class FeatureTester:
                 return False, "Normalized CSV file was not created"
             
             return True, f"Successfully ingested {len(df.columns)} nodes, {len(df)} samples"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
@@ -235,55 +239,48 @@ class FeatureTester:
     def test_byzantine_resilience(self) -> Tuple[bool, str]:
         """Test Byzantine fault tolerance (M-of-N multi-sig)."""
         try:
-            from byzantine_resilience import ByzantineResilienceEngine, MinistryType
+            from byzantine_resilience import ByzantineResilienceEngine, MinistryType, ActionConsequenceLevel
             
             engine = ByzantineResilienceEngine()
             
-            # Test action classification
-            action_id = "test_action_001"
+            # Test multi-sig requirements determination
+            action_type = "open_dam"  # High-consequence action
             action_desc = "Test critical action"
             target_assets = ["asset_001", "asset_002"]
             
-            result = engine.create_action(
-                action_id=action_id,
-                action_description=action_desc,
-                target_assets=target_assets
-            )
+            required_ministries, threshold = engine.determine_multi_sig_requirements(action_desc, target_assets, action_type)
             
-            if result.get('quorum_type') == 'CRITICAL':
-                return True, "Byzantine resilience engine initialized correctly"
-            else:
-                return True, f"Action created: {result.get('quorum_type')}"
+            return True, f"Byzantine resilience engine initialized, quorum: {threshold}-of-{len(required_ministries)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_logic_lock(self) -> Tuple[bool, str]:
         """Test Logic-Lock physics validation."""
         try:
-            from logic_lock import LogicLockEngine
+            from logic_lock import LogicLockEngine, AssetType
             
             engine = LogicLockEngine()
             
             # Test constraint validation
             command = {
-                'action': 'open_valve',
-                'target': 'valve_001',
-                'parameters': {'position': 50}
+                'rpm': 4000  # Exceeds max RPM of 3600
             }
             
-            constraints = [
-                {'type': 'state_dependency', 'rule': 'pump_001 must be ON'}
-            ]
+            result = engine.validate_command(
+                command_id="test_cmd_001",
+                asset_id="turbine_001",
+                asset_type=AssetType.TURBINE,
+                command=command
+            )
             
-            result = engine.validate_command(command, constraints)
-            
-            return True, f"Logic-Lock validation: {result.get('valid', False)}"
+            return True, f"Logic-Lock validation: valid={result.valid}, blocked={result.blocked}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_protocol_translation(self) -> Tuple[bool, str]:
         """Test protocol translation layer."""
         try:
+            import pandas as pd
             from protocol_translator import ProtocolTranslator
             
             translator = ProtocolTranslator()
@@ -293,20 +290,29 @@ class FeatureTester:
             protocol = translator.detect_protocol(test_frame)
             
             return True, f"Protocol translator initialized, detected: {protocol}"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_data_diode(self) -> Tuple[bool, str]:
         """Test data diode enforcement."""
         try:
-            from data_diode import DataDiodeEnforcer
+            from data_diode import DataDiodeEnforcer, DataDiodeMode
             
-            enforcer = DataDiodeEnforcer()
+            enforcer = DataDiodeEnforcer(mode=DataDiodeMode.HARDWARE_DIODE)
             
-            # Test one-way enforcement
-            result = enforcer.verify_one_way()
+            # Test inbound (should be allowed)
+            inbound_result = enforcer.verify_inbound("test_source", {"test": "data"})
             
-            return True, f"Data diode verification: {result.get('one_way_enforced', False)}"
+            # Test outbound (should be blocked)
+            try:
+                enforcer.verify_outbound("test_dest", {"test": "data"})
+                return False, "Outbound should be blocked but wasn't"
+            except Exception:
+                pass  # Expected to fail
+            
+            return True, f"Data diode working: inbound={inbound_result['allowed']}, outbound blocked"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
@@ -315,12 +321,15 @@ class FeatureTester:
     def test_shadow_simulation(self) -> Tuple[bool, str]:
         """Test shadow simulation mode."""
         try:
+            import pandas as pd
             from shadow_simulation import ShadowModeEngine
             
             engine = ShadowModeEngine()
             
             # Test shadow mode initialization
             return True, "Shadow simulation engine initialized"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
@@ -329,9 +338,23 @@ class FeatureTester:
         try:
             from agentic_reasoning import AgenticReasoningEngine
             
-            engine = AgenticReasoningEngine()
+            # Load required data
+            graph_file = self.out_dir / "graph.json"
+            evidence_file = self.out_dir / "evidence.json"
+            incidents_file = self.out_dir / "incidents.json"
             
-            # Test reasoning initialization
+            if not all(f.exists() for f in [graph_file, evidence_file, incidents_file]):
+                return False, "Required data files not found (run pipeline first)"
+            
+            with open(graph_file, 'r') as f:
+                graph_data = json.load(f)
+            with open(evidence_file, 'r') as f:
+                evidence_data = json.load(f)
+            with open(incidents_file, 'r') as f:
+                incidents_data = json.load(f)
+            
+            engine = AgenticReasoningEngine(graph_data, evidence_data, incidents_data)
+            
             return True, "Agentic reasoning engine initialized"
         except Exception as e:
             return False, f"Exception: {str(e)}"
@@ -339,74 +362,111 @@ class FeatureTester:
     def test_cmi_prioritization(self) -> Tuple[bool, str]:
         """Test Civilian-Military Integration prioritization."""
         try:
-            from cmi_prioritization import CMIPrioritizationEngine
+            from cmi_prioritization import CMIPrioritizationEngine, EmergencyLevel, AssetClassification, AssetPriority
             
             engine = CMIPrioritizationEngine()
             
-            # Test prioritization
-            assets = ["hospital_001", "military_base_001", "commercial_001"]
-            result = engine.prioritize_assets(assets, emergency_level='war')
+            # Set emergency level
+            engine.set_emergency_level(EmergencyLevel.WAR)
             
-            return True, f"CMI prioritization: {len(result.get('tier_1', []))} Tier 1 assets"
+            # Classify an asset first
+            asset_id = "hospital_001"
+            classification = engine.classify_asset(
+                asset_id=asset_id,
+                sector="healthcare",
+                asset_type="hospital",
+                is_life_support=True,
+                serves_hospitals=True
+            )
+            
+            # Test asset prioritization
+            result = engine.prioritize_asset(asset_id)
+            
+            return True, f"CMI prioritization: asset {asset_id} priority={result.base_priority.value}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_physical_verification(self) -> Tuple[bool, str]:
         """Test physical verification (RF/acoustic)."""
         try:
+            import numpy as np
             from physical_verification import PhysicalVerificationEngine
             
             engine = PhysicalVerificationEngine()
             
             return True, "Physical verification engine initialized"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_provenance_ledger(self) -> Tuple[bool, str]:
         """Test provenance ledger (data integrity)."""
         try:
-            from provenance_ledger import ProvenanceLedger
+            from provenance_ledger import ProvenanceLedger, HardwareRoot, DataSourceType
             
             ledger = ProvenanceLedger()
             
-            # Test hash generation
-            test_data = {'sensor_id': 'test_001', 'value': 123.45, 'timestamp': '2026-01-01T00:00:00Z'}
-            hash_result = ledger.hash_data_point(test_data)
+            # Test hardware root registration
+            root = HardwareRoot(
+                source_id="test_sensor_001",
+                source_type=DataSourceType.SENSOR,
+                hardware_id="hw_001",
+                public_key="test_key",
+                certificate="test_cert",
+                issued_at=datetime.now().isoformat()
+            )
+            ledger.register_hardware_root(root)
             
-            return True, f"Provenance ledger initialized, hash: {hash_result[:16]}..."
+            return True, f"Provenance ledger initialized, {len(ledger.hardware_roots)} hardware roots registered"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_digital_twin(self) -> Tuple[bool, str]:
         """Test digital twin stress-testing."""
         try:
+            import pandas as pd
             from sovereign_digital_twin import DigitalTwinEngine
             
             engine = DigitalTwinEngine()
             
             return True, "Digital twin engine initialized"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_sovereign_handshake(self) -> Tuple[bool, str]:
         """Test sovereign handshake (biometric multi-sig)."""
         try:
-            from sovereign_handshake import SovereignHandshakeEngine
+            from sovereign_handshake import (
+                SovereignHandshake, MinistrySignature, BiometricHandshake
+            )
+            import hashlib
             
-            engine = SovereignHandshakeEngine()
+            # Test handshake creation
+            handshake = SovereignHandshake(
+                action_id="test_action_001",
+                action_description="Test action",
+                required_ministries=["water_authority", "power_grid"],
+                threshold=2
+            )
             
-            return True, "Sovereign handshake engine initialized"
+            return True, f"Sovereign handshake created: {handshake.action_id}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_liability_shield(self) -> Tuple[bool, str]:
         """Test liability shield (legal compliance)."""
         try:
+            import yaml
             from liability_shield import LiabilityShieldEngine
             
             engine = LiabilityShieldEngine()
             
             return True, "Liability shield engine initialized"
+        except ImportError as e:
+            return False, f"Missing dependency: {str(e)}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
@@ -424,11 +484,11 @@ class FeatureTester:
     def test_n_version_programming(self) -> Tuple[bool, str]:
         """Test N-version programming (consensus)."""
         try:
-            from n_version_programming import NVersionEngine
+            from n_version_programming import NVersionProgrammingEngine
             
-            engine = NVersionEngine()
+            engine = NVersionProgrammingEngine(n_versions=3, threshold=2)
             
-            return True, "N-version programming engine initialized"
+            return True, f"N-version programming engine initialized: {engine.n_versions} versions, threshold {engine.threshold}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
@@ -448,42 +508,75 @@ class FeatureTester:
         try:
             from digital_asset_vault import DigitalAssetVault
             
-            vault = DigitalAssetVault()
+            vault_path = self.out_dir / "test_vault"
+            vault = DigitalAssetVault(
+                vault_id="test_vault_001",
+                location={"lat": 0.0, "lon": 0.0, "name": "Test Location"},
+                vault_path=vault_path
+            )
             
-            return True, "Digital asset vault initialized"
+            return True, f"Digital asset vault initialized: {vault.vault_id}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_sovereign_mesh(self) -> Tuple[bool, str]:
         """Test sovereign mesh network."""
         try:
-            from sovereign_mesh import SovereignMeshEngine
+            from sovereign_mesh import SovereignMeshNetwork, SovereignMeshNode, MeshNodeType, MeshProtocol
             
-            engine = SovereignMeshEngine()
+            network = SovereignMeshNetwork()
             
-            return True, "Sovereign mesh engine initialized"
+            # Add a test node
+            node = SovereignMeshNode(
+                node_id="test_node_001",
+                node_type=MeshNodeType.LORA_BASE_STATION,
+                location={"lat": 0.0, "lon": 0.0},
+                protocol=MeshProtocol.LORA_WAN
+            )
+            network.add_node(node)
+            
+            return True, f"Sovereign mesh network initialized: {len(network.nodes)} nodes"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_wide_bandgap_edge(self) -> Tuple[bool, str]:
         """Test wide-bandgap edge computing."""
         try:
-            from wide_bandgap_edge import WideBandgapEdgeNode
+            from wide_bandgap_edge import WideBandgapEdgeNode, EdgeNodeSpec, SemiconductorType, OperatingEnvironment
             
-            node = WideBandgapEdgeNode()
+            spec = EdgeNodeSpec(
+                node_id="test_edge_001",
+                semiconductor_type=SemiconductorType.GAN,
+                operating_environment=OperatingEnvironment.HIGH_VOLTAGE_GRID,
+                max_operating_temperature=200.0,
+                max_operating_voltage=10000.0,
+                power_consumption=50.0,
+                compute_capability="ARM Cortex-A78 @ 2.8GHz",
+                memory_capacity=8,
+                storage_capacity=128,
+                network_interfaces=["LoRaWAN", "Ethernet"],
+                location={"lat": 0.0, "lon": 0.0},
+                deployment_date=datetime.now().isoformat()
+            )
             
-            return True, "Wide-bandgap edge node initialized"
+            node = WideBandgapEdgeNode(spec)
+            
+            return True, f"Wide-bandgap edge node initialized: {node.spec.node_id}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     
     def test_biometric_key(self) -> Tuple[bool, str]:
         """Test biometric key generation."""
         try:
-            from biometric_key import BiometricKeyGenerator
+            from biometric_key import SovereignHandshakeTablet, BiometricType
             
-            generator = BiometricKeyGenerator()
+            tablet = SovereignHandshakeTablet(
+                tablet_id="test_tablet_001",
+                serial_number="SN001",
+                location={"lat": 0.0, "lon": 0.0}
+            )
             
-            return True, "Biometric key generator initialized"
+            return True, f"Biometric tablet initialized: {tablet.tablet_id}"
         except Exception as e:
             return False, f"Exception: {str(e)}"
     

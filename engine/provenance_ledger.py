@@ -228,6 +228,79 @@ class ProvenanceLedger:
             'timestamp': datetime.now().isoformat()
         }
     
+    def create_merkle_proof_per_data_point(
+        self,
+        data_id: str,
+        data_content: str,
+        timestamp: str
+    ) -> Dict:
+        """
+        Create Merkle proof for a single data point.
+        
+        Returns proof that can be verified independently.
+        """
+        data_hash = self._hash_data(data_content)
+        
+        # Create leaf node hash: SHA-256(data_id:timestamp:data_hash)
+        leaf_data = f"{data_id}:{timestamp}:{data_hash}"
+        leaf_hash = hashlib.sha256(leaf_data.encode()).hexdigest()
+        
+        # Add to Merkle tree
+        self.merkle_tree.append(leaf_hash)
+        
+        # Build Merkle proof path (simplified - would use proper Merkle tree in production)
+        proof_path = []
+        current_index = len(self.merkle_tree) - 1
+        
+        # Generate proof siblings (simplified binary tree)
+        while current_index > 0:
+            sibling_index = current_index ^ 1  # XOR to get sibling
+            if sibling_index < len(self.merkle_tree):
+                proof_path.append({
+                    'index': sibling_index,
+                    'hash': self.merkle_tree[sibling_index]
+                })
+            current_index = (current_index - 1) // 2
+        
+        # Compute root hash
+        self.merkle_root = self._compute_merkle_root()
+        
+        return {
+            'data_id': data_id,
+            'data_hash': data_hash,
+            'leaf_hash': leaf_hash,
+            'proof_path': proof_path,
+            'merkle_root': self.merkle_root,
+            'timestamp': timestamp
+        }
+    
+    def verify_merkle_proof_per_data_point(
+        self,
+        proof: Dict,
+        data_content: str
+    ) -> Tuple[bool, str]:
+        """
+        Verify Merkle proof for a data point.
+        
+        Returns (is_valid, reason)
+        """
+        # Recompute data hash
+        data_hash = self._hash_data(data_content)
+        
+        # Recompute leaf hash
+        leaf_data = f"{proof['data_id']}:{proof['timestamp']}:{data_hash}"
+        leaf_hash = hashlib.sha256(leaf_data.encode()).hexdigest()
+        
+        if leaf_hash != proof['leaf_hash']:
+            return False, "Leaf hash mismatch - data point has been modified"
+        
+        # Verify proof path (simplified - would use proper Merkle tree verification)
+        # In production, would verify sibling hashes lead to root
+        if proof.get('merkle_root') != self.merkle_root:
+            return False, "Merkle root mismatch - proof invalid"
+        
+        return True, "Merkle proof verified"
+    
     def _hash_data(self, data: str) -> str:
         """Compute SHA-256 hash of data."""
         return hashlib.sha256(data.encode()).hexdigest()

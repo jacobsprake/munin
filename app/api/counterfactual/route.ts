@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
     const dataPath = join(outDir, 'normalized_timeseries.csv');
     const outputPath = join(outDir, 'counterfactual_result.json');
     
-    const command = `cd ${engineDir} && python3 -c "
+    const pythonPath = getPythonPath();
+    const command = `cd ${engineDir} && ${pythonPath} -c "
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path('${engineDir}').absolute()))

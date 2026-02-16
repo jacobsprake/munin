@@ -2,24 +2,26 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 import json
+from config import GraphInferenceConfig, get_config
 
 def compute_correlation_with_lag(
     series1: pd.Series,
     series2: pd.Series,
-    max_lag_seconds: int = 300
+    max_lag_seconds: int = 300,
+    min_samples: int = 10
 ) -> Tuple[float, int]:
     """Compute correlation at optimal lag offset."""
     # Align timestamps
     common_idx = series1.index.intersection(series2.index)
-    if len(common_idx) < 10:
+    if len(common_idx) < min_samples:
         return 0.0, 0
     
     s1 = series1.loc[common_idx].dropna()
     s2 = series2.loc[common_idx].dropna()
     
-    if len(s1) < 10 or len(s2) < 10:
+    if len(s1) < min_samples or len(s2) < min_samples:
         return 0.0, 0
     
     # Try different lag offsets
@@ -152,11 +154,21 @@ def is_shadow_link(
 
 def infer_edges(
     df: pd.DataFrame,
-    min_confidence: float = 0.5,
-    max_edges_per_node: int = 3,
-    registry_edges: List[Dict] = None
+    min_confidence: float = None,
+    max_edges_per_node: int = None,
+    registry_edges: List[Dict] = None,
+    config: Optional[GraphInferenceConfig] = None
 ) -> List[Dict]:
     """Infer edges between nodes based on correlation."""
+    if config is None:
+        from config import default_config
+        config = default_config.graph
+    
+    if min_confidence is None:
+        min_confidence = config.min_correlation
+    if max_edges_per_node is None:
+        max_edges_per_node = config.top_k_edges_per_node
+    
     edges = []
     node_ids = df.columns.tolist()
     edge_id_counter = 0
@@ -167,10 +179,19 @@ def infer_edges(
         
         for target in node_ids[i+1:]:
             target_series = df[target]
-            corr, lag = compute_correlation_with_lag(source_series, target_series)
+            corr, lag = compute_correlation_with_lag(
+                source_series, 
+                target_series,
+                max_lag_seconds=config.max_lag_seconds,
+                min_samples=config.min_samples_per_pair
+            )
             
             if abs(corr) >= min_confidence:
-                stability = compute_stability_score(df, source, target)
+                stability = compute_stability_score(
+                    df, source, target,
+                    window_hours=config.stability_window_hours,
+                    num_windows=config.stability_num_windows
+                )
                 is_shadow = is_shadow_link(source, target, registry_edges)
                 
                 correlations.append({
@@ -192,6 +213,10 @@ def infer_edges(
             if corr_data['correlation'] > 0:
                 # Count evidence windows (simplified: use data length)
                 window_count = max(1, len(df) // (24 * 60))  # Approximate windows per day
+                
+                # Filter by stability threshold
+                if corr_data['stability'] < config.min_stability:
+                    continue
                 
                 # Generate confounder notes
                 confounder_notes = []
@@ -262,7 +287,11 @@ def create_nodes_from_data(df: pd.DataFrame) -> List[Dict]:
                 break
         
         # Mock health (would come from sensor_health in real system)
-        health_score = np.random.uniform(0.7, 1.0)
+        # Use deterministic RNG based on node_id hash for reproducibility
+        import hashlib
+        node_hash = int(hashlib.md5(node_id.encode()).hexdigest()[:8], 16)
+        rng_state = np.random.RandomState(node_hash % (2**31))
+        health_score = rng_state.uniform(0.7, 1.0)
         if health_score < 0.8:
             status = 'degraded'
         elif health_score < 0.9:
@@ -286,9 +315,13 @@ def create_nodes_from_data(df: pd.DataFrame) -> List[Dict]:
     
     return nodes
 
-def build_graph(input_path: Path, output_path: Path, registry_path: Path = None):
+def build_graph(input_path: Path, output_path: Path, registry_path: Path = None, config=None):
     """Build dependency graph from normalized time-series."""
     df = pd.read_csv(input_path, index_col=0, parse_dates=True)
+    
+    # Load config if not provided
+    if config is None:
+        config = get_config().graph
     
     # Load registry if provided
     registry_edges = None
@@ -298,7 +331,7 @@ def build_graph(input_path: Path, output_path: Path, registry_path: Path = None)
             registry_edges = registry_data.get('edges', [])
     
     nodes = create_nodes_from_data(df)
-    edges = infer_edges(df, registry_edges=registry_edges)
+    edges = infer_edges(df, registry_edges=registry_edges, config=config)
     
     graph = {
         'nodes': nodes,

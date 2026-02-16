@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
     const outDir = join(process.cwd(), 'engine', 'out');
     
     // Run the agentic reasoning engine
-    const pythonCmd = `python3 "${scriptPath}"`;
+    const pythonPath = getPythonPath();
+    const pythonCmd = `${pythonPath} "${scriptPath}"`;
     const { stdout, stderr } = await execAsync(pythonCmd, {
       cwd: join(process.cwd(), 'engine'),
       env: { ...process.env, INCIDENT_ID: incidentId, BROKEN_SENSOR_ID: brokenSensorId || '' }

@@ -224,24 +224,60 @@ export default function CounterfactualPanel({ onRunSimulation }: CounterfactualP
                 <div className="pt-3 border-t border-base-700">
                   <div className="text-xs font-mono text-text-muted mb-2">Top Predictions:</div>
                   <div className="space-y-2">
-                    {result.predictions.slice(0, 5).map((pred, idx) => (
-                      <div key={idx} className="p-2 bg-base-800 rounded border border-base-700">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-mono text-text-primary">{pred.node_id}</span>
-                          <span className="text-xs font-mono text-text-muted">
-                            {Math.floor(pred.time_to_impact / 60)}m
-                          </span>
+                    {result.predictions.slice(0, 5).map((pred, idx) => {
+                      const confidenceWidth = pred.confidence_band.upper - pred.confidence_band.lower;
+                      const confidencePercent = ((confidenceWidth / Math.abs(pred.predicted_value)) * 100) || 0;
+                      const isHighConfidence = confidencePercent < 10;
+                      
+                      return (
+                        <div key={idx} className="p-2 bg-base-800 rounded border border-base-700">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-mono text-text-primary">{pred.node_id}</span>
+                            <span className="text-xs font-mono text-text-muted">
+                              {Math.floor(pred.time_to_impact / 60)}m
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-mono text-text-secondary">
+                              {pred.predicted_value.toFixed(2)}
+                            </span>
+                            <span className={`text-xs font-mono ${isHighConfidence ? 'text-safety-emerald' : 'text-safety-amber'}`}>
+                              [{pred.confidence_band.lower.toFixed(2)}, {pred.confidence_band.upper.toFixed(2)}]
+                            </span>
+                          </div>
+                          {/* Confidence band explanation */}
+                          <div className="text-[10px] font-mono text-text-muted mt-1">
+                            {isHighConfidence 
+                              ? `High confidence: ${confidencePercent.toFixed(1)}% uncertainty`
+                              : `Moderate confidence: ${confidencePercent.toFixed(1)}% uncertainty - consider additional evidence`
+                            }
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-text-secondary">
-                            {pred.predicted_value.toFixed(2)}
-                          </span>
-                          <span className="text-xs font-mono text-text-muted">
-                            [{pred.confidence_band.lower.toFixed(2)}, {pred.confidence_band.upper.toFixed(2)}]
-                          </span>
-                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              
+              {/* Overall explanation */}
+              {result && (
+                <div className="pt-3 border-t border-base-700">
+                  <div className="text-xs font-mono text-text-muted mb-2">Explanation:</div>
+                  <div className="text-xs font-mono text-text-secondary space-y-1">
+                    <div>
+                      • Simulation predicts cascade through {result.cascade_path.length} nodes over {result.time_horizon_minutes} minutes
+                    </div>
+                    <div>
+                      • Overall confidence: {(result.overall_confidence * 100).toFixed(1)}% based on evidence quality and graph stability
+                    </div>
+                    <div>
+                      • Confidence bands show 95% prediction intervals - actual values may vary within these ranges
+                    </div>
+                    {result.overall_confidence < 0.7 && (
+                      <div className="text-safety-amber">
+                        ⚠️ Lower confidence suggests limited historical evidence - consider manual verification
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}

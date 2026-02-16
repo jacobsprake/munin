@@ -239,8 +239,12 @@ class SovereignDigitalTwin:
                     edge_confidence = edge.get('confidenceScore', 0.5)
                     failure_prob = scenario.severity * (1.0 - edge_confidence)
                     
-                    # Simulate failure (random based on probability)
-                    if np.random.random() < failure_prob:
+                    # Simulate failure (deterministic based on edge and scenario)
+                    # Use deterministic RNG seeded by edge ID and scenario ID
+                    import hashlib
+                    edge_scenario_hash = int(hashlib.md5(f"{edge['source']}:{edge['target']}:{scenario.id}".encode()).hexdigest()[:8], 16)
+                    rng = np.random.RandomState(edge_scenario_hash % (2**31))
+                    if rng.random() < failure_prob:
                         failed_nodes.add(target)
                         new_path = path + [target]
                         cascade_paths.append(new_path)

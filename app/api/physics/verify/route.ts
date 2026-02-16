@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -23,7 +24,8 @@ export async function POST(request: Request) {
     
     // Call Python engine to verify signals
     const scriptPath = process.cwd() + '/engine/physics_ingest.py';
-    const command = `python3 "${scriptPath}" verify "${sensorId}" "${JSON.stringify(digitalSignal)}" "${JSON.stringify(acousticSignal || {})}" "${JSON.stringify(rfSignal || {})}"`;
+    const pythonPath = getPythonPath();
+    const command = `${pythonPath} "${scriptPath}" verify "${sensorId}" "${JSON.stringify(digitalSignal)}" "${JSON.stringify(acousticSignal || {})}" "${JSON.stringify(rfSignal || {})}"`;
     
     try {
       const { stdout } = await execAsync(command);
@@ -60,7 +62,8 @@ export async function GET(request: Request) {
     if (action === 'statistics') {
       // Get verification statistics
       const scriptPath = process.cwd() + '/engine/physics_ingest.py';
-      const command = `python3 "${scriptPath}" statistics`;
+      const pythonPath = getPythonPath();
+      const command = `${pythonPath} "${scriptPath}" statistics`;
       
       try {
         const { stdout } = await execAsync(command);

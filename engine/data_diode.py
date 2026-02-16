@@ -37,13 +37,49 @@ class DataDiodeEnforcer:
     """
     Enforces one-way data flow for air-gapped deployments.
     Prevents any outbound network traffic from Munin.
+    
+    Hardware Integration Points:
+    - Hardware diodes: Fiber-optic unidirectional links (e.g., Owl Cyber Defense, Waterfall)
+    - Network interface configuration: iptables/netfilter rules
+    - Physical network isolation: Air-gapped network segments
     """
     
-    def __init__(self, mode: DataDiodeMode = DataDiodeMode.HARDWARE_DIODE):
+    def __init__(
+        self,
+        mode: DataDiodeMode = DataDiodeMode.HARDWARE_DIODE,
+        hardware_device_path: Optional[str] = None,
+        simulation_mode: bool = False
+    ):
+        """
+        Initialize data diode enforcer.
+        
+        Args:
+            mode: Data diode mode (hardware/software/disabled)
+            hardware_device_path: Path to hardware diode device (e.g., '/dev/diode0')
+            simulation_mode: If True, simulate hardware diode (for development)
+        """
         self.mode = mode
+        self.hardware_device_path = hardware_device_path
+        self.simulation_mode = simulation_mode
         self.inbound_allowed = True
         self.outbound_blocked = (mode != DataDiodeMode.DISABLED)
         self.audit_log = []
+        
+        # Initialize hardware diode if in hardware mode
+        if mode == DataDiodeMode.HARDWARE_DIODE and not simulation_mode:
+            self._initialize_hardware_diode()
+    
+    def _initialize_hardware_diode(self):
+        """Initialize hardware data diode device."""
+        if self.hardware_device_path:
+            # In production, would open hardware device
+            # For now, verify device exists
+            import os
+            if not os.path.exists(self.hardware_device_path):
+                raise FileNotFoundError(
+                    f"Hardware diode device not found: {self.hardware_device_path}. "
+                    f"Set simulation_mode=True for development."
+                )
     
     def verify_inbound(self, data_source: str, data: Any) -> Dict[str, Any]:
         """

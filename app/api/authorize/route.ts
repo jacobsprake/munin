@@ -7,6 +7,7 @@ import { packetsRepo, auditLogRepo } from '@/lib/db/repositories';
 import { signWithPQC } from '@/lib/pqc';
 import { signPacketInTEE, detectTEEPlatform } from '@/lib/tee';
 import { generateLegalCertificate } from '@/lib/compliance';
+import { getPythonPath } from '@/lib/utils';
 import yaml from 'js-yaml';
 
 export async function POST(request: Request) {
@@ -30,8 +31,9 @@ export async function POST(request: Request) {
       const engineDir = join(process.cwd(), 'engine');
       
       try {
+        const pythonPath = getPythonPath();
         const { stdout } = await execAsync(
-          `cd ${engineDir} && python3 -c "from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))"`
+          `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))"`
         );
         const cmiStatus = JSON.parse(stdout.trim());
         

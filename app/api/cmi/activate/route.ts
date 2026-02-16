@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -14,8 +15,9 @@ export async function POST(request: Request) {
     // Activate CMI Protocol via Python engine
     const engineDir = join(process.cwd(), 'engine');
     try {
+      const pythonPath = getPythonPath();
       const { stdout } = await execAsync(
-        `cd ${engineDir} && python3 -c "from cmi_logic import activate_cmi_protocol; import json; print(json.dumps(activate_cmi_protocol()))"`
+        `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import activate_cmi_protocol; import json; print(json.dumps(activate_cmi_protocol()))"`
       );
       const result = JSON.parse(stdout.trim());
       

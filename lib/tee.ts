@@ -17,6 +17,23 @@
 
 export type TEEPlatform = 'INTEL_SGX' | 'ARM_TRUSTZONE' | 'AMD_SEV' | 'SOFTWARE_FALLBACK';
 
+export interface TEEConfig {
+  platform: TEEPlatform;
+  useRealHardware: boolean;
+  simulationMode: boolean;
+  iasEndpoint?: string; // Intel Attestation Service endpoint for real hardware
+  enclavePath?: string; // Path to enclave binary for real hardware
+  attestationCacheWindowMs?: number; // Cache attestations for this duration (default: 300000 = 5min)
+  enableAttestationCache?: boolean; // Enable attestation caching (default: true)
+}
+
+export interface TEEFailureMode {
+  type: 'HARDWARE_UNAVAILABLE' | 'ENCLAVE_ERROR' | 'ATTESTATION_FAILED' | 'PHYSICS_VIOLATION';
+  message: string;
+  recoverable: boolean;
+  fallbackAvailable: boolean;
+}
+
 export interface TEEAttestation {
   platform: TEEPlatform;
   enclaveId: string; // Unique hardware enclave identifier
@@ -35,12 +52,84 @@ export interface TEESignature {
 }
 
 /**
- * Simulate TEE attestation generation
- * In production, this would call actual hardware enclave APIs
+ * Detect available TEE platform
+ * In production, checks actual hardware capabilities
+ */
+export async function detectTEEPlatform(config?: TEEConfig): Promise<TEEPlatform> {
+  if (config?.platform) {
+    return config.platform;
+  }
+  
+  // In production, would check:
+  // - CPUID for Intel SGX support
+  // - ARM TrustZone availability
+  // - AMD SEV support
+  
+  // For now, return software fallback
+  return 'SOFTWARE_FALLBACK';
+}
+
+/**
+ * Get TEE configuration
+ */
+// Attestation cache for performance
+const attestationCache = new Map<string, { attestation: TEEAttestation; timestamp: number }>();
+
+export function getTEEConfig(): TEEConfig {
+  // In production, load from environment or config file
+  const useRealHardware = process.env.TEE_USE_REAL_HARDWARE === 'true';
+  const platform = (process.env.TEE_PLATFORM as TEEPlatform) || 'SOFTWARE_FALLBACK';
+  const cacheWindowMs = parseInt(process.env.TEE_ATTESTATION_CACHE_WINDOW_MS || '300000', 10);
+  const enableCache = process.env.TEE_ENABLE_ATTESTATION_CACHE !== 'false';
+  
+  return {
+    platform,
+    useRealHardware,
+    simulationMode: !useRealHardware,
+    iasEndpoint: process.env.TEE_IAS_ENDPOINT,
+    enclavePath: process.env.TEE_ENCLAVE_PATH,
+    attestationCacheWindowMs: cacheWindowMs,
+    enableAttestationCache: enableCache
+  };
+}
+
+/**
+ * Generate TEE attestation (production-ready with real hardware support)
+ * In production with real hardware, calls actual enclave APIs
  */
 export async function generateTEEAttestation(
-  platform: TEEPlatform = 'INTEL_SGX'
+  platform: TEEPlatform = 'INTEL_SGX',
+  config?: TEEConfig
 ): Promise<TEEAttestation> {
+  const teeConfig = config || getTEEConfig();
+  
+  // Check attestation cache if enabled
+  if (teeConfig.enableAttestationCache) {
+    const cacheKey = `${platform}-${teeConfig.enclavePath || 'default'}`;
+    const cached = attestationCache.get(cacheKey);
+    const cacheWindow = teeConfig.attestationCacheWindowMs || 300000; // 5 minutes default
+    
+    if (cached && (Date.now() - cached.timestamp) < cacheWindow) {
+      return cached.attestation;
+    }
+  }
+  
+  if (teeConfig.useRealHardware && platform !== 'SOFTWARE_FALLBACK') {
+    // Real hardware path - would call actual enclave APIs
+    // For Intel SGX:
+    //   const sgx = require('node-sgx');
+    //   const report = await sgx.ereport(...);
+    //   const quote = await sgx.egetkey(...);
+    //   const attestation = await verifyWithIAS(quote);
+    //   return attestation;
+    
+    throw new Error(
+      `Real hardware TEE not yet implemented for ${platform}. ` +
+      `Set TEE_USE_REAL_HARDWARE=false for simulation mode.`
+    );
+  }
+  
+  // Simulation mode (for development/demo)
   // In production, this would:
   // 1. Call Intel SGX egetkey() to get hardware-derived key
   // 2. Call ereport() to generate attestation report
@@ -77,7 +166,7 @@ export async function generateTEEAttestation(
       .join('')}`
   );
   
-  return {
+  const attestation: TEEAttestation = {
     platform,
     enclaveId,
     quote,
@@ -86,6 +175,14 @@ export async function generateTEEAttestation(
     measurement,
     reportData: `REPORT-${enclaveId}-${timestamp}`
   };
+  
+  // Cache attestation if enabled
+  if (teeConfig.enableAttestationCache) {
+    const cacheKey = `${platform}-${teeConfig.enclavePath || 'default'}`;
+    attestationCache.set(cacheKey, { attestation, timestamp: Date.now() });
+  }
+  
+  return attestation;
 }
 
 /**
@@ -96,18 +193,23 @@ export async function generateTEEAttestation(
 export async function signPacketInTEE(
   packetContent: string,
   platform: TEEPlatform = 'INTEL_SGX',
-  validatePhysics: boolean = true
+  validatePhysics: boolean = true,
+  config?: TEEConfig
 ): Promise<TEESignature> {
-  // In production, this would:
-  // 1. Enter the hardware enclave
-  // 2. Parse packet and extract commands
+  const teeConfig = config || getTEEConfig();
+  
+  // In production with real hardware, this would:
+  // 1. Enter the hardware enclave (ecall)
+  // 2. Parse packet and extract commands inside enclave
   // 3. Validate commands against physics constraints (Logic-Lock)
   // 4. If physics violation detected, REFUSE TO SIGN (block command)
   // 5. If valid, verify packet integrity inside enclave
   // 6. Sign with hardware-derived key (never leaves enclave)
   // 7. Generate attestation quote proving execution in enclave
+  // 8. Exit enclave (ocall) with signature and attestation
   
-  const attestation = await generateTEEAttestation(platform);
+  try {
+    const attestation = await generateTEEAttestation(platform, teeConfig);
   
   // Logic-Lock: Validate physics before signing
   if (validatePhysics) {
@@ -125,10 +227,41 @@ export async function signPacketInTEE(
     } catch (error: any) {
       // If packet parsing fails or physics validation fails, refuse to sign
       if (error.message.includes('Logic-Lock')) {
-        throw error; // Re-throw Logic-Lock errors
+        const failureMode: TEEFailureMode = {
+          type: 'PHYSICS_VIOLATION',
+          message: error.message,
+          recoverable: false,
+          fallbackAvailable: false
+        };
+        throw new Error(`TEE Logic-Lock violation: ${error.message}`);
       }
       // For other errors, continue (may be non-command packets)
     }
+  } catch (error: any) {
+    // Handle TEE failures with well-defined failure modes
+    if (error.message.includes('Logic-Lock') || error.message.includes('PHYSICS_VIOLATION')) {
+      throw error; // Don't fallback on physics violations
+    }
+    
+    // For hardware errors, provide failure mode info
+    const failureMode: TEEFailureMode = {
+      type: 'HARDWARE_UNAVAILABLE',
+      message: error.message,
+      recoverable: true,
+      fallbackAvailable: teeConfig.simulationMode
+    };
+    
+    if (teeConfig.simulationMode) {
+      // Fallback to simulation mode
+      console.warn('TEE hardware unavailable, falling back to simulation mode');
+      return signPacketInTEE(packetContent, 'SOFTWARE_FALLBACK', validatePhysics, {
+        ...teeConfig,
+        simulationMode: true,
+        useRealHardware: false
+      });
+    }
+    
+    throw error;
   }
   
   // Compute packet hash

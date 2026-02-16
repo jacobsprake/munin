@@ -139,12 +139,14 @@ class ByzantineResilienceEngine:
         self,
         action_description: str,
         target_assets: List[str],
-        action_type: str
+        action_type: str,
+        emergency_level: Optional[str] = None
     ) -> Tuple[List[MinistryType], int]:
         """
         Determine which ministries must sign and the threshold (M-of-N).
         
         High-consequence actions require signatures from physically separated ministries.
+        Supports arbitrary quorum graphs and conditional signatures based on emergency level.
         """
         # Map action types to consequence levels
         high_consequence_actions = [
@@ -155,7 +157,25 @@ class ByzantineResilienceEngine:
         
         is_high_consequence = any(action in action_type.lower() for action in high_consequence_actions)
         
-        if is_high_consequence:
+        # Emergency level affects quorum requirements
+        # Under war/emergency, fewer signatures allowed with proper logging
+        if emergency_level in ['war', 'national_emergency', 'critical']:
+            if is_high_consequence:
+                # Critical actions in emergency: require 2-of-3 (reduced from 3-of-4)
+                required_ministries = [
+                    MinistryType.WATER_AUTHORITY,
+                    MinistryType.POWER_GRID_OPERATOR,
+                    MinistryType.NATIONAL_SECURITY
+                ]
+                threshold = 2
+            else:
+                # Standard actions in emergency: require 1-of-2 (reduced from 2-of-3)
+                required_ministries = [
+                    MinistryType.WATER_AUTHORITY,
+                    MinistryType.EMERGENCY_SERVICES
+                ]
+                threshold = 1
+        elif is_high_consequence:
             # Critical actions: require 3-of-4 signatures from different ministries
             required_ministries = [
                 MinistryType.WATER_AUTHORITY,

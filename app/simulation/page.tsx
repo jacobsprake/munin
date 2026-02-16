@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import GraphCanvas from '@/components/GraphCanvas';
 import SimulationScrubber from '@/components/SimulationScrubber';
+import CMITierVisualization from '@/components/CMITierVisualization';
 import LatencyImpactWidget from '@/components/LatencyImpactWidget';
 import CommandShell from '@/components/CommandShell';
 import DigitalTwinShadow from '@/components/DigitalTwinShadow';
@@ -373,6 +374,16 @@ export default function SimulationPage() {
           <GraphCanvas data={getFilteredGraphData() || graphData} />
         </div>
       </div>
+
+      {/* CMI Tier Visualization */}
+      {selectedIncident && (
+        <div className="absolute top-20 left-4 z-10 w-80">
+          <CMITierVisualization
+            incidentId={selectedIncident.id}
+            impactedNodes={impactedNodes}
+          />
+        </div>
+      )}
 
       {/* Timeline Scrubber */}
       {selectedIncident && (

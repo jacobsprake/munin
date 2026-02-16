@@ -32,6 +32,7 @@ from infer_graph import build_graph
 from sensor_health import assess_sensor_health, build_evidence_windows
 from build_incidents import build_incidents
 from packetize import packetize_incidents
+from safety_plc import SafetyPLC, SafetyLevel
 
 
 def setup_carlisle_data(
@@ -123,6 +124,35 @@ def run_munin_pipeline(data_dir: Path, out_dir: Path, playbooks_dir: Path):
         playbooks_dir,
         out_dir / "packets"
     )
+    
+    # Step 2.6: Safety PLC validation (last line of defense)
+    print("\n[2.6/6] Safety PLC validation (last line of defense)...")
+    safety_plc = SafetyPLC()
+    packet_files = list((out_dir / "packets").glob("*.json"))
+    plc_validated = 0
+    plc_blocked = 0
+    
+    for packet_file in packet_files:
+        with open(packet_file, 'r') as f:
+            packet = json.load(f)
+        
+        # Simulate command validation
+        # In production, would extract actual commands from packet
+        simulated_command = {
+            'id': packet['id'],
+            'action': packet.get('proposedAction', ''),
+            'target_assets': packet.get('scope', {}).get('nodeIds', [])
+        }
+        
+        check_result = safety_plc.check_command(simulated_command)
+        
+        if check_result.safety_level == SafetyLevel.BLOCKED:
+            plc_blocked += 1
+            print(f"  ⚠️  BLOCKED: {packet_file.name} - {check_result.block_reason}")
+        else:
+            plc_validated += 1
+    
+    print(f"  ✓ Safety PLC: {plc_validated} validated, {plc_blocked} blocked")
     packet_files = list((out_dir / "packets").glob("*.json"))
     print(f"  ✓ Packets: {len(packet_files)} generated")
     

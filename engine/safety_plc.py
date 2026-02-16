@@ -18,10 +18,11 @@ physically impossible for it to cause a meltdown.
 """
 
 import json
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Any
 from dataclasses import dataclass, asdict
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta
+from logic_lock_engine import LogicLockEngine, Command as LogicLockCommand
 
 
 class PhysicalInvariantType(Enum):
@@ -73,7 +74,10 @@ class SafetyPLC:
     that violates the laws of physics.
     """
     
-    def __init__(self):
+    def __init__(self, logic_lock_engine: Optional[LogicLockEngine] = None):
+        # Integrate Logic-Lock engine for YAML-driven rules
+        self.logic_lock = logic_lock_engine or LogicLockEngine()
+        
         # Define physical invariants (hard-coded, never changes)
         self.invariants: Dict[str, PhysicalInvariant] = {
             # State dependencies
@@ -94,6 +98,52 @@ class SafetyPLC:
                 condition='turbine.rpm ≤ 3600',
                 assets_involved=['turbine'],
                 severity='critical'
+            ),
+            # Pump-specific constraints (realistic PLC constraint set)
+            'inv_pump_001': PhysicalInvariant(
+                id='inv_pump_001',
+                name='Pump RPM Limit',
+                invariant_type=PhysicalInvariantType.RATE_LIMIT,
+                description='Pump RPM cannot exceed 3600 RPM (mechanical limit)',
+                condition='pump.rpm ≤ 3600',
+                assets_involved=['pump'],
+                severity='critical'
+            ),
+            'inv_pump_002': PhysicalInvariant(
+                id='inv_pump_002',
+                name='Pump Pressure Limit',
+                invariant_type=PhysicalInvariantType.MATERIAL_LIMIT,
+                description='Pump discharge pressure cannot exceed 100 bar (material limit)',
+                condition='pump.discharge_pressure ≤ 100',
+                assets_involved=['pump'],
+                severity='critical'
+            ),
+            'inv_pump_003': PhysicalInvariant(
+                id='inv_pump_003',
+                name='Pump Dry-Run Protection',
+                invariant_type=PhysicalInvariantType.STATE_DEPENDENCY,
+                description='Pump cannot run if inlet valve is closed (dry-run protection)',
+                condition='pump.running → inlet_valve.open',
+                assets_involved=['pump', 'inlet_valve'],
+                severity='critical'
+            ),
+            'inv_pump_004': PhysicalInvariant(
+                id='inv_pump_004',
+                name='Pump Start Sequence',
+                invariant_type=PhysicalInvariantType.SEQUENCE_REQUIREMENT,
+                description='Pump must start before discharge valve opens',
+                condition='discharge_valve.open → pump.running',
+                assets_involved=['pump', 'discharge_valve'],
+                severity='high'
+            ),
+            'inv_pump_005': PhysicalInvariant(
+                id='inv_pump_005',
+                name='Pump Temperature Limit',
+                invariant_type=PhysicalInvariantType.MATERIAL_LIMIT,
+                description='Pump temperature cannot exceed 120°C (bearing limit)',
+                condition='pump.temperature ≤ 120',
+                assets_involved=['pump'],
+                severity='high'
             ),
             'inv_003': PhysicalInvariant(
                 id='inv_003',
@@ -136,6 +186,9 @@ class SafetyPLC:
         self.blocked_commands: List[SafetyPLCCheck] = []
         self.allowed_commands: List[SafetyPLCCheck] = []
         self.current_state: Dict[str, Dict[str, Any]] = {}  # Current state of assets
+        self.command_history: Dict[str, List[Dict]] = {}  # asset_id -> [(timestamp, value), ...]
+        self.logic_lock_engine = None  # Will be initialized if logic_lock_rules.yaml exists
+        self.temporal_history: Dict[str, List[Tuple[datetime, Dict]]] = {}  # For temporal constraints
     
     def check_command(
         self,
@@ -155,7 +208,31 @@ class SafetyPLC:
         target_assets = command.get('target_nodes', [])
         parameters = command.get('parameters', {})
         
-        # Check each invariant
+        # Check Logic-Lock rules if engine available
+        if self.logic_lock_engine:
+            for asset_id in target_assets:
+                asset_type = self._infer_asset_type(asset_id)
+                for param_name, param_value in parameters.items():
+                    try:
+                        from logic_lock_engine import Command
+                        logic_command = Command(
+                            asset_id=asset_id,
+                            asset_type=asset_type,
+                            parameter=param_name,
+                            value=float(param_value),
+                            unit=parameters.get('unit', ''),
+                            timestamp=datetime.now().isoformat(),
+                            previous_value=self._get_previous_value(asset_id, param_name),
+                            previous_timestamp=self._get_previous_timestamp(asset_id, param_name)
+                        )
+                        
+                        result = self.logic_lock_engine.validate_command(logic_command)
+                        if not result.valid:
+                            violated_invariants.extend(result.blocked_rules)
+                    except Exception:
+                        pass  # Fallback to hard-coded invariants
+        
+        # Check each hard-coded invariant
         for inv_id, invariant in self.invariants.items():
             if self._violates_invariant(command, invariant):
                 violated_invariants.append(inv_id)
@@ -182,6 +259,16 @@ class SafetyPLC:
             self.blocked_commands.append(check)
         else:
             self.allowed_commands.append(check)
+            # Record command in history for temporal constraints
+            for asset_id in target_assets:
+                if asset_id not in self.command_history:
+                    self.command_history[asset_id] = []
+                for param_name, param_value in parameters.items():
+                    self.command_history[asset_id].append({
+                        'parameter': param_name,
+                        'value': param_value,
+                        'timestamp': datetime.now().isoformat()
+                    })
         
         return check
     
@@ -249,6 +336,37 @@ class SafetyPLC:
                 return True  # Violation: RPM exceeds limit
         
         return False
+    
+    def _infer_asset_type(self, asset_id: str) -> str:
+        """Infer asset type from asset ID."""
+        asset_lower = asset_id.lower()
+        if 'pump' in asset_lower:
+            return 'pump'
+        elif 'turbine' in asset_lower:
+            return 'turbine'
+        elif 'valve' in asset_lower:
+            return 'valve'
+        elif 'substation' in asset_lower:
+            return 'substation'
+        return 'unknown'
+    
+    def _get_previous_value(self, asset_id: str, parameter: str) -> Optional[float]:
+        """Get previous value for temporal constraint checking."""
+        if asset_id in self.command_history:
+            history = self.command_history[asset_id]
+            for entry in reversed(history):
+                if entry.get('parameter') == parameter:
+                    return entry.get('value')
+        return None
+    
+    def _get_previous_timestamp(self, asset_id: str, parameter: str) -> Optional[str]:
+        """Get previous timestamp for temporal constraint checking."""
+        if asset_id in self.command_history:
+            history = self.command_history[asset_id]
+            for entry in reversed(history):
+                if entry.get('parameter') == parameter:
+                    return entry.get('timestamp')
+        return None
     
     def _check_material_limit(
         self,

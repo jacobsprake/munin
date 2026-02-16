@@ -280,7 +280,9 @@ def simulate_physics_verification_example():
     
     # Register a pump sensor fingerprint
     sensor_id = "pump_04"
-    baseline_spectrum = np.random.rand(1000)  # Simulated baseline
+    # Use deterministic RNG for baseline spectrum
+    rng = np.random.RandomState(42)  # Fixed seed for demo
+    baseline_spectrum = rng.rand(1000)  # Simulated baseline
     engine.register_sensor_fingerprint(
         sensor_id=sensor_id,
         signal_type=SignalType.SCADA_DIGITAL,
@@ -303,7 +305,7 @@ def simulate_physics_verification_example():
         signal_type=SignalType.ACOUSTIC_VIBRATION,
         timestamp=datetime.now(),
         value=0.0,  # No vibration = pump is closed
-        frequency_spectrum=np.random.rand(1000) * 0.1,  # Very low amplitude
+        frequency_spectrum=rng.rand(1000) * 0.1,  # Very low amplitude
         sensor_id=sensor_id
     )
     

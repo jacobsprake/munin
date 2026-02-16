@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { getPythonPath } from '@/lib/utils';
 
 interface AuditLogEntry {
   timestamp: string;
@@ -123,7 +124,8 @@ export async function POST(request: Request) {
       const execAsync = promisify(exec);
 
       const engineDir = join(process.cwd(), 'engine');
-      const cmd = `cd ${engineDir} && python3 -c "
+      const pythonPath = getPythonPath();
+      const cmd = `cd ${engineDir} && ${pythonPath} -c "
 from audit_log import get_audit_log
 from pathlib import Path
 import json

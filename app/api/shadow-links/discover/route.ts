@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -19,8 +20,9 @@ export async function POST() {
     const scriptPath = join(enginePath, 'infer_graph.py');
     
     // Run the graph inference which includes shadow link detection
+    const pythonPath = getPythonPath();
     const { stdout, stderr } = await execAsync(
-      `cd ${enginePath} && python3 infer_graph.py`,
+      `cd ${enginePath} && ${pythonPath} infer_graph.py`,
       { timeout: 30000 }
     );
     
@@ -44,7 +46,7 @@ export async function POST() {
         await fs.access(normalizedPath);
         // We have data, just need to infer graph
         const { stdout: inferStdout } = await execAsync(
-          `cd ${enginePath} && python3 infer_graph.py`,
+          `cd ${enginePath} && ${pythonPath} infer_graph.py`,
           { timeout: 30000 }
         );
         graphExists = true;

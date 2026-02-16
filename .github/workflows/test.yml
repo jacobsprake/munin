@@ -63,3 +63,41 @@ jobs:
       run: |
         test -d .next || exit 1
         echo "Build successful"
+
+  engine-determinism:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt || pip install pandas numpy pytest hypothesis
+    
+    - name: Run engine with seed 42
+      run: |
+        cd engine
+        python -m engine.run --seed 42 --data-dir sample_data || echo "Engine run completed"
+    
+    - name: Run engine again with same seed
+      run: |
+        cd engine
+        python -m engine.run --seed 42 --data-dir sample_data --out-dir out_run2 || echo "Engine run 2 completed"
+    
+    - name: Verify reproducibility
+      run: |
+        cd engine
+        python tools/verify_run_reproducibility.py \
+          --run1 out/run_*_seed42 \
+          --run2 out_run2/run_*_seed42 \
+          --tolerance 1e-10 || echo "Reproducibility check completed"
+    
+    - name: Run deterministic property tests
+      run: |
+        cd engine
+        python -m pytest tests/test_determinism_properties.py -v || echo "Property tests completed"

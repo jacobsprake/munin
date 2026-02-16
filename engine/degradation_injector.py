@@ -2,6 +2,10 @@
 import pandas as pd
 import numpy as np
 from typing import Dict, Optional
+from config import RNGConfig
+
+# Use deterministic RNG for degradation injection
+_rng_config = RNGConfig(base_seed=42, synthetic_seed_offset=3000)
 
 def inject_drift(df: pd.DataFrame, node_id: str, drift_rate: float = 0.1) -> pd.DataFrame:
     """Inject drift into a sensor signal."""
@@ -29,9 +33,13 @@ def inject_missingness(df: pd.DataFrame, node_id: str, missing_rate: float = 0.2
     df_copy = df.copy()
     series = df_copy[node_id].copy()
     
-    # Randomly set values to NaN
+    # Randomly set values to NaN (deterministic based on node_id)
     n_missing = int(len(series) * missing_rate)
-    missing_indices = np.random.choice(series.index, size=n_missing, replace=False)
+    # Use deterministic RNG seeded by node_id for reproducibility
+    import hashlib
+    node_seed = int(hashlib.md5(node_id.encode()).hexdigest()[:8], 16) + _rng_config.get_synthetic_seed()
+    rng = np.random.RandomState(node_seed % (2**31))
+    missing_indices = rng.choice(series.index, size=n_missing, replace=False)
     series.loc[missing_indices] = np.nan
     
     df_copy[node_id] = series

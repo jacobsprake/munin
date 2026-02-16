@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -67,8 +68,9 @@ export async function POST(request: NextRequest) {
       const scriptPath = join(process.cwd(), 'engine', 'digital_asset_vault.py');
       
       // Run Python script to create vault
+      const pythonPath = getPythonPath();
       const { stdout, stderr } = await execAsync(
-        `python3 "${scriptPath}"`,
+        `${pythonPath} "${scriptPath}"`,
         { cwd: process.cwd() }
       );
 

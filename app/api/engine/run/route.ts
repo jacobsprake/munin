@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { engineJobsRepo } from '@/lib/db/repositories';
 import { spawn } from 'child_process';
 import { join } from 'path';
+import { getPythonPath } from '@/lib/utils';
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
 
     // Run the engine pipeline in the background
     const enginePath = join(process.cwd(), 'engine', 'run.py');
-    const pythonProcess = spawn('python3', [enginePath], {
+    const pythonProcess = spawn(getPythonPath(), [enginePath], {
       cwd: process.cwd(),
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe']

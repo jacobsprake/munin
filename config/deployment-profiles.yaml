@@ -1,0 +1,144 @@
+# Munin Deployment Configuration Profiles
+# Different profiles for different deployment scenarios
+
+profiles:
+  demo:
+    name: "Demo Mode"
+    description: "Development and demonstration mode with relaxed security"
+    air_gap:
+      enabled: false
+      enforcement: "software"
+    tee:
+      use_real_hardware: false
+      simulation_mode: true
+    byzantine:
+      enabled: false
+      quorum_required: 1
+    physical_verification:
+      enabled: false
+    data_diode:
+      mode: "disabled"
+      simulation_mode: true
+    logging:
+      level: "debug"
+      audit_log: true
+    database:
+      type: "sqlite"
+      path: "data/demo.db"
+    network:
+      allow_external: true
+      allow_dns: true
+
+  pilot:
+    name: "Pilot Mode (Shadow)"
+    description: "6-12 month passive shadow mode deployment"
+    air_gap:
+      enabled: true
+      enforcement: "software"
+      verification_required: true
+    tee:
+      use_real_hardware: false
+      simulation_mode: true
+    byzantine:
+      enabled: true
+      quorum_required: 2
+    physical_verification:
+      enabled: false
+    data_diode:
+      mode: "software_enforced"
+      simulation_mode: true
+    shadow_mode:
+      enabled: true
+      duration_days: 365
+      passive_only: true
+    logging:
+      level: "info"
+      audit_log: true
+    database:
+      type: "postgresql"
+      path: "data/pilot.db"
+    network:
+      allow_external: false
+      allow_dns: false
+
+  production:
+    name: "Production Mode"
+    description: "Live critical infrastructure deployment"
+    air_gap:
+      enabled: true
+      enforcement: "hardware"
+      verification_required: true
+    tee:
+      use_real_hardware: true
+      simulation_mode: false
+    byzantine:
+      enabled: true
+      quorum_required: 3
+    physical_verification:
+      enabled: true
+    data_diode:
+      mode: "hardware_diode"
+      simulation_mode: false
+      hardware_device_path: "/dev/diode0"
+    shadow_mode:
+      enabled: false
+    logging:
+      level: "warning"
+      audit_log: true
+    database:
+      type: "postgresql"
+      path: "/var/munin/data/production.db"
+    network:
+      allow_external: false
+      allow_dns: false
+    security:
+      require_pqc_keys: true
+      key_rotation_days: 90
+      require_provenance: true
+
+  war_emergency:
+    name: "War-Emergency Mode"
+    description: "Maximum security for national emergency scenarios"
+    air_gap:
+      enabled: true
+      enforcement: "hardware"
+      verification_required: true
+    tee:
+      use_real_hardware: true
+      simulation_mode: false
+    byzantine:
+      enabled: true
+      quorum_required: 4
+      require_ministry_of_defense: true
+    physical_verification:
+      enabled: true
+      strict_mode: true
+    data_diode:
+      mode: "hardware_diode"
+      simulation_mode: false
+      hardware_device_path: "/dev/diode0"
+    cmi:
+      enabled: true
+      emergency_level: "CRITICAL"
+      prioritize_military: true
+    shadow_mode:
+      enabled: false
+    logging:
+      level: "error"
+      audit_log: true
+      immutable_log: true
+    database:
+      type: "postgresql"
+      path: "/var/munin/data/war_emergency.db"
+    network:
+      allow_external: false
+      allow_dns: false
+    security:
+      require_pqc_keys: true
+      key_rotation_days: 30
+      require_provenance: true
+      require_digital_vault: true
+      mesh_network_required: true
+
+# Default profile
+default_profile: "demo"

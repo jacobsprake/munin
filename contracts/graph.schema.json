@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/edge" }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "engine_version": { "type": "string" },
+        "created": { "type": "string" },
+        "config_version": { "type": "string" }
+      }
+    }
+  },
+  "required": ["nodes", "edges"],
+  "definitions": {
+    "node": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sector": { "type": "string" },
+        "label": { "type": "string" },
+        "kind": { "type": "string" },
+        "region": { "type": "string" },
+        "lat": { "type": ["number", "null"] },
+        "lon": { "type": ["number", "null"] },
+        "health": {
+          "type": "object",
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 1 },
+            "status": { "type": "string", "enum": ["ok", "warning", "degraded", "critical"] }
+          },
+          "required": ["score", "status"]
+        }
+      },
+      "required": ["id", "sector", "label", "kind", "region"]
+    },
+    "edge": {
+      "$ref": "./edge.schema.json#"
+    }
+  }
+}

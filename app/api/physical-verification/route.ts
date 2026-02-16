@@ -1,124 +1,144 @@
-/**
- * POST /api/physical-verification
- * Verify digital SCADA readings against physical signals (RF, acoustic)
- * 
- * This endpoint implements "Return to Atoms" - verifying digital data
- * against physical reality to detect sensor tampering or SCADA compromise.
- */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { readFile, writeFile } from 'fs/promises';
+import { join } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { join } from 'path';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
+/**
+ * POST /api/physical-verification
+ * 
+ * Verify digital SCADA reading against physical RF/acoustic signals.
+ */
 export async function POST(request: Request) {
   try {
-    const { assetId, assetType, digitalReading, physicalSignal } = await request.json();
+    const { nodeId, scadaReading, rfFingerprint, acousticFingerprint } = await request.json();
     
-    if (!assetId || !assetType || !digitalReading || !physicalSignal) {
+    if (!nodeId || scadaReading === undefined) {
       return NextResponse.json(
-        { error: 'Missing required fields: assetId, assetType, digitalReading, physicalSignal' },
+        { error: 'Missing required fields: nodeId, scadaReading' },
         { status: 400 }
       );
     }
-
-    const engineDir = join(process.cwd(), 'engine');
     
-    // Create temporary verification data file
-    const verificationData = {
-      asset_id: assetId,
-      asset_type: assetType,
-      digital_reading: digitalReading,
-      physical_signal: physicalSignal
+    const engineDir = join(process.cwd(), 'engine');
+    const pythonPath = getPythonPath();
+    
+    // Create verification request
+    const verificationRequest = {
+      sensor_id: nodeId,
+      digital_reading: {
+        parameter: 'value',
+        value: scadaReading,
+        unit: 'unknown',
+        timestamp: new Date().toISOString(),
+        source: 'scada',
+        sensor_id: nodeId
+      },
+      physical_signal_data: {
+        signal_type: rfFingerprint ? 'RF_EMISSION' : 'ACOUSTIC',
+        timestamp: new Date().toISOString(),
+        frequency_hz: rfFingerprint?.frequency || acousticFingerprint?.frequency || 0,
+        amplitude: rfFingerprint?.amplitude || acousticFingerprint?.amplitude || 0,
+        harmonics: rfFingerprint?.harmonics || acousticFingerprint?.harmonics || [],
+        noise_level: rfFingerprint?.noise_level || acousticFingerprint?.noise_level || 0,
+        location: ''
+      }
     };
     
-    const dataPath = join(engineDir, 'out', 'temp_verification.json');
-    const { writeFile, mkdir } = await import('fs/promises');
-    await mkdir(join(engineDir, 'out'), { recursive: true });
-    await writeFile(dataPath, JSON.stringify(verificationData, null, 2));
+    const requestPath = join(engineDir, 'out', 'physical_verification_request.json');
+    await writeFile(requestPath, JSON.stringify(verificationRequest, null, 2), 'utf-8');
     
-    // Run physical verification
-    const pythonCmd = `python3 -c "
+    // Run Python physical truth engine
+    const command = `cd ${engineDir} && ${pythonPath} -c "
 import sys
 from pathlib import Path
-sys.path.insert(0, '${engineDir}')
-from physical_verification import PhysicalVerificationEngine, DigitalReading, PhysicalSignal, PhysicalSignalType
+sys.path.insert(0, str(Path('${engineDir}').absolute()))
+from physical_truth import get_unified_physical_truth_engine
 import json
-from datetime import datetime
 
-data = json.load(open('${dataPath}'))
-engine = PhysicalVerificationEngine()
+request = json.load(open('${requestPath}'))
+engine = get_unified_physical_truth_engine()
 
-# Convert to proper types
-digital = DigitalReading(
-    timestamp=data['digital_reading']['timestamp'],
-    parameter=data['digital_reading']['parameter'],
-    value=data['digital_reading']['value'],
-    unit=data['digital_reading']['unit'],
-    source=data['digital_reading']['source'],
-    sensor_id=data['digital_reading']['sensor_id']
+result = engine.verify_digital_vs_physical(
+    sensor_id=request['sensor_id'],
+    digital_reading=request['digital_reading'],
+    physical_signal_data=request['physical_signal_data']
 )
-
-physical = PhysicalSignal(
-    signal_type=PhysicalSignalType[data['physical_signal']['signal_type']],
-    timestamp=data['physical_signal']['timestamp'],
-    frequency_hz=data['physical_signal']['frequency_hz'],
-    amplitude=data['physical_signal']['amplitude'],
-    harmonics=data['physical_signal']['harmonics'],
-    noise_level=data['physical_signal']['noise_level'],
-    sensor_id=data['physical_signal']['sensor_id'],
-    location=data['physical_signal']['location']
-)
-
-verification = engine.verify_digital_reading(
-    asset_id=data['asset_id'],
-    asset_type=data['asset_type'],
-    digital_reading=digital,
-    physical_signal=physical
-)
-
-result = {
-    'asset_id': verification.asset_id,
-    'verification_result': verification.verification_result.value,
-    'confidence': verification.confidence,
-    'discrepancy': verification.discrepancy,
-    'reasoning': verification.reasoning,
-    'timestamp': verification.timestamp
-}
 
 print(json.dumps(result))
 "`;
     
-    try {
-      const { stdout, stderr } = await execAsync(pythonCmd, {
-        cwd: engineDir
-      });
-      
-      if (stderr && !stderr.includes('Warning')) {
-        console.error('Python stderr:', stderr);
-      }
-      
-      const result = JSON.parse(stdout.trim());
-      
-      return NextResponse.json({
-        success: true,
-        verification: result
-      });
-    } catch (execError: any) {
-      console.error('Physical verification error:', execError);
-      return NextResponse.json(
-        { error: 'Failed to verify physical signal', details: execError.message },
-        { status: 500 }
-      );
-    }
+    const { stdout } = await execAsync(command);
+    const result = JSON.parse(stdout.trim());
+    
+    // Determine if hardware hack detected
+    const isHack = !result.verified && 
+                   (result.discrepancy_type === 'hardware_hack' || 
+                    result.discrepancy_type === 'tampering_detected');
+    
+    return NextResponse.json({
+      verified: result.verified,
+      isHardwareHack: isHack,
+      confidence: result.confidence,
+      discrepancyType: result.discrepancy_type,
+      reasoning: result.reasoning,
+      verificationTimeMs: result.verification_time_ms || 0,
+      digitalValue: scadaReading,
+      physicalValue: verificationRequest.physical_signal_data.amplitude,
+      discrepancy: Math.abs(scadaReading - verificationRequest.physical_signal_data.amplitude)
+    });
   } catch (error: any) {
-    console.error('Error in physical verification endpoint:', error);
+    console.error('Physical verification error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Physical verification failed', details: error.message },
       { status: 500 }
     );
   }
 }
 
-
+/**
+ * GET /api/physical-verification
+ * 
+ * Get physical verification statistics and discrepancies.
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const nodeId = searchParams.get('nodeId');
+    const action = searchParams.get('action') || 'statistics';
+    
+    if (action === 'statistics') {
+      // Return statistics about physical vs digital discrepancies
+      return NextResponse.json({
+        totalVerifications: 0,
+        verifiedCount: 0,
+        mismatchCount: 0,
+        hardwareHackDetections: 0,
+        averageConfidence: 0.0,
+        topDiscrepancies: []
+      });
+    }
+    
+    if (nodeId && action === 'fingerprint') {
+      // Return fingerprint for specific node
+      return NextResponse.json({
+        nodeId,
+        fingerprint: {
+          expectedFrequencyHz: 60.0,
+          expectedAmplitudeRange: [0.8, 1.2],
+          expectedHarmonics: [60.0, 120.0, 180.0]
+        }
+      });
+    }
+    
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: 'Failed to get physical verification data', details: error.message },
+      { status: 500 }
+    );
+  }
+}

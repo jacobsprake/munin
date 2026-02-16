@@ -247,8 +247,34 @@ export default function CarlisleDashboard() {
   };
 
   const handleApprove = async (packetId: string) => {
-    // In production, this would call the approval API
-    alert(`Approving packet ${packetId}`);
+    try {
+      const response = await fetch('/api/authorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packetId,
+          operatorId: 'operator_001', // In production, get from auth context
+          role: 'operator',
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authorized) {
+          // Refresh pending packets
+          fetchPendingPackets();
+          alert(`Packet ${packetId} authorized successfully`);
+        } else {
+          alert(`Authorization failed: ${data.error || 'Unknown error'}`);
+        }
+      } else {
+        const error = await response.json();
+        alert(`Authorization failed: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Approval error:', error);
+      alert('Failed to approve packet. Please try again.');
+    }
   };
 
   return (

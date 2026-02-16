@@ -3,6 +3,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -54,8 +55,9 @@ export async function POST(request: NextRequest) {
       const outDir = join(process.cwd(), 'engine', 'out');
       
       // Run Python script to create mesh network
+      const pythonPath = getPythonPath();
       const { stdout, stderr } = await execAsync(
-        `python3 "${scriptPath}"`,
+        `${pythonPath} "${scriptPath}"`,
         { cwd: process.cwd() }
       );
 

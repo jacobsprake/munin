@@ -1,0 +1,120 @@
+# Logic-Lock Rules Engine Configuration
+# YAML-driven rules for physics constraint validation
+
+version: "1.0"
+description: "Logic-Lock rules for physical invariant enforcement"
+
+rules:
+  # Pump constraints
+  - id: "pump_max_rpm"
+    asset_type: "pump"
+    parameter: "rpm"
+    constraint_type: "max"
+    value: 3600
+    unit: "rpm"
+    violation_message: "Pump RPM exceeds maximum safe operating speed"
+    severity: "critical"
+    
+  - id: "pump_min_rpm"
+    asset_type: "pump"
+    parameter: "rpm"
+    constraint_type: "min"
+    value: 0
+    unit: "rpm"
+    violation_message: "Pump RPM cannot be negative"
+    severity: "error"
+    
+  - id: "pump_max_pressure"
+    asset_type: "pump"
+    parameter: "pressure"
+    constraint_type: "max"
+    value: 100
+    unit: "bar"
+    violation_message: "Pump pressure exceeds maximum safe operating pressure"
+    severity: "critical"
+    
+  - id: "pump_max_flow_rate"
+    asset_type: "pump"
+    parameter: "flow_rate"
+    constraint_type: "max"
+    value: 5000
+    unit: "liters_per_minute"
+    violation_message: "Pump flow rate exceeds maximum capacity"
+    severity: "warning"
+    
+  # Turbine constraints
+  - id: "turbine_max_rpm"
+    asset_type: "turbine"
+    parameter: "rpm"
+    constraint_type: "max"
+    value: 3000
+    unit: "rpm"
+    violation_message: "Turbine RPM exceeds maximum safe operating speed"
+    severity: "critical"
+    
+  - id: "turbine_max_temperature"
+    asset_type: "turbine"
+    parameter: "temperature"
+    constraint_type: "max"
+    value: 600
+    unit: "celsius"
+    violation_message: "Turbine temperature exceeds maximum safe operating temperature"
+    severity: "critical"
+    
+  - id: "turbine_max_power_output"
+    asset_type: "turbine"
+    parameter: "power_output"
+    constraint_type: "max"
+    value: 100
+    unit: "megawatts"
+    violation_message: "Turbine power output exceeds maximum rated capacity"
+    severity: "critical"
+  
+  # Temporal constraints (ramp rates)
+  - id: "pump_max_ramp_rate"
+    asset_type: "pump"
+    parameter: "rpm"
+    constraint_type: "max_ramp_rate"
+    value: 600
+    unit: "rpm_per_minute"
+    violation_message: "Pump RPM change rate exceeds maximum safe ramp rate"
+    severity: "warning"
+    temporal_window_seconds: 60
+    
+  - id: "turbine_max_ramp_rate"
+    asset_type: "turbine"
+    parameter: "power_output"
+    constraint_type: "max_ramp_rate"
+    value: 10
+    unit: "megawatts_per_minute"
+    violation_message: "Turbine power change rate exceeds maximum safe ramp rate"
+    severity: "warning"
+    temporal_window_seconds: 60
+
+# Rule sets (collections of rules for different scenarios)
+rule_sets:
+  default:
+    description: "Default rule set for all assets"
+    rules:
+      - "pump_max_rpm"
+      - "pump_min_rpm"
+      - "pump_max_pressure"
+      - "turbine_max_rpm"
+      - "turbine_max_temperature"
+  
+  strict:
+    description: "Strict rule set with all constraints including temporal"
+    rules:
+      - "pump_max_rpm"
+      - "pump_min_rpm"
+      - "pump_max_pressure"
+      - "pump_max_ramp_rate"
+      - "turbine_max_rpm"
+      - "turbine_max_temperature"
+      - "turbine_max_ramp_rate"
+  
+  emergency:
+    description: "Emergency mode - relaxed constraints"
+    rules:
+      - "pump_max_rpm"  # Still enforce absolute maximums
+      - "turbine_max_temperature"  # Still enforce safety limits

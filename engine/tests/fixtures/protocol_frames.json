@@ -1,0 +1,109 @@
+{
+  "modbus_frames": [
+    {
+      "description": "Modbus RTU holding register read",
+      "protocol": "modbus",
+      "vendor": "Siemens",
+      "frame": {
+        "device_address": 1,
+        "function_code": 3,
+        "start_address": 40001,
+        "quantity": 2,
+        "values": [1234, 5678],
+        "timestamp": "2026-01-15T12:00:00Z",
+        "hex": "010300000002C40B"
+      },
+      "expected_normalized": {
+        "node_id": "pump_01",
+        "value": 1234.0,
+        "source_protocol": "modbus",
+        "dataType": "holding_register"
+      }
+    },
+    {
+      "description": "Modbus coil (binary) read",
+      "protocol": "modbus",
+      "vendor": "Schneider",
+      "frame": {
+        "device_address": 2,
+        "function_code": 1,
+        "start_address": 1,
+        "quantity": 1,
+        "values": [true],
+        "timestamp": "2026-01-15T12:00:00Z",
+        "hex": "020100010001"
+      },
+      "expected_normalized": {
+        "node_id": "valve_01",
+        "value": 1.0,
+        "source_protocol": "modbus",
+        "dataType": "coil"
+      }
+    }
+  ],
+  "dnp3_frames": [
+    {
+      "description": "DNP3 analog input",
+      "protocol": "dnp3",
+      "vendor": "Schweitzer Engineering",
+      "frame": {
+        "object_group": 30,
+        "object_variation": 1,
+        "index": 0,
+        "value": 123.45,
+        "quality": "GOOD",
+        "timestamp": "2026-01-15T12:00:00Z",
+        "hex": "0564 01 C0 01 00 00"
+      },
+      "expected_normalized": {
+        "node_id": "substation_01",
+        "value": 123.45,
+        "source_protocol": "dnp3",
+        "dataType": "analog_input"
+      }
+    }
+  ],
+  "bacnet_frames": [
+    {
+      "description": "BACnet analog input",
+      "protocol": "bacnet",
+      "vendor": "Johnson Controls",
+      "frame": {
+        "object_type": "analog_input",
+        "object_instance": 1,
+        "property": "present_value",
+        "value": 23.5,
+        "units": "degrees_celsius",
+        "timestamp": "2026-01-15T12:00:00Z",
+        "hex": "81 0B 00 0C"
+      },
+      "expected_normalized": {
+        "node_id": "temperature_sensor_01",
+        "value": 23.5,
+        "source_protocol": "bacnet",
+        "dataType": "analog_input"
+      }
+    }
+  ],
+  "opc_ua_frames": [
+    {
+      "description": "OPC UA variable",
+      "protocol": "opc_ua",
+      "vendor": "Siemens",
+      "frame": {
+        "node_id": "ns=2;s=PressureSensor1",
+        "data_type": "Double",
+        "value": 45.67,
+        "source_timestamp": "2026-01-15T12:00:00Z",
+        "server_timestamp": "2026-01-15T12:00:00Z",
+        "status_code": "Good"
+      },
+      "expected_normalized": {
+        "node_id": "pressure_sensor_01",
+        "value": 45.67,
+        "source_protocol": "opc_ua",
+        "dataType": "variable"
+      }
+    }
+  ]
+}

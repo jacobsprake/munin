@@ -9,6 +9,7 @@ import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getPythonPath } from '@/lib/utils';
 
 const execAsync = promisify(exec);
 
@@ -26,7 +27,8 @@ export async function POST(request: Request) {
       
       // Call Python engine to add ministry signature
       const scriptPath = join(process.cwd(), 'engine', 'byzantine_resilience.py');
-      const command = `python3 "${scriptPath}" add_signature "${packetId}" "${ministry}" "${signerId}" "${publicKey}" "${signature}" "${location}" "${ministrySeal}"`;
+      const pythonPath = getPythonPath();
+      const command = `${pythonPath} "${scriptPath}" add_signature "${packetId}" "${ministry}" "${signerId}" "${publicKey}" "${signature}" "${location}" "${ministrySeal}"`;
       
       try {
         const { stdout, stderr } = await execAsync(command);
@@ -70,7 +72,8 @@ export async function GET(request: Request) {
       
       // Call Python engine to verify authorization
       const scriptPath = join(process.cwd(), 'engine', 'byzantine_resilience.py');
-      const command = `python3 "${scriptPath}" verify "${packetId}"`;
+      const pythonPath = getPythonPath();
+      const command = `${pythonPath} "${scriptPath}" verify "${packetId}"`;
       
       try {
         const { stdout } = await execAsync(command);
@@ -88,7 +91,8 @@ export async function GET(request: Request) {
     if (action === 'pending') {
       // Get all pending actions requiring signatures
       const scriptPath = join(process.cwd(), 'engine', 'byzantine_resilience.py');
-      const command = `python3 "${scriptPath}" pending`;
+      const pythonPath = getPythonPath();
+      const command = `${pythonPath} "${scriptPath}" pending`;
       
       try {
         const { stdout } = await execAsync(command);

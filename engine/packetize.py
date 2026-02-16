@@ -4,7 +4,7 @@ import hashlib
 import yaml
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any, Set
 from liability_shield import LiabilityShield
 from byzantine_resilience import ByzantineResilienceEngine, integrate_byzantine_multi_sig_into_packet
 from audit_log import get_audit_log
@@ -89,26 +89,64 @@ def determine_multi_sig_requirements(playbook: Dict, incident: Dict) -> Dict:
     }
 
 def generate_packet(
-    incident: Dict,
+    incident: Dict[str, Any],
     playbook_id: str,
-    graph: Dict,
-    evidence: Dict
-) -> Dict:
-    """Generate a handshake packet from an incident."""
+    graph: Dict[str, Any],
+    evidence: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Generate a handshake packet from an incident.
+    
+    Args:
+        incident: Incident dictionary with 'id', 'type', 'timeline' fields
+        playbook_id: Identifier for the playbook to use
+        graph: Dependency graph with 'nodes' and 'edges'
+        evidence: Evidence windows dictionary with 'windows' list
+    
+    Returns:
+        Validated handshake packet dictionary
+    
+    Raises:
+        ValueError: If required fields are missing or invalid
+    """
+    # Validate inputs
+    if not isinstance(incident, dict):
+        raise ValueError("incident must be a dictionary")
+    if 'id' not in incident:
+        raise ValueError("incident must have 'id' field")
+    if 'type' not in incident:
+        raise ValueError("incident must have 'type' field")
+    if 'timeline' not in incident:
+        raise ValueError("incident must have 'timeline' field")
+    if not isinstance(playbook_id, str) or not playbook_id:
+        raise ValueError("playbook_id must be a non-empty string")
+    if not isinstance(graph, dict) or 'nodes' not in graph or 'edges' not in graph:
+        raise ValueError("graph must be a dictionary with 'nodes' and 'edges' fields")
+    if not isinstance(evidence, dict) or 'windows' not in evidence:
+        raise ValueError("evidence must be a dictionary with 'windows' field")
     created_ts = datetime.now()
     packet_id = f"packet_{incident['id']}_{created_ts.strftime('%Y%m%d%H%M%S')}"
     
     # Determine scope from incident timeline
-    all_impacted = set()
+    all_impacted: Set[str] = set()
     for timeline_entry in incident['timeline']:
-        all_impacted.update(timeline_entry['impactedNodeIds'])
+        if not isinstance(timeline_entry, dict):
+            raise ValueError("timeline entries must be dictionaries")
+        if 'impactedNodeIds' not in timeline_entry:
+            raise ValueError("timeline entries must have 'impactedNodeIds' field")
+        node_ids = timeline_entry['impactedNodeIds']
+        if not isinstance(node_ids, list):
+            raise ValueError("impactedNodeIds must be a list")
+        all_impacted.update(node_ids)
     
     # Get regions from nodes
-    node_regions = {}
+    node_regions: Dict[str, str] = {}
     for node in graph['nodes']:
-        node_regions[node['id']] = node['region']
+        if not isinstance(node, dict) or 'id' not in node:
+            raise ValueError("Graph nodes must be dictionaries with 'id' field")
+        node_regions[node['id']] = node.get('region', 'unknown')
     
-    regions = list(set(node_regions.get(nid, 'unknown') for nid in all_impacted))
+    regions: List[str] = list(set(node_regions.get(nid, 'unknown') for nid in all_impacted))
     
     # Map incident type to playbook and regulatory basis
     regulatory_map = {
@@ -130,11 +168,20 @@ def generate_packet(
     }
     
     # Compute uncertainty from evidence
-    relevant_evidence = [e for e in evidence['windows'] 
-                        if any(nid in str(e) for nid in all_impacted)]
+    relevant_evidence: List[Dict[str, Any]] = []
+    for e in evidence['windows']:
+        if not isinstance(e, dict):
+            continue
+        # Check if evidence relates to impacted nodes
+        evidence_nodes = e.get('sourceNodeId', '') + ' ' + e.get('targetNodeId', '')
+        if any(nid in evidence_nodes for nid in all_impacted):
+            if 'robustness' in e and isinstance(e['robustness'], (int, float)):
+                relevant_evidence.append(e)
+    
     if relevant_evidence:
-        avg_confidence = sum(e['robustness'] for e in relevant_evidence) / len(relevant_evidence)
-        uncertainty = 1.0 - avg_confidence
+        robustness_values = [e['robustness'] for e in relevant_evidence]
+        avg_confidence = sum(robustness_values) / len(robustness_values)
+        uncertainty = float(max(0.0, min(1.0, 1.0 - avg_confidence)))
     else:
         uncertainty = 0.3
     
@@ -183,26 +230,33 @@ def generate_packet(
         'notes': 'No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only.'
     }
     
-    packet = {
-        'id': packet_id,
-        'version': 1,
-        'createdTs': created_ts.isoformat(),
+    # Validate evidence refs
+    evidence_refs: List[str] = []
+    for e in relevant_evidence[:5]:
+        if 'id' in e and isinstance(e['id'], str):
+            evidence_refs.append(e['id'])
+    
+    # Validate packet fields
+    packet: Dict[str, Any] = {
+        'id': str(packet_id),
+        'version': int(1),
+        'createdTs': str(created_ts.isoformat()),
         'firstApprovalTs': None,  # Will be set when first approval is received
         'authorizedTs': None,  # Will be set when authorization threshold is met
         'timeToAuthorize': None,  # Will be calculated when authorized
-        'status': 'ready',
+        'status': str('ready'),
         'scope': {
-            'regions': regions,
-            'nodeIds': list(all_impacted),
+            'regions': [str(r) for r in regions],
+            'nodeIds': [str(nid) for nid in sorted(all_impacted)],
         },
-        'situationSummary': summary_map.get(incident['type'], 'Unknown incident type'),
-        'proposedAction': action_map.get(incident['type'], 'Review and assess'),
-        'regulatoryBasis': regulatory_map.get(incident['type'], 'General emergency protocols'),
-        'playbookId': playbook_id,
-        'evidenceRefs': [e['id'] for e in relevant_evidence[:5]],  # Top 5 evidence refs
+        'situationSummary': str(summary_map.get(incident['type'], 'Unknown incident type')),
+        'proposedAction': str(action_map.get(incident['type'], 'Review and assess')),
+        'regulatoryBasis': str(regulatory_map.get(incident['type'], 'General emergency protocols')),
+        'playbookId': str(playbook_id),
+        'evidenceRefs': evidence_refs,
         'uncertainty': {
             'overall': float(uncertainty),
-            'notes': uncertainty_notes
+            'notes': [str(note) for note in uncertainty_notes]
         },
         'approvals': [
             {
@@ -213,15 +267,48 @@ def generate_packet(
             }
         ],
         'provenance': {
-            'modelVersion': 'prototype_v1',
-            'configHash': config_hash,
-            'dataHash': data_hash
+            'modelVersion': str('prototype_v1'),
+            'configHash': str(config_hash),
+            'dataHash': str(data_hash)
         },
         'technicalVerification': technical_verification,
         'actuatorBoundary': actuator_boundary
     }
     
+    # Validate packet structure matches schema
+    _validate_packet_structure(packet)
+    
     return packet
+
+
+def _validate_packet_structure(packet: Dict[str, Any]) -> None:
+    """Validate packet structure matches expected schema."""
+    required_fields = [
+        'id', 'version', 'createdTs', 'status', 'scope',
+        'situationSummary', 'proposedAction', 'regulatoryBasis',
+        'playbookId', 'evidenceRefs', 'uncertainty', 'approvals',
+        'provenance'
+    ]
+    
+    for field in required_fields:
+        if field not in packet:
+            raise ValueError(f"Packet missing required field: {field}")
+    
+    # Validate types
+    if not isinstance(packet['id'], str):
+        raise ValueError("Packet 'id' must be a string")
+    if not isinstance(packet['version'], int):
+        raise ValueError("Packet 'version' must be an integer")
+    if not isinstance(packet['scope'], dict):
+        raise ValueError("Packet 'scope' must be a dictionary")
+    if 'regions' not in packet['scope'] or not isinstance(packet['scope']['regions'], list):
+        raise ValueError("Packet 'scope.regions' must be a list")
+    if 'nodeIds' not in packet['scope'] or not isinstance(packet['scope']['nodeIds'], list):
+        raise ValueError("Packet 'scope.nodeIds' must be a list")
+    if not isinstance(packet['uncertainty'], dict) or 'overall' not in packet['uncertainty']:
+        raise ValueError("Packet 'uncertainty' must be a dictionary with 'overall' field")
+    if not (0.0 <= packet['uncertainty']['overall'] <= 1.0):
+        raise ValueError("Packet 'uncertainty.overall' must be between 0.0 and 1.0")
 
 def packetize_incidents(
     incidents_path: Path,
