@@ -1,0 +1,14 @@
+timestamp,node_id,value
+2005-08-29 00:00:00,industrial_canal_level,1.0
+2005-08-29 04:30:00,industrial_canal_level,2.0
+2005-08-29 06:30:00,industrial_canal_level,2.8
+2005-08-29 07:45:00,industrial_canal_level,3.5
+2005-08-29 08:00:00,industrial_canal_level,4.0
+2005-08-29 08:30:00,industrial_canal_level,4.5
+2005-08-29 09:00:00,industrial_canal_level,5.0
+2005-08-29 10:00:00,industrial_canal_level,5.5
+2005-08-29 12:00:00,industrial_canal_level,6.0
+2005-08-29 18:00:00,industrial_canal_level,6.2
+2005-08-30 00:00:00,industrial_canal_level,6.0
+2005-08-30 12:00:00,industrial_canal_level,5.8
+2005-08-31 00:00:00,industrial_canal_level,5.5

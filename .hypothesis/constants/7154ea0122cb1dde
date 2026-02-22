@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/domains/transport.py
+# hypothesis_version: 6.151.9
+
+[0.1, 0.4, 0.9, 25.0, 2000.0, 'airports', 'alternative_routes', 'blocked', 'bridge', 'bridge_closure', 'closed', 'congestion', 'diversion', 'economic', 'environmental', 'ports', 'rail', 'rerouting', 'road', 'road_closure', 'roads', 'social', 'traffic', 'traffic_gridlock', 'traffic_management', 'transport', 'tunnel', 'tunnel_closure']

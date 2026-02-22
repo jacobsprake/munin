@@ -1,0 +1,12 @@
+timestamp,node_id,value
+2011-03-11 14:46:00,reactor1_water_level,4.5
+2011-03-11 16:00:00,reactor1_water_level,4.2
+2011-03-11 18:00:00,reactor1_water_level,4.0
+2011-03-11 19:00:00,reactor1_water_level,3.5
+2011-03-11 19:30:00,reactor1_water_level,3.0
+2011-03-11 21:00:00,reactor1_water_level,2.5
+2011-03-12 00:00:00,reactor1_water_level,2.0
+2011-03-12 05:50:00,reactor1_water_level,2.2
+2011-03-12 10:00:00,reactor1_water_level,2.5
+2011-03-12 19:00:00,reactor1_water_level,3.0
+2011-03-13 00:00:00,reactor1_water_level,3.2

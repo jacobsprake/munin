@@ -87,10 +87,11 @@ class TestMixedConsequenceLevels:
         """Test low-consequence actions require single approval."""
         packet = create_test_packet()
         packet['consequence_level'] = 'LOW'
+        packet['multiSig'] = {'required': 1, 'threshold': 1, 'currentSignatures': 0}
         
         approved = approve_packet(
             packet,
-            role='Operator',
+            role='EA Duty Officer',
             operator_id='op_001'
         )
         
@@ -101,6 +102,11 @@ class TestMixedConsequenceLevels:
         """Test high-consequence actions require multiple approvals."""
         packet = create_test_packet()
         packet['consequence_level'] = 'HIGH'
+        packet['approvals'] = [
+            {'role': 'EA Duty Officer'},
+            {'role': 'Senior Operator'},
+            {'role': 'Supervisor'}
+        ]
         packet['multiSig'] = {
             'required': 3,
             'threshold': 2,
@@ -110,7 +116,7 @@ class TestMixedConsequenceLevels:
         # First approval - should not authorize
         approved = approve_packet(
             packet,
-            role='Operator',
+            role='EA Duty Officer',
             operator_id='op_001'
         )
         assert approved['status'] == 'ready'
@@ -119,7 +125,7 @@ class TestMixedConsequenceLevels:
         # Second approval - should authorize
         approved = approve_packet(
             approved,
-            role='Supervisor',
+            role='Senior Operator',
             operator_id='sup_001'
         )
         assert approved['status'] == 'authorized'
@@ -152,7 +158,7 @@ class TestInvalidSignatures:
         """Test that invalid roles are rejected."""
         packet = create_test_packet()
         
-        with pytest.raises(ValueError, match="not in required roles"):
+        with pytest.raises(ValueError, match="not found"):
             approve_packet(
                 packet,
                 role='InvalidRole',
@@ -204,24 +210,23 @@ class TestTimingMetrics:
     
     def test_authorized_timestamp_set(self):
         """Test that authorizedTs is set when threshold met."""
-        packet = create_test_packet()
+        packet = create_test_packet(minimum_sign_off=True)
         assert packet.get('authorizedTs') is None
         
-        authorized = authorize_packet(packet)
+        authorized = authorize_packet(packet, role='EA Duty Officer', operator_id='op_001')
         
         if authorized['status'] == 'authorized':
             assert authorized.get('authorizedTs') is not None
     
     def test_time_to_authorize_calculated(self):
         """Test that timeToAuthorize is calculated correctly."""
-        packet = create_test_packet()
+        packet = create_test_packet(minimum_sign_off=True)
         packet['createdTs'] = datetime.now().isoformat()
         
-        # Wait a bit
         import time
         time.sleep(0.1)
         
-        authorized = authorize_packet(packet)
+        authorized = authorize_packet(packet, role='EA Duty Officer', operator_id='op_001')
         
         if authorized['status'] == 'authorized' and authorized.get('timeToAuthorize'):
             assert authorized['timeToAuthorize'] > 0

@@ -10,6 +10,13 @@ Procedures for common operational events in Munin deployments.
 4. [System Restore](#system-restore)
 5. [Incident Response](#incident-response)
 6. [Maintenance Windows](#maintenance-windows)
+7. [Deploy and health](#deploy-and-health)
+
+## Deploy and health
+
+- **Deploy:** Run `scripts/deploy.sh` (optionally with `docker` for container deploy). Migrations run via `scripts/migrate.sh` when `DATABASE_URL` is Postgres.
+- **Health:** `GET /api/health` (overall), `GET /api/health/ready` (readiness), `GET /api/health/live` (liveness). Use for load balancer and Kubernetes probes.
+- **Rollback:** See [docs/ROLLBACK.md](ROLLBACK.md).
 
 ## Engine Failure
 

@@ -1,0 +1,30 @@
+{
+  "event_id": "uk_floods_2007",
+  "name": "UK Summer Floods 2007",
+  "date": "2007-07-20",
+  "location": "UK (multiple regions: June NE England; July central England, Gloucester, Tewkesbury)",
+  "primary_bottleneck": "cross_government_coordination",
+  "source": "Pitt Review, UK Parliament flood resilience reports, Met Office",
+  "replay_window_start": "2007-07-19",
+  "replay_window_end": "2007-07-22",
+  "timeline": [
+    { "t": "2007-06-25", "event": "First phase: severe flooding NE England (Sheffield, Doncaster, Hull)" },
+    { "t": "2007-07-19", "event": "Heavy rainfall begins; south Midlands and Wales" },
+    { "t": "2007-07-20", "event": "Peak rainfall; >200 mm in places (4× July average); worst in 60 years" },
+    { "t": "2007-07-20", "event": "Central England: Oxford, Gloucester, Tewkesbury severely affected" },
+    { "t": "2007-07-20+", "event": "55,000+ homes and businesses flooded; multi-agency response" },
+    { "t": "post-event", "event": "Multi-agency coordination reported 3–5 hours for coordinated actions" }
+  ],
+  "coordination_steps_traditional": [
+    "Lack of cross-government coordination",
+    "Insufficient clarity over leadership for adaptation",
+    "Coordination difficulties cited by experts",
+    "Only 12% of UK experts thought government performed well (comparative studies)"
+  ],
+  "notes": "Storm Desmond (Dec 2015) is the event with full Munin demo: see carlisle_storm_desmond fixtures and CARLISLE_DEMO_SETUP.md. UK 2007 and 2011 floods share the same coordination-bottleneck pattern.",
+  "munin_counterfactual": "Pre-validated cross-government flood playbooks; single coordination layer; 3–5 h → <5 min authorisation.",
+  "demo_nodes": [
+    { "node_id": "river_tewkesbury_level", "label": "River level Tewkesbury area", "unit": "m", "flood_warning": 3.0, "flood_critical": 4.0 },
+    { "node_id": "rainfall_gloucester", "label": "Rainfall Gloucester / south Midlands", "unit": "mm/hour", "warning": 10, "critical": 20 }
+  ]
+}

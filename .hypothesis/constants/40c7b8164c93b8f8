@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/ingest.py
+# hypothesis_version: 6.151.9
+
+['*.csv', '__main__', 'mean', 'node_id', 'out', 'sample_data', 'source_file', 'timestamp', 'value']

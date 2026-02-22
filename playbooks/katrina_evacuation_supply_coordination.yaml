@@ -1,0 +1,113 @@
+id: katrina_evacuation_supply_coordination
+title: Katrina Evacuation and Supply Coordination Protocol
+version: 1.0
+type: hurricane_evacuation
+
+description: |
+  Decision-support playbook for hurricane evacuation and supply coordination,
+  informed by the 2005 Katrina baseline. Munin would have matched pre-simulated
+  Gulf Coast hurricane scenarios and presented pre-validated multi-agency
+  playbooks (FEMA, state, local, Red Cross) so authorisation could complete
+  in minutes instead of days.
+
+triggers:
+  - condition: canal_water_level > flood_warning_threshold
+    threshold: 2.5
+    unit: meters
+    node_id: canal_17th_street_level
+    operator: ">"
+  - condition: canal_water_level > flood_warning_threshold
+    threshold: 2.5
+    unit: meters
+    node_id: industrial_canal_level
+    operator: ">"
+  - condition: evacuation_requests_pending > threshold
+    threshold: 500
+    unit: count
+    node_id: evacuation_requests_pending
+    operator: ">"
+
+actions:
+  - step: 1
+    action: assess_levee_and_flood_severity
+    target_nodes:
+      - canal_17th_street_level
+      - industrial_canal_level
+    parameters:
+      check_interval: 15m
+      severity_levels:
+        - warning: 2.5m
+        - critical: 4.0m
+    task_owner: FEMA Regional
+    auto_assign: true
+
+  - step: 2
+    action: activate_evacuation_and_supply_playbook
+    parameters:
+      pre_positioned_meals: true
+      multi_agency_sign_off: [FEMA, State, Local, Red_Cross]
+      bypass_sequential_approval: pre_validated
+    task_owner: FEMA PFO
+    approval_required: true
+    auto_assign: true
+
+  - step: 3
+    action: notify_state_and_local_authorities
+    parameters:
+      recipients:
+        - State Emergency Ops
+        - Parish EOCs
+        - Red Cross
+      message_template: hurricane_evacuation_supply_activation
+    task_owner: Communications
+    auto_assign: true
+
+  - step: 4
+    action: execute_supply_orders_without_cancel_delay
+    parameters:
+      meal_orders: pre_authorised
+      transport: pre_contracted
+    task_owner: Logistics
+    approval_required: true
+    auto_assign: true
+
+regulatory_compliance:
+  - act: "Stafford Act"
+    requirement: "Federal assistance coordinated with state/local; FCO designated"
+  - act: "FEMA policies"
+    requirement: "Pre-positioned resources and pre-signed agreements for rapid release"
+
+approval_required:
+  - role: FEMA Federal Coordinating Officer
+    authority: federal_emergency
+    minimum_sign_off: true
+  - role: State Governor / EOC
+    authority: state_emergency
+    minimum_sign_off: true
+  - role: Red Cross (supply release)
+    authority: supply_chain
+    minimum_sign_off: false
+
+expected_outcomes:
+  - Multi-agency authorisation in minutes, not days
+  - Pre-positioned meals and transport activated before/at landfall
+  - No 37-day delay for supply orders (counterfactual: Sept 1 order honoured same week)
+
+metrics:
+  - metric: time_to_authorize
+    target: < 30 minutes
+    baseline: "2–5 days (Katrina: meals ordered Sep 1, delivered Oct 8)"
+  - metric: coordination_latency
+    target: < 15 minutes
+    baseline: "Multi-day (FEMA/state/local/Red Cross coordination failure)"
+
+risks:
+  - risk: Over-centralisation
+    mitigation: Pre-validated playbooks retain state/local sign-off; Munin only accelerates coordination
+
+incident_replay:
+  - event: Hurricane Katrina
+    date: 2005-08-29
+    description: Levee failures, evacuation and supply coordination failure
+    replay_window: 2005-08-28 to 2005-09-02
+    baseline_data: engine/fixtures/disaster_baselines/katrina_2005_baseline.json

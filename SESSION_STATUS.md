@@ -283,4 +283,4 @@ python3 carlisle_demo.py
 
 **Status**: All code saved, ready to resume tomorrow! 🚀
 
-**Last Updated**: 2026-01-13
+**Last Updated**: 2026-02-04 (state saved for later; see `SAVED_STATE.md` to resume)

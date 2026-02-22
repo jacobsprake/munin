@@ -122,7 +122,7 @@
 **"This is consulting"**  
 → Show shadow link detection from telemetry, not human-drawn maps
 
-**"Palantir will do this"**  
+**"A big vendor will do this"**  
 → Show bottom-up OT telemetry, messy historian data, physics-like temporal links
 
 **"It's just a dashboard"**  

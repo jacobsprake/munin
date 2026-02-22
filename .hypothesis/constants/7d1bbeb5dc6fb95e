@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/decision_integration.py
+# hypothesis_version: 6.151.9
+
+[200, 'UNKNOWN_ACTION', '__main__', 'action_type', 'approvals', 'authorized', 'decision', 'decision_id', 'decisions', 'id', 'incident_id', 'key_id', 'metadata', 'multiSig', 'packet_id', 'packets', 'playbook_id', 'policy', 'proposedAction', 'required', 'role', 'scope', 'signature', 'signatures_received', 'signer_id', 'signers', 'status', 'step_id', 'threshold', 'w']

@@ -119,6 +119,9 @@ export interface HandshakePacket {
     constraintsSatisfied: string[];
     constraintsFailed?: string[];
   };
+  /** Pre-simulated outcome: e.g. "85% confidence cascade contained to Zone 3" */
+  outcomeConfidence?: number;
+  outcomeSummary?: string;
   actuatorBoundary?: {
     writesToHardware: false;
     notes: string;

@@ -1,0 +1,11 @@
+timestamp,node_id,value
+2007-07-19 12:00:00,rainfall_gloucester,2.0
+2007-07-20 00:00:00,rainfall_gloucester,5.0
+2007-07-20 06:00:00,rainfall_gloucester,12.0
+2007-07-20 09:00:00,rainfall_gloucester,18.0
+2007-07-20 12:00:00,rainfall_gloucester,22.0
+2007-07-20 15:00:00,rainfall_gloucester,15.0
+2007-07-20 18:00:00,rainfall_gloucester,8.0
+2007-07-20 21:00:00,rainfall_gloucester,4.0
+2007-07-21 00:00:00,rainfall_gloucester,2.0
+2007-07-21 12:00:00,rainfall_gloucester,0.5

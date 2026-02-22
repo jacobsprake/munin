@@ -10,6 +10,7 @@ This directory contains "golden" expected outputs for known inputs, used for reg
   - `incidents.json` - Expected incident simulations
   - `packets/` - Expected handshake packets
   - `config_metadata.json` - Config version used to generate fixtures
+- `disaster_baselines/` - Timeline and coordination-step data for other evidence disasters (Katrina, Fukushima, 9/11, UK 2007) for demo scenarios and docs. See `disaster_baselines/README.md`. Primary runnable demo remains Storm Desmond (Carlisle).
 
 ## Usage
 

@@ -379,9 +379,9 @@ export default function CarlisleDashboard() {
           </div>
         </div>
 
-        {/* Metrics Summary */}
+        {/* Metrics Summary – Munin vs traditional (roadmap item 15) */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Performance Metrics</h2>
+          <h2 className="text-xl font-semibold mb-4">Performance Metrics (Munin vs traditional)</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="p-4">
               <div className="text-sm text-text-secondary mb-1">Time-to-Authorize</div>

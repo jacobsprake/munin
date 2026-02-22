@@ -2,6 +2,8 @@
 
 **The First Sovereign Orchestration Layer for Zero-Latency Crisis Response**
 
+Munin is **decision support** for infrastructure operators. Humans always authorise; Munin makes their decisions faster by doing the prep work in advance. Operators review pre-simulated playbooks and authorise via Byzantine multi-sig—we turn 2–6 hours of ad-hoc coordination into 20–30 minutes of reviewing pre-packaged options. *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
+
 ---
 
 ## The Thesis
@@ -17,9 +19,9 @@ Modern infrastructure failure is not a data problem—we have enough sensors. It
 - **5 minutes**: Backup generators fail due to fuel supply issues
 - **15 minutes**: Critical services (hospitals, emergency services) affected
 - **2-6 hours**: Human operators coordinate across agencies, verify legal authorization, execute response
-- **Result**: Cascade has already consumed entire sectors before response can be authorized
+- **Result**: Cascade has already consumed entire sectors before response can be authorised
 
-**Munin eliminates this false dichotomy by pre-validating playbooks through simulation and generating cryptographic execution packets that carry legal authority.**
+**Munin eliminates this false dichotomy by maintaining exhaustive pre-simulation of the scenario space—single-origin failures, multi-fault and correlated (shadow-link) stress scenarios—with a continuously updated library of pre-approved playbooks and cryptographic execution packets that carry legal authority.**
 
 ---
 
@@ -75,6 +77,29 @@ python3 engine/detect_shadow_link.py
 
 ---
 
+## One-Command Demo (Show Don't Tell)
+
+Run the full Carlisle flood demo start-to-finish so reviewers can see Munin in 5 minutes:
+
+```bash
+./demo.sh
+# or
+./scripts/munin demo carlisle-2011
+```
+
+Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt;4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation.
+
+**CLI reference:**
+- `munin demo carlisle` – full pipeline demo
+- `munin scenarios analyze [--output scenarios_analysis.md]` – scenario library with quantified outcomes
+- `munin evidence-quality` – evidence quality dashboard (HIGH/MEDIUM/LOW confidence, confounder analysis)
+- `munin applicability` – when Munin does / doesn’t apply (Katrina ✓, Texas 2021 ✗, Dubai 2024 ✗)
+- `munin viz cascade` – generate cascade animation HTML
+- `munin perf` – performance benchmarks
+- `munin regulatory [UK|US|EU]` – regulatory compliance mapper
+
+---
+
 ## The 2026 Tech Stack
 
 ### Post-Quantum Cryptography (PQC)
@@ -107,9 +132,9 @@ See [research/pqc-whitepaper.md](./research/pqc-whitepaper.md) for detailed tech
 
 **Why**: A single compromised administrator or rogue official could sabotage critical infrastructure. Traditional access control (username/password) is insufficient for national-scale operations.
 
-**Decision**: Critical actions require M-of-N cryptographic signatures from physically separated ministries. Even if 1 ministry is compromised, action cannot be authorized.
+**Decision**: Critical actions require M-of-N cryptographic signatures from physically separated ministries. Even if 1 ministry is compromised, action cannot be authorised.
 
-**Example**: 3-of-4 ministries must sign to authorize opening a dam during a flood. No single person or ministry can authorize alone.
+**Example**: 3-of-4 ministries must sign to authorise opening a dam during a flood. No single person or ministry can authorise alone.
 
 ### Protocol Translation Layer
 
@@ -293,7 +318,7 @@ Modern infrastructure failure is not a data problem—we have enough sensors. It
 - **5 minutes**: Backup generators fail due to fuel supply issues
 - **15 minutes**: Critical services (hospitals, emergency services) affected
 - **2-6 hours**: Human operators coordinate across agencies, verify legal authorization, execute response
-- **Result**: Cascade has already consumed entire sectors before response can be authorized
+- **Result**: Cascade has already consumed entire sectors before response can be authorised
 
 ### The Dependency Blindness Problem
 
@@ -788,7 +813,7 @@ timestamp,node_id,value,quality,source_protocol
    - Identifies critical nodes in cascade path
 
 4. **Multi-Step Recovery Planning**
-   - Generates autonomous recovery plans with 5+ steps
+   - Generates suggested recovery plans (5+ steps) for operator review—no autonomous execution
    - Each step includes: action, target, timing, dependencies
 
 5. **Multi-Agency Coordination**
@@ -1779,7 +1804,7 @@ npm run dev
 ```
 
 7. **Open the application**:
-Navigate to `http://localhost:3000` (redirects to `/graph`). Then try `/simulation`, `/handshakes`, `/carlisle-dashboard`.
+Navigate to `http://localhost:3000` (landing page). Use **Start 5-minute demo** or **Enter platform** (`/graph`). Then try `/demo-path`, `/demos`, `/simulation`, `/handshakes`, `/carlisle-dashboard`.
 
 ### Demo Guide
 
@@ -1913,9 +1938,17 @@ pnpm test
 
 ## Additional Resources
 
+### For reviewers (5-minute path)
+
+- **[docs/FOR_REVIEWERS.md](./docs/FOR_REVIEWERS.md)**: One-page guide for evaluators: what Munin is, 5-min app path, CLI commands, key documents.
+
+### Documentation index
+
+- **[docs/README.md](./docs/README.md)**: Full documentation index (thesis & evidence, architecture, demos, pilots, operations)
+
 ### Core Documentation
 
-- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: The philosophical whitepaper explaining the "Secret" and the thesis
+- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: the "Secret" (Shadow Links), exhaustive scenario space, sovereignty paradox
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and algorithms
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development principles
 - **[TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md)**: Required engineering talent for production hardening

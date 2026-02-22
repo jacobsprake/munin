@@ -1,0 +1,104 @@
+id: uk_2007_flood_coordination
+title: UK 2007 Flood Cross-Government Coordination Protocol
+version: 1.0
+type: flood
+
+description: |
+  Decision-support playbook for cross-government flood coordination,
+  informed by the UK Summer 2007 floods (Pitt Review). Pre-validated
+  playbooks and a single coordination layer would reduce multi-agency
+  authorisation from 3–5 hours to under 5 minutes.
+
+triggers:
+  - condition: river_level > flood_warning_threshold
+    threshold: 3.0
+    unit: meters
+    node_id: river_tewkesbury_level
+    operator: ">"
+  - condition: rainfall_rate > threshold
+    threshold: 10.0
+    unit: mm_per_hour
+    node_id: rainfall_gloucester
+    operator: ">"
+
+actions:
+  - step: 1
+    action: assess_flood_severity
+    target_nodes:
+      - river_tewkesbury_level
+      - rainfall_gloucester
+    parameters:
+      check_interval: 15m
+      severity_levels:
+        - warning: 3.0m
+        - critical: 4.0m
+    task_owner: Environment Agency
+    auto_assign: true
+
+  - step: 2
+    action: coordinate_cross_government_response
+    parameters:
+      agencies: [Environment_Agency, Local_Authorities, Highways, Emergency_Services, Utilities]
+      single_coordination_layer: true
+      pre_validated_playbook: true
+    task_owner: Lead Local Flood Authority
+    approval_required: true
+    auto_assign: true
+
+  - step: 3
+    action: notify_public_and_partners
+    parameters:
+      recipients:
+        - Public warnings
+        - Council EOCs
+        - Water companies
+        - Highways
+      message_template: flood_warning_2007_style
+    task_owner: Communications
+    auto_assign: true
+
+  - step: 4
+    action: continuous_monitoring
+    parameters:
+      check_interval: 10m
+      escalation_threshold: critical
+    task_owner: EA Duty Officer
+    auto_assign: true
+
+regulatory_compliance:
+  - act: "Flood and Water Management Act 2010 (post-2007)"
+    requirement: "Coordinate flood risk management across authorities"
+  - act: "Civil Contingencies Act 2004"
+    requirement: "Effective emergency response coordination"
+
+approval_required:
+  - role: Environment Agency Duty Officer
+    authority: flood_operations
+    minimum_sign_off: true
+  - role: Lead Local Flood Authority
+    authority: local_coordination
+    minimum_sign_off: true
+
+expected_outcomes:
+  - Cross-government coordination in minutes (not 3–5 hours)
+  - Clear leadership and single playbook (Pitt Review recommendation)
+  - Improved public and expert perception of response (counterfactual)
+
+metrics:
+  - metric: time_to_authorize
+    target: < 5 minutes
+    baseline: "3–5 hours (UK 2007 multi-agency coordination)"
+  - metric: coordination_latency
+    target: < 10 minutes
+    baseline: "Lack of cross-government coordination (Pitt Review)"
+
+risks:
+  - risk: Fragmented ownership
+    mitigation: Pre-agreed lead and playbook; Munin surfaces one recommended response
+
+incident_replay:
+  - event: UK Summer Floods 2007
+    date: 2007-07-20
+    description: Widespread flooding; 55k+ properties; coordination difficulties
+    replay_window: 2007-07-19 to 2007-07-22
+    baseline_data: engine/fixtures/disaster_baselines/uk_floods_2007_baseline.json

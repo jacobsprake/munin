@@ -1,6 +1,6 @@
 """
 Sovereign Chaos Simulator - Red-Team-as-a-Service
-Systematic scenario testing for every conceivable failure mode.
+Systematic scenario testing across the full scenario space (single-origin, multi-fault, correlated failure modes).
 Extends core incident simulation with comprehensive threat library.
 """
 import json

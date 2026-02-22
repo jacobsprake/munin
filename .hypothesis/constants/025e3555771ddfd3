@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/provenance_ledger.py
+# hypothesis_version: 6.151.9
+
+[0.0, -1000, '=', 'CERT-SENSOR-01', 'FAKE-SIGNATURE', 'Ledger Summary', 'PROOF-', 'PUB-KEY-SENSOR-01', 'Provenance verified', 'SIG-', 'TPM-001-ABC123', '__main__', 'corruption_detected', 'cross_verification', 'data_001', 'data_002', 'data_hash', 'data_id', 'expired', 'hardware_roots', 'hash', 'index', 'leaf_hash', 'legal_authorization', 'merkle_root', 'proof_path', 'provenance_rate', 'provenance_records', 'provenanced', 'reason', 'registered_sources', 'revoked', 'satellite', 'scada', 'sensor', 'source_type', 'status', 'summary', 'tampered', 'timestamp', 'total_records', 'unprovenanced', 'voice_command']

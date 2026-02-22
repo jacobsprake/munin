@@ -1,0 +1,13 @@
+timestamp,node_id,value
+2011-03-11 14:46:00,reactor1_core_temp,280
+2011-03-11 16:00:00,reactor1_core_temp,320
+2011-03-11 18:00:00,reactor1_core_temp,450
+2011-03-11 19:30:00,reactor1_core_temp,650
+2011-03-11 21:00:00,reactor1_core_temp,900
+2011-03-12 00:00:00,reactor1_core_temp,1200
+2011-03-12 05:00:00,reactor1_core_temp,1800
+2011-03-12 06:50:00,reactor1_core_temp,2200
+2011-03-12 10:00:00,reactor1_core_temp,2100
+2011-03-12 14:00:00,reactor1_core_temp,1800
+2011-03-12 19:00:00,reactor1_core_temp,1200
+2011-03-13 00:00:00,reactor1_core_temp,900

@@ -4,6 +4,18 @@
 **Duration**: 5-10 minutes  
 **Audience**: Technical, Executive, or Regulatory
 
+**Munin is decision support.** Humans always authorise; Munin recommends pre-validated playbooks. No autonomous execution.
+
+---
+
+## 🚀 For reviewers (shortest path)
+
+1. Open `http://localhost:3000` (landing). Read thesis and "Traditional vs Munin."
+2. Click **Start 5-minute demo** → `/demo-path`. Scroll through thesis → problem → solution → Shadow Links → evidence; then use buttons to open Graph, Demos, Carlisle, Simulation.
+3. Or go directly to `/demos` (disaster timelines), `/carlisle-dashboard` (flood metrics), `/handshakes` (outcome confidence + authorisation).
+
+See [FOR_REVIEWERS.md](FOR_REVIEWERS.md) for one-page summary and CLI path.
+
 ---
 
 ## 🎯 Pre-Demo Checklist
@@ -56,7 +68,7 @@ npm run dev
 **Best for**: Technical audiences, investors
 
 #### Scene 1: Dependency Graph (1 minute)
-1. Open `http://localhost:3000` → redirects to `/graph`
+1. Open `http://localhost:3000` (landing); click **Enter platform** or go to `/graph`
 2. **Say**: *"This is Munin's dependency graph. It was automatically inferred from time-series data, not manually drawn."*
 3. Click on a node (e.g., `substation_north_01`)
 4. **Point out**:
@@ -76,7 +88,7 @@ npm run dev
    - Blast radius counter
    - Time-to-impact table
    - Confidence bands
-6. **Say**: *"We simulate the cascade before it happens. Before Munin: 4 hours of coordination. After Munin: 5 seconds to authorize."*
+6. **Say**: *"We simulate the cascade before it happens. Before Munin: 2–6 hours of coordination. With Munin: playbook and handshake ready in seconds; operators review and authorise in 20–30 minutes."*
 
 #### Scene 3: Handshake Generation (1.5 minutes)
 1. Click "Generate Handshake" button
@@ -88,7 +100,7 @@ npm run dev
    - Evidence references
    - Uncertainty scores
    - Approval requirements
-5. **Say**: *"This packet carries legal authority. It's cryptographically signed and links to evidence that stands up to expert review."*
+5. **Say**: *"This packet carries the authority framework. It's cryptographically signed and links to evidence. Operators review outcome confidence and proposed action, then authorise—no autonomous execution."*
 
 #### Scene 4: Decision Workflow (1.5 minutes)
 1. Navigate to `/decisions`
@@ -121,12 +133,12 @@ cd ..
    - Threshold indicators
 4. **Say**: *"Munin discovered dependencies between stations that weren't in any registry."*
 
-#### Scene 2: Automated Response (2 minutes)
+#### Scene 2: Recommended response (2 minutes)
 1. **Show**:
    - Playbook activation
-   - Automated task assignments
-   - Single approval workflow
-2. **Say**: *"When thresholds are exceeded, Munin automatically generates authorized actions. Time-to-authorize: < 2 minutes vs 2-6 hours baseline."*
+   - Task assignments (for operator review)
+   - Approval workflow (humans authorise)
+2. **Say**: *"When thresholds are exceeded, Munin generates recommended actions (handshakes) for operator review. Time-to-authorise: < 2 minutes vs 2–6 hours baseline. Humans still decide."*
 
 #### Scene 3: Performance Metrics (2 minutes)
 1. Navigate to `/readiness`
@@ -160,7 +172,7 @@ cd ..
    - Chaos scenario selector
    - Multiple scenario types
    - Impact metrics
-3. **Say**: *"We test against every conceivable scenario. Natural disasters, cyber attacks, infrastructure failures, cascading events."*
+3. **Say**: *"We maintain exhaustive coverage of the scenario space—natural disasters, cyber attacks, infrastructure failures, multi-fault and cascading events."*
 
 #### Scene 7: Resource Management (1 minute)
 1. Navigate to `/resources`
@@ -188,7 +200,7 @@ cd ..
 ### The Proof
 - **Time-to-Authorize**: < 2 minutes vs 2-6 hours baseline
 - **Shadow Mode**: 12 months of passive observation with measurable improvement
-- **Chaos Testing**: Systematic testing against every conceivable scenario
+- **Chaos Testing**: Systematic testing across the full scenario space (single-origin, multi-fault, correlated)
 
 ---
 

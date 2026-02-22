@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/domain_registry.py
+# hypothesis_version: 6.151.9
+
+['bridge', 'comms', 'emergency', 'fire', 'frequency', 'grid', 'hospital', 'network', 'other', 'power', 'pump', 'rail', 'reservoir', 'road', 'substation', 'tower', 'traffic', 'transport', 'treatment', 'tunnel', 'voltage', 'water']

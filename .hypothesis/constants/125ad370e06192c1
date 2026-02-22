@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/domains/water.py
+# hypothesis_version: 6.151.9
+
+[0.1, 0.2, 0.3, 0.7, 0.8, 1.5, 1000.0, 2000.0, 5000.0, 10000.0, 15000.0, 'distribution', 'drought', 'drought_management', 'economic', 'environmental', 'flood', 'level', 'pump', 'pump_failure', 'pumps', 'reservoir', 'reservoirs', 'social', 'treatment', 'water', 'water_conservation']

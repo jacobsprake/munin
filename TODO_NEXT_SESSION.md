@@ -1,6 +1,7 @@
 # TODO: Next Session
 
-**Quick Reference** - Copy/paste these commands when you resume
+**Quick Reference** – Copy/paste when you resume.  
+**Saved state**: Feb 4, 2026 – see `SAVED_STATE.md` for full resume instructions.
 
 ---
 

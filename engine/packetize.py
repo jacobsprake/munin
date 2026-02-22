@@ -153,27 +153,44 @@ def generate_packet(
         'flood': 'Complies with 2026 Flood Resilience Act, Section 4.2',
         'drought': 'Complies with 2026 Drought Resilience Act, Section 4',
         'power_instability': 'Complies with NERC Reliability Standards, EOP-011',
+        'chaos_multi_fault': 'Complies with Civil Contingencies Act 2004, multi-sector coordination',
+        'chaos_correlated': 'Complies with Civil Contingencies Act 2004, cross-sector shadow-link response',
     }
     
     action_map = {
         'flood': 'Isolate affected pump stations and divert flow to backup reservoirs',
         'drought': 'Divert 40% flow from Reservoir Alpha to Reservoir Beta',
         'power_instability': 'Initiate frequency stabilization protocol and load shedding',
+        'chaos_multi_fault': 'Coordinate cross-sector response; isolate fault origins and contain cascade',
+        'chaos_correlated': 'Execute shadow-link aware response; contain correlated failure pair',
     }
     
     summary_map = {
         'flood': f"Flood event detected affecting {len(all_impacted)} nodes. Cascading impact predicted across water infrastructure.",
         'drought': f"Drought conditions detected. Reservoir levels critical. Predicted impact to {len(all_impacted)} dependent nodes.",
         'power_instability': f"Power frequency instability detected. Grid stability at risk. {len(all_impacted)} nodes predicted to be impacted.",
+        'chaos_multi_fault': f"Multi-fault chaos scenario affecting {len(all_impacted)} nodes. Cross-sector cascade.",
+        'chaos_correlated': f"Correlated (shadow-link) chaos scenario affecting {len(all_impacted)} nodes.",
     }
     
-    # Compute uncertainty from evidence
+    # Build edge_id -> (source, target) so we can match evidence windows (which use edgeId) to impacted nodes
+    edge_to_endpoints: Dict[str, tuple] = {}
+    for edge in graph.get('edges', []):
+        if isinstance(edge, dict) and edge.get('id') and edge.get('source') is not None and edge.get('target') is not None:
+            edge_to_endpoints[edge['id']] = (edge['source'], edge['target'])
+
+    # Compute uncertainty from evidence (evidence windows have edgeId, not sourceNodeId/targetNodeId)
     relevant_evidence: List[Dict[str, Any]] = []
     for e in evidence['windows']:
         if not isinstance(e, dict):
             continue
-        # Check if evidence relates to impacted nodes
-        evidence_nodes = e.get('sourceNodeId', '') + ' ' + e.get('targetNodeId', '')
+        edge_id = e.get('edgeId')
+        if not edge_id:
+            # Legacy: try sourceNodeId/targetNodeId if present
+            evidence_nodes = e.get('sourceNodeId', '') + ' ' + e.get('targetNodeId', '')
+        else:
+            endpoints = edge_to_endpoints.get(edge_id, ('', ''))
+            evidence_nodes = ' '.join(endpoints)
         if any(nid in evidence_nodes for nid in all_impacted):
             if 'robustness' in e and isinstance(e['robustness'], (int, float)):
                 relevant_evidence.append(e)
@@ -230,6 +247,17 @@ def generate_packet(
         'notes': 'No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only.'
     }
     
+    # Outcome confidence (pre-simulated playbook result for operator decision)
+    outcome_confidence = float(max(0.0, min(1.0, base_success_prob)))
+    outcome_summary_map = {
+        'flood': f'{int(outcome_confidence * 100)}% confidence cascade contained to affected zone with coordinated gate operations.',
+        'drought': f'{int(outcome_confidence * 100)}% confidence reservoir diversion limits impact to pre-defined sectors.',
+        'power_instability': f'{int(outcome_confidence * 100)}% confidence frequency restored within stability band; load shed minimised.',
+        'chaos_multi_fault': f'{int(outcome_confidence * 100)}% confidence multi-fault cascade contained with cross-sector coordination.',
+        'chaos_correlated': f'{int(outcome_confidence * 100)}% confidence correlated failure contained; shadow-link response applied.',
+    }
+    outcome_summary = str(outcome_summary_map.get(incident['type'], f'{int(outcome_confidence * 100)}% confidence based on pre-simulation.'))
+    
     # Validate evidence refs
     evidence_refs: List[str] = []
     for e in relevant_evidence[:5]:
@@ -244,6 +272,7 @@ def generate_packet(
         'firstApprovalTs': None,  # Will be set when first approval is received
         'authorizedTs': None,  # Will be set when authorization threshold is met
         'timeToAuthorize': None,  # Will be calculated when authorized
+        'timeToAuthorizeSeconds': None,  # Coordination latency metric: set when first approval received
         'status': str('ready'),
         'scope': {
             'regions': [str(r) for r in regions],
@@ -272,7 +301,9 @@ def generate_packet(
             'dataHash': str(data_hash)
         },
         'technicalVerification': technical_verification,
-        'actuatorBoundary': actuator_boundary
+        'actuatorBoundary': actuator_boundary,
+        'outcomeConfidence': outcome_confidence,
+        'outcomeSummary': outcome_summary,
     }
     
     # Validate packet structure matches schema
@@ -330,9 +361,11 @@ def packetize_incidents(
     # Map incident types to playbooks
     # Try Carlisle playbook first, fallback to original if not found
     playbook_map = {
-        'flood': 'carlisle_flood_gate_coordination.yaml',  # Use Carlisle playbook for flood incidents
+        'flood': 'carlisle_flood_gate_coordination.yaml',
         'drought': 'drought_reservoir_diversion.yaml',
         'power_instability': 'power_frequency_instability.yaml',
+        'chaos_multi_fault': 'flood_event_pump_isolation.yaml',   # Generic coordination playbook for chaos
+        'chaos_correlated': 'flood_event_pump_isolation.yaml',
     }
     
     # Fallback playbooks if primary not found
@@ -357,6 +390,9 @@ def packetize_incidents(
     # Sort by creation time to get latest
     existing_packets.sort(key=lambda p: p.get('createdTs', ''), reverse=True)
     previous_hash = existing_packets[0].get('merkle', {}).get('receiptHash') if existing_packets else None
+    
+    # Initialize audit log for packet creation entries
+    audit_log = get_audit_log(output_dir.parent)
     
     for incident in incidents_data['incidents']:
         playbook_id = playbook_map.get(incident['type'], 'default.yaml')
@@ -447,8 +483,7 @@ def packetize_incidents(
             }
         )
     
-    # Initialize immutable audit log (for final summary)
-    audit_log = get_audit_log(output_dir.parent)
+    # Verify audit log chain
     verification = audit_log.verify_chain()
     if verification['valid']:
         print(f"\n✅ Audit log chain verified: {verification['entries_checked']} entries")

@@ -8,7 +8,7 @@ import RightPanel from './RightPanel';
 import StatusStrip from './StatusStrip';
 
 interface CommandShellProps {
-  children: ReactNode;
+  children?: ReactNode;
   rightPanelContent?: ReactNode;
   rightPanelTitle?: string;
   rightPanelCollapsed?: boolean;

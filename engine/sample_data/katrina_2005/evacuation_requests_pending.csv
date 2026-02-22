@@ -1,0 +1,11 @@
+timestamp,node_id,value
+2005-08-28 12:00:00,evacuation_requests_pending,50
+2005-08-29 06:00:00,evacuation_requests_pending,200
+2005-08-29 08:00:00,evacuation_requests_pending,500
+2005-08-29 10:00:00,evacuation_requests_pending,1200
+2005-08-29 12:00:00,evacuation_requests_pending,2500
+2005-08-29 18:00:00,evacuation_requests_pending,5000
+2005-08-30 00:00:00,evacuation_requests_pending,8000
+2005-08-30 12:00:00,evacuation_requests_pending,12000
+2005-08-31 00:00:00,evacuation_requests_pending,15000
+2005-09-01 00:00:00,evacuation_requests_pending,18000

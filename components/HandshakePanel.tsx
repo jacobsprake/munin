@@ -71,6 +71,19 @@ export default function HandshakePanel({ packet, onAuthorize }: HandshakePanelPr
             {packet.proposedAction}
           </div>
         </div>
+        {(packet.outcomeConfidence != null || packet.outcomeSummary) && (
+          <div className="bg-safety-cobalt/10 border border-safety-cobalt/30 rounded p-3">
+            <div className="text-xs text-text-muted font-mono mb-1">OUTCOME CONFIDENCE (pre-simulation)</div>
+            {packet.outcomeConfidence != null && (
+              <div className="text-lg font-mono font-semibold text-safety-cobalt">
+                {Math.round((packet.outcomeConfidence ?? 0) * 100)}%
+              </div>
+            )}
+            {packet.outcomeSummary && (
+              <div className="text-xs font-mono text-text-secondary mt-1">{packet.outcomeSummary}</div>
+            )}
+          </div>
+        )}
         <div>
           <div className="text-xs text-text-muted font-mono mb-1">REGULATORY BASIS</div>
           <div className="text-sm font-mono text-text-primary">{packet.regulatoryBasis}</div>

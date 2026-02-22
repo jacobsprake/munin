@@ -1,5 +1,9 @@
 # Storm Desmond Baseline Analysis
 
+**Primary demo for evidence:** The live demo that illustrates this baseline is the **Carlisle / Storm Desmond demo**. See [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) for setup and [README_DEMO.md](../README_DEMO.md) for routes (e.g. `/carlisle-dashboard`). Run with `npm run dev` then open `/carlisle-dashboard`, or from `engine`: `python carlisle_demo.py`.
+
+---
+
 ## Question: Is 4 hours a realistic baseline? What was the actual baseline during Storm Desmond?
 
 ## Traditional Crisis Response Process (Baseline)

@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/domains/power.py
+# hypothesis_version: 6.151.9
+
+[0.05, 0.3, 0.9, 1.1, 49.5, 50.5, 100.0, 5000.0, 'distribution', 'economic', 'edges', 'environmental', 'frequency_response', 'generation', 'id', 'line', 'line_restoration', 'line_trip', 'load_shedding', 'load_transfer', 'nodes', 'offline', 'power', 'reactive_power', 'rerouting', 'social', 'source', 'substation', 'substation_outage', 'substations', 'target', 'transmission', 'tripped', 'voltage_control', 'voltage_instability']

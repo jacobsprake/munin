@@ -26,7 +26,7 @@ These features transform Munin from a tool into a **future-proof sovereign asset
   - Cross-sector sensor correlation
   - Historical incident database
 - **Cascade Dependency Analysis**: Predicts failure propagation through dependency chains
-- **Multi-Step Recovery Planning**: Generates autonomous recovery plans with 5+ steps
+- **Multi-Step Recovery Planning**: Generates suggested recovery plans (5+ steps) for operator review—no autonomous execution
 - **Multi-Agency Coordination**: Drafts coordination plans for multiple agencies with defined roles, communication channels, and priorities
 
 ### Demo Usage

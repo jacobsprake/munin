@@ -1,0 +1,20 @@
+timestamp,node_id,value
+2005-08-29 00:00:00,canal_17th_street_level,1.2
+2005-08-29 02:00:00,canal_17th_street_level,1.5
+2005-08-29 04:00:00,canal_17th_street_level,1.8
+2005-08-29 05:00:00,canal_17th_street_level,2.1
+2005-08-29 06:00:00,canal_17th_street_level,2.4
+2005-08-29 07:00:00,canal_17th_street_level,2.7
+2005-08-29 08:00:00,canal_17th_street_level,3.0
+2005-08-29 09:00:00,canal_17th_street_level,3.4
+2005-08-29 10:00:00,canal_17th_street_level,3.8
+2005-08-29 10:30:00,canal_17th_street_level,4.2
+2005-08-29 11:00:00,canal_17th_street_level,4.6
+2005-08-29 11:51:00,canal_17th_street_level,5.0
+2005-08-29 12:00:00,canal_17th_street_level,5.2
+2005-08-29 14:00:00,canal_17th_street_level,5.5
+2005-08-29 18:00:00,canal_17th_street_level,5.8
+2005-08-30 00:00:00,canal_17th_street_level,6.0
+2005-08-30 06:00:00,canal_17th_street_level,6.1
+2005-08-30 12:00:00,canal_17th_street_level,6.0
+2005-08-31 00:00:00,canal_17th_street_level,5.8

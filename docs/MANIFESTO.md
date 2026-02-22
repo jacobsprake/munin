@@ -2,6 +2,8 @@
 
 **"The state is not a software company. It is a physics company. Its job is to prevent cascading failures that propagate at the speed of light through infrastructure that was never designed to be visible."**
 
+Munin is **decision support** for infrastructure operators. Humans always authorise; Munin makes their decisions faster by doing the prep work in advance. Operators review pre-simulated playbooks and authorise via Byzantine multi-sig—we turn 2–6 hours of ad-hoc coordination into 20–30 minutes of reviewing pre-packaged options. *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
+
 ---
 
 ## The Thesis
@@ -28,6 +30,16 @@ The state has two conflicting mandates:
 2. **Maintain legal accountability** for every action taken
 
 Traditional systems force a choice: **Speed or Safety**. Munin eliminates this false dichotomy by pre-validating playbooks through simulation and generating cryptographic execution packets that carry legal authority.
+
+### Exhaustive pre-simulation of the scenario space
+
+**In peacetime:** Munin maintains exhaustive pre-simulation of the scenario space: single-origin failures by asset type, multi-fault (cross-sector) stress scenarios, and correlated failure modes (e.g. shadow-link pairs). The pipeline runs continuously to keep the scenario library and pre-approved playbooks current. For each scenario it simulates outcomes, validates responses, pre-approves legal authority, maps statutory compliance, and generates handshake packets. That work cannot be done during a crisis—it must be done in advance.
+
+**In crisis:** Shadow Link detection matches the live situation to the nearest pre-simulated scenario. Munin presents pre-validated playbooks with **outcome confidence** (e.g. “Option A: 85% confidence cascade contained to Zone 3”). Operators review and choose; multi-ministry Byzantine authorisation follows; then execution. Humans still decide—they just decide in 20–30 minutes instead of 2–6 hours.
+
+As the official report on Hurricane Katrina put it: *“Had the simulation taken place earlier and been more comprehensive, it would have facilitated organisational learning”* and improved coordination. Munin does that systematically: it runs simulations for all conceivable and chaos scenarios at all times, so that when a real cascade occurs the right playbook is ready and authorisation is already mapped.
+
+**Counterfactual (Katrina with Munin):** Pre-simulated hurricane and evacuation playbooks for the Gulf Coast; pre-validated FEMA–state–local sign-off requirements; pre-contracted meals and transport. Before landfall, pattern-match to “Category 3 New Orleans direct hit” and present the playbook; multi-agency authorisation in minutes; execution begins before the storm. No 37-day delay for meals; no multi-day coordination paralysis.
 
 ---
 

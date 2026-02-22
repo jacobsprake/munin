@@ -1,0 +1,13 @@
+timestamp,node_id,value
+2007-07-19 00:00:00,river_tewkesbury_level,1.2
+2007-07-19 12:00:00,river_tewkesbury_level,1.5
+2007-07-20 00:00:00,river_tewkesbury_level,1.8
+2007-07-20 06:00:00,river_tewkesbury_level,2.2
+2007-07-20 09:00:00,river_tewkesbury_level,2.8
+2007-07-20 12:00:00,river_tewkesbury_level,3.2
+2007-07-20 15:00:00,river_tewkesbury_level,3.6
+2007-07-20 18:00:00,river_tewkesbury_level,4.0
+2007-07-20 21:00:00,river_tewkesbury_level,4.2
+2007-07-21 00:00:00,river_tewkesbury_level,4.1
+2007-07-21 12:00:00,river_tewkesbury_level,3.8
+2007-07-22 00:00:00,river_tewkesbury_level,3.4

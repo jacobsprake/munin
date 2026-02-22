@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Sovereign Orchestration Prototype',
-  description: 'Command and control digital twin interface',
+  title: 'Munin — Sovereign Infrastructure Orchestration',
+  description: 'Decision support for zero-latency crisis response. Pre-simulated playbooks, Byzantine multi-sig authorisation. Humans decide in 20–30 minutes instead of 2–6 hours.',
 }
 
 export default function RootLayout({

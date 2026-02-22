@@ -1,0 +1,25 @@
+{
+  "event_id": "sep11_2001",
+  "name": "September 11, 2001 (World Trade Center)",
+  "date": "2001-09-11",
+  "location": "USA, New York City",
+  "firefighter_deaths": 343,
+  "primary_bottleneck": "interagency_communication_coordination",
+  "source": "FDNY reports, McKinsey report, 9/11 Commission",
+  "timeline": [
+    { "t": "09:59", "event": "South Tower collapses" },
+    { "t": "09:59+", "event": "NYPD helicopter observes North Tower instability; warning not relayed to FDNY" },
+    { "t": "10:28", "event": "North Tower collapses; many FDNY in tower lacked situational awareness" }
+  ],
+  "coordination_steps_traditional": [
+    "FDNY (VHF) and NYPD (UHF) radios incompatible",
+    "Port Authority Police on third system",
+    "No interoperable multi-agency command channel",
+    "Helicopter reconnaissance not integrated into fire command"
+  ],
+  "quotes": [
+    "UHF (police) and VHF (fire) frequencies were not interoperable, hampering interagency coordination.",
+    "Commanders lacked communication with NYPD who had helicopters at scene."
+  ],
+  "munin_counterfactual": "Unified decision-support layer; pre-agreed playbooks; shared situational awareness (e.g. helicopter feed); faster coordinated decisions and safer withdrawal."
+}

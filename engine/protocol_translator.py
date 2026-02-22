@@ -133,19 +133,20 @@ class ProtocolTranslator:
         # Determine data quality
         quality = self._assess_quality(frame)
         
-        # Build normalized data point
+        # Build normalized data point (top-level source_protocol for tests/API)
         normalized = {
             'node_id': node_id,
             'timestamp': timestamp.isoformat(),
             'value': float(value),
+            'source_protocol': self.protocol,
             'metadata': {
                 'protocol': self.protocol,
-                'address': frame.get('address', 'unknown'),
-                'functionCode': frame.get('functionCode', 'unknown'),
+                'address': str(frame.get('address', frame.get('start_address', 'unknown'))),
+                'functionCode': str(frame.get('function_code', frame.get('functionCode', 'unknown'))),
                 'dataType': self._infer_data_type(frame),
                 'quality': quality,
                 'vendor': self.vendor or 'unknown',
-                'rawHex': frame.get('hex', '')[:32],  # First 32 chars for debugging
+                'rawHex': frame.get('hex', '')[:32] if frame.get('hex') else '',
             }
         }
         
@@ -153,18 +154,31 @@ class ProtocolTranslator:
     
     def _extract_value(self, frame: Dict[str, Any]) -> float:
         """Extract numeric value from protocol frame."""
-        # Try payload first
+        # Direct value (DNP3, OPC UA, BACnet tests pass 'value')
+        if 'value' in frame:
+            v = frame['value']
+            if isinstance(v, (int, float)):
+                return float(v)
+            if isinstance(v, bool):
+                return 1.0 if v else 0.0
+        # values list (Modbus tests pass 'values': [1234, 5678] or [True])
+        if 'values' in frame:
+            vals = frame['values']
+            if vals and isinstance(vals[0], (int, float)):
+                return float(vals[0])
+            if vals and isinstance(vals[0], bool):
+                return 1.0 if vals[0] else 0.0
+        # Try payload
         if 'payload' in frame:
             payload = frame['payload']
             if isinstance(payload, (int, float)):
                 return float(payload)
             if isinstance(payload, str):
-                # Try to parse hex or decimal
                 try:
                     if payload.startswith('0x'):
                         return float(int(payload, 16))
                     return float(payload)
-                except:
+                except Exception:
                     pass
         
         # Try to extract from hex

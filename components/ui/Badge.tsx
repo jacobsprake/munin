@@ -6,7 +6,7 @@ type BadgeStatus = 'ok' | 'warning' | 'active' | 'degraded' | 'disconnected' | '
 
 interface BadgeProps {
   status: BadgeStatus;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 }
 

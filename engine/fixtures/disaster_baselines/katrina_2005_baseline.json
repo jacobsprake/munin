@@ -1,0 +1,52 @@
+{
+  "event_id": "katrina_2005",
+  "name": "Hurricane Katrina",
+  "date": "2005-08-29",
+  "location": "USA, Gulf Coast (New Orleans)",
+  "deaths": 1300,
+  "damage_usd_billion": 161,
+  "primary_bottleneck": "coordination_authorization",
+  "source": "Official post-incident reports (President's report, FEMA, Congress), Wikipedia Timeline of Hurricane Katrina",
+  "replay_window_start": "2005-08-28",
+  "replay_window_end": "2005-09-02",
+  "timeline": [
+    { "t": "2005-08-28T00:40", "event": "Katrina reaches Category 4 (145 mph)" },
+    { "t": "2005-08-28T07:00", "event": "Category 5; NHC warns of devastating damage" },
+    { "t": "2005-08-28T10:00", "event": "Mandatory evacuation ordered for New Orleans" },
+    { "t": "2005-08-28T12:00", "event": "Superdome opened as refuge of last resort (~20k people)" },
+    { "t": "2005-08-29T04:30", "event": "Industrial Canal levees fail (I-10 bridge); storm surge enters" },
+    { "t": "2005-08-29T05:00", "event": "Power lost in Superdome" },
+    { "t": "2005-08-29T06:10", "event": "Katrina second landfall near Buras, LA (Category 3)" },
+    { "t": "2005-08-29T06:30", "event": "Power lost across much of New Orleans" },
+    { "t": "2005-08-29T07:45", "event": "Industrial Canal eastern breach; 20 ft water into Lower Ninth Ward" },
+    { "t": "2005-08-29T08:14", "event": "NWS Flash Flood Warning: levee breach Industrial Canal, 3–8 ft water" },
+    { "t": "2005-08-29T08:30", "event": "Twenty-foot tidal surge reported to FEMA regional office" },
+    { "t": "2005-08-29T09:00", "event": "6–8 feet water in Lower Ninth Ward" },
+    { "t": "2005-08-29T09:14", "event": "TSA reports Industrial Canal levee breach" },
+    { "t": "2005-08-29T09:30", "event": "London Avenue Canal breach (Gentilly)" },
+    { "t": "2005-08-29T10:30", "event": "17th Street Canal breach; London Avenue western breach" },
+    { "t": "2005-08-29T11:51", "event": "17th Street Canal breach reported to FEMA (Michael Heath)" },
+    { "t": "2005-08-29T14:00", "event": "New Orleans officials confirm 17th Street Canal breach" },
+    { "t": "2005-08-30T12:00", "event": "Chertoff learns levees cannot be plugged; evacuation of city ordered" },
+    { "t": "2005-08-31T22:00", "event": "Sandbag plan for 17th Street breach fails; 85% city underwater" },
+    { "t": "2005-09-01", "event": "Red Cross requests 300k meals; FEMA cancels order" },
+    { "t": "2005-09-02", "event": "National Guard deployed with clear authority" },
+    { "t": "2005-10-08", "event": "Red Cross meals delivered (37 days after request)" }
+  ],
+  "coordination_steps_traditional": [
+    "FEMA wait for state requests",
+    "Multiple approval signatures and data processing steps",
+    "Paperwork and form completions hindered immediate action",
+    "Red Cross / FEMA coordination breakdown on supply orders"
+  ],
+  "quotes": [
+    "Numerous time consuming approval signatures and data processing steps prior to any action, delaying the response.",
+    "Poor operational coordination generated a weak Federal performance."
+  ],
+  "munin_counterfactual": "Pre-simulated hurricane/evacuation playbooks; Byzantine multi-agency sign-off in minutes; pre-positioned resources activated before landfall.",
+  "demo_nodes": [
+    { "node_id": "canal_17th_street_level", "label": "17th Street Canal water level", "unit": "m", "flood_warning": 2.5, "flood_critical": 4.0 },
+    { "node_id": "industrial_canal_level", "label": "Industrial Canal water level", "unit": "m", "flood_warning": 2.5, "flood_critical": 4.0 },
+    { "node_id": "evacuation_requests_pending", "label": "Pending evacuation/supply requests", "unit": "count", "threshold_warning": 100 }
+  ]
+}

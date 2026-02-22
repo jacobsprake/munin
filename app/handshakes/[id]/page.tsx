@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import CommandShell from '@/components/CommandShell';
 import RightPanel from '@/components/RightPanel';
 import Card from '@/components/ui/Card';
@@ -82,6 +82,20 @@ export default function HandshakeDetailPage() {
         <div className="text-body mono text-text-primary">{packet.situationSummary}</div>
       </Card>
 
+      {(packet.outcomeConfidence != null || packet.outcomeSummary) && (
+        <Card className="border-safety-cobalt/30 bg-safety-cobalt/5">
+          <div className="text-label mono text-text-muted mb-1">OUTCOME CONFIDENCE (pre-simulation)</div>
+          {packet.outcomeConfidence != null && (
+            <div className="text-data-number mono text-safety-cobalt mb-1">
+              {Math.round((packet.outcomeConfidence ?? 0) * 100)}%
+            </div>
+          )}
+          {packet.outcomeSummary && (
+            <div className="text-body-mono mono text-text-secondary text-sm">{packet.outcomeSummary}</div>
+          )}
+        </Card>
+      )}
+
       {packet.status === 'ready' && !isAuthorized && (
         <>
           <Button variant="authorize" onClick={() => setShowSignModal(true)} className="w-full">
@@ -102,9 +116,9 @@ export default function HandshakeDetailPage() {
             <CheckCircle2 className="w-5 h-5 text-safety-emerald" />
             <div className="text-label mono text-safety-emerald">AUTHORIZED</div>
           </div>
-          {packet.approvals.find((a) => a.signatureHash) && (
+          {packet.approvals.find((a: { signatureHash?: string }) => a.signatureHash) && (
             <div className="text-body-mono mono text-text-secondary">
-              Signature: {packet.approvals.find((a) => a.signatureHash)?.signatureHash?.substring(0, 32)}...
+              Signature: {packet.approvals.find((a: { signatureHash?: string }) => a.signatureHash)?.signatureHash?.substring(0, 32)}...
             </div>
           )}
         </Card>
@@ -165,6 +179,20 @@ export default function HandshakeDetailPage() {
             </div>
           </Card>
 
+          {(packet.outcomeConfidence != null || packet.outcomeSummary) && (
+            <Card variant="packet" className="border-safety-cobalt/30 bg-safety-cobalt/5">
+              <div className="text-label mono text-text-muted mb-2">OUTCOME CONFIDENCE (pre-simulated playbook)</div>
+              {packet.outcomeConfidence != null && (
+                <div className="text-2xl font-mono font-semibold text-safety-cobalt mb-2">
+                  {Math.round((packet.outcomeConfidence ?? 0) * 100)}%
+                </div>
+              )}
+              {packet.outcomeSummary && (
+                <div className="text-body-mono mono text-text-secondary">{packet.outcomeSummary}</div>
+              )}
+            </Card>
+          )}
+
           <Card variant="packet">
             <div className="text-label mono text-text-muted mb-2">REGULATORY BASIS</div>
             <div className="text-body-mono mono text-text-primary bg-base-800 p-3 rounded">
@@ -182,7 +210,7 @@ export default function HandshakeDetailPage() {
                 </div>
                 <div className="text-label mono text-text-muted mb-1">Constraints satisfied:</div>
                 <ul className="list-disc list-inside text-body mono text-text-primary space-y-1">
-                  {packet.technicalVerification.constraintsSatisfied.map((c, i) => (
+                  {packet.technicalVerification.constraintsSatisfied.map((c: string, i: number) => (
                     <li key={i}>{c}</li>
                   ))}
                 </ul>
@@ -193,7 +221,7 @@ export default function HandshakeDetailPage() {
           <Card variant="packet">
             <div className="text-label mono text-text-muted mb-2">EVIDENCE BUNDLE</div>
             <div className="flex flex-wrap gap-2">
-              {packet.evidenceRefs.map((ref, i) => (
+              {packet.evidenceRefs.map((ref: string, i: number) => (
                 <span
                   key={i}
                   className="px-2 py-1 bg-base-800 border border-base-700 rounded text-body-mono mono text-text-secondary cursor-pointer hover:bg-base-750"
@@ -207,14 +235,14 @@ export default function HandshakeDetailPage() {
           <Card variant="packet">
             <div className="text-label mono text-text-muted mb-2">PRECONDITIONS + COORDINATION</div>
             <div className="text-body mono text-text-primary">
-              Roles required: {packet.approvals.map((a) => a.role).join(', ')}
+              Roles required: {packet.approvals.map((a: { role: string }) => a.role).join(', ')}
             </div>
           </Card>
 
           <Card variant="packet">
             <div className="text-label mono text-text-muted mb-2">VERIFICATION STEPS</div>
             <div className="space-y-2">
-              {packet.technicalVerification?.constraintsSatisfied.map((step, i) => (
+              {packet.technicalVerification?.constraintsSatisfied.map((step: string, i: number) => (
                 <div key={i} className="flex items-center gap-2 text-body mono text-text-primary">
                   <div className="w-4 h-4 border border-base-700 rounded" />
                   <span>{step}</span>
@@ -226,7 +254,7 @@ export default function HandshakeDetailPage() {
           <Card variant="packet">
             <div className="text-label mono text-text-muted mb-2">APPROVALS</div>
             <div className="space-y-2">
-              {packet.approvals.map((approval, idx) => (
+              {packet.approvals.map((approval: { role: string; signerId?: string; signedTs?: string; signatureHash?: string }, idx: number) => (
                 <div
                   key={idx}
                   className="p-3 bg-base-800 border border-base-700 rounded"
@@ -269,13 +297,13 @@ export default function HandshakeDetailPage() {
             </div>
 
             {/* Feature #4: Legal Certificate (Liability Shield) */}
-            {isAuthorized && packet.approvals.find(a => a.signerId) && (
+            {isAuthorized && packet.approvals.find((a: { signerId?: string }) => a.signerId) && (
               <div className="mb-6">
                 <ComplianceCertificatePanel
                   packetId={packet.id}
                   playbookId={packet.playbookId}
-                  operatorId={packet.approvals.find(a => a.signerId)?.signerId}
-                  operatorRole={packet.approvals.find(a => a.signerId)?.role}
+                  operatorId={packet.approvals.find((a: { signerId?: string }) => a.signerId)?.signerId}
+                  operatorRole={packet.approvals.find((a: { signerId?: string; role: string }) => a.signerId)?.role}
                 />
               </div>
             )}
@@ -293,14 +321,14 @@ export default function HandshakeDetailPage() {
             label="OPERATOR ID"
             type="text"
             value={operatorId}
-            onChange={(e) => setOperatorId(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setOperatorId(e.target.value)}
             placeholder="OP-XXXX"
           />
           <Input
             label="PASSPHRASE"
             type="password"
             value={passphrase}
-            onChange={(e) => setPassphrase(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassphrase(e.target.value)}
             placeholder="••••••••"
           />
           <div className="text-body-mono mono text-text-muted text-xs">

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Munin CLI – runs engine/cli.py with repo root as cwd and Python path set.
+set -e
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+export PYTHONPATH="${ROOT}/engine:${PYTHONPATH:-}"
+if [ -d "$ROOT/venv/bin" ]; then
+  exec "$ROOT/venv/bin/python" "$ROOT/engine/cli.py" "$@"
+else
+  exec python3 "$ROOT/engine/cli.py" "$@"
+fi

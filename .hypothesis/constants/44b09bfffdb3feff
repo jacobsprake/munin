@@ -1,0 +1,4 @@
+# file: /Users/jacoblsprake/Library/Mobile Documents/com~apple~CloudDocs/Sprake/Business and Entrepreneurship/SPRLABS/Munin/engine/infer_graph.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.5, 0.7, 0.8, 0.9, 1.0, 300, 3600, '_', '__main__', 'alpha', 'beta', 'condition', 'confidenceScore', 'confounderNotes', 'correlation', 'degraded', 'east', 'edges', 'evidenceRefs', 'evidenceWindowCount', 'graph.json', 'health', 'id', 'inferredLagSeconds', 'isShadowLink', 'is_shadow', 'kind', 'label', 'lag', 'lat', 'lon', 'nodes', 'north', 'ok', 'other', 'out', 'power', 'pump', 'r', 'region', 'reservoir', 'score', 'sector', 'service', 'source', 'south', 'stability', 'stabilityScore', 'status', 'substation', 'target', 'telecom', 'tower', 'unknown', 'w', 'warning', 'water', 'west']

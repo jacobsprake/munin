@@ -1,6 +1,7 @@
 """Main pipeline runner: ingest -> infer -> health -> incidents -> packets."""
 import sys
 import random
+import shutil
 import numpy as np
 from pathlib import Path
 from datetime import datetime
@@ -51,9 +52,13 @@ def main(
     out_dir: Path = None,
     playbooks_dir: Path = None,
     config_path: Path = None,
-    seed: int = 42
+    seed: int = 42,
+    all_scenarios: bool = True,
 ):
     """Run the complete pipeline with deterministic execution.
+    
+    By default exhaustively enumerates the scenario space (single-origin, multi-fault, correlated)
+    and builds pre-approved playbooks for each. Use all_scenarios=False (--quick) for a small fixed set.
     
     Args:
         data_dir: Directory containing sample CSV files (default: engine/sample_data)
@@ -61,6 +66,7 @@ def main(
         playbooks_dir: Directory containing playbook YAML files (default: playbooks/)
         config_path: Path to engine config JSON (default: use defaults)
         seed: Random seed for deterministic execution (default: 42)
+        all_scenarios: If True, enumerate and simulate all conceivable + chaos scenarios; if False, run quick 3-incident set.
     """
     # Load configuration and initialize RNG streams
     config = get_config(config_path)
@@ -138,6 +144,16 @@ def main(
         "normalizedPath": str(out_dir / "normalized_timeseries.csv"),
     })
 
+    # Playbook trigger evaluation (live data -> which playbooks are triggered)
+    try:
+        import pandas as pd
+        from live_match import evaluate_playbook_triggers, write_triggered_playbooks
+        df_norm = pd.read_csv(out_dir / "normalized_timeseries.csv", index_col=0, parse_dates=True)
+        triggered = evaluate_playbook_triggers(df_norm)
+        write_triggered_playbooks(triggered, out_dir / "triggered_playbooks.json")
+    except Exception:
+        pass  # Optional: carlisle_config may not be available
+
     print("\n[2/5] Inferring dependency graph...")
     logger.start_phase("graph_inference")
     _agent_log(run_id, "H3", "engine/run.py:graph:start", "Starting build_graph", {})
@@ -187,10 +203,10 @@ def main(
     })
     print(f"Evidence saved: {len(evidence_windows)} windows")
 
-    print("\n[4/5] Building incident simulations...")
+    print("\n[4/5] Building incident simulations (exhaustive scenario space)...")
     logger.start_phase("incident_simulation")
-    _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {})
-    build_incidents(out_dir / "graph.json", out_dir / "incidents.json")
+    _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {"all_scenarios": all_scenarios})
+    build_incidents(out_dir / "graph.json", out_dir / "incidents.json", all_scenarios=all_scenarios)
     
     with open(out_dir / "incidents.json", 'r') as f:
         incidents_data = json.load(f)
@@ -232,13 +248,32 @@ def main(
     print(f"  - incidents.json")
     print(f"  - packets/")
     print(f"  - audit.jsonl")
+
+    # Copy key outputs to engine/out for app compatibility (app and sync read engine/out/graph.json, incidents.json, etc.)
+    parent_out = out_dir.parent
+    if parent_out != out_dir:
+        for name in ["graph.json", "evidence.json", "incidents.json"]:
+            src = out_dir / name
+            if src.exists():
+                shutil.copy2(src, parent_out / name)
+        packets_src = out_dir / "packets"
+        packets_dst = parent_out / "packets"
+        if packets_src.exists():
+            if packets_dst.exists():
+                shutil.rmtree(packets_dst)
+            shutil.copytree(packets_src, packets_dst)
+        _agent_log(run_id, "H5", "engine/run.py:copy_out", "Copied outputs to engine/out for app", {
+            "parentOut": str(parent_out),
+        })
+
     _agent_log(run_id, "H5", "engine/run.py:done", "Pipeline complete", {
         "outDir": str(out_dir),
     })
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description='Run Munin engine pipeline')
+    import time
+    parser = argparse.ArgumentParser(description='Run Munin engine pipeline. By default exhaustively enumerates the scenario space (single-origin, multi-fault, correlated).')
     parser.add_argument('--data-dir', type=Path, help='Input data directory')
     parser.add_argument('--out-dir', type=Path, help='Output directory')
     parser.add_argument('--playbooks-dir', type=Path, help='Playbooks directory')
@@ -246,17 +281,33 @@ if __name__ == "__main__":
     parser.add_argument('--seed', type=int, default=42, help='Random seed (default: 42)')
     parser.add_argument('--resume-from', type=str, help='Resume from checkpoint stage (ingest, graph, incidents, packets)')
     parser.add_argument('--check', action='store_true', help='Run sanity checks on outputs')
+    parser.add_argument('--quick', action='store_true', help='Run only 3 fixed incidents (fast demo); default is all conceivable + chaos scenarios')
+    parser.add_argument('--continuous', action='store_true', help='Re-run pipeline at all times (every --interval seconds)')
+    parser.add_argument('--interval', type=int, default=3600, help='Seconds between runs when --continuous (default: 3600)')
     args = parser.parse_args()
     
     if args.check:
         from engine.tools.sanity_check_outputs import sanity_check_all
         sanity_check_all(args.out_dir or Path("engine/out"))
+    elif args.continuous:
+        while True:
+            main(
+                data_dir=args.data_dir,
+                out_dir=args.out_dir,
+                playbooks_dir=args.playbooks_dir,
+                config_path=args.config,
+                seed=args.seed,
+                all_scenarios=not args.quick,
+            )
+            print(f"\nContinuous mode: sleeping {args.interval}s until next run...")
+            time.sleep(args.interval)
     else:
         main(
             data_dir=args.data_dir,
             out_dir=args.out_dir,
             playbooks_dir=args.playbooks_dir,
             config_path=args.config,
-            seed=args.seed
+            seed=args.seed,
+            all_scenarios=not args.quick,
         )
 

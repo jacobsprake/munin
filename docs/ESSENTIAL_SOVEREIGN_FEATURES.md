@@ -27,7 +27,7 @@
 - No architectural changes
 
 **What it adds:**
-- Systematic scenario library (every conceivable failure mode):
+- Systematic scenario library (exhaustive failure-mode coverage):
   - Cyber-attacks (ransomware, DDoS, supply chain)
   - Natural disasters (floods, storms, earthquakes, solar flares)
   - Infrastructure failures (substation loss, dam breach, pipeline rupture)
@@ -40,7 +40,7 @@
   - Critical path identification (which nodes must be restored first)
 
 **Why it's essential:**
-- **"Plan for every conceivable scenario"** - This is the systematic way to do it
+- **Exhaustive pre-simulation of the scenario space** — systematic coverage of single-origin, multi-fault, and correlated failure modes
 - Moves from reactive (incident happens) to proactive (test resilience continuously)
 - Uses existing simulation infrastructure, just more scenarios
 - No fluff - this is what governments need to validate readiness
@@ -141,7 +141,7 @@
 - Both directly extend core simulation capabilities
 - Both use existing infrastructure (shadow mode, digital twin, cascade prediction)
 - Both provide measurable value without adding architectural complexity
-- Both align with Munin's mission: "plan for every conceivable scenario" + "measurable resilience"
+- Both align with Munin's mission: exhaustive scenario-space coverage + measurable resilience
 
 **Security Compliance:**
 - ✅ Both maintain air-gapped deployment
@@ -156,7 +156,7 @@
 1. **Chaos Simulator** (High Priority)
    - Extends existing simulation engine
    - Provides systematic scenario coverage
-   - Enables "plan for every conceivable scenario"
+   - Enables exhaustive coverage of the scenario space
 
 2. **Readiness Benchmarks** (High Priority)
    - Aggregates existing simulation data

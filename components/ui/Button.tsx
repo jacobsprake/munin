@@ -5,7 +5,7 @@ import { Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps {
-  children: ReactNode;
+  children?: ReactNode;
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'authorize';
   onClick?: () => void;
   disabled?: boolean;

@@ -1,0 +1,39 @@
+# Deploy workflow (roadmap item 36) – staging/deploy job
+# Trigger manually or on push to main after tests pass.
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:ci
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+    # deploy step: add your provider (e.g. Docker push, Vercel, k8s)
+    # - name: Deploy to staging
+    #   run: ...
+    #   env:
+    #     DEPLOY_SECRET: ${{ secrets.DEPLOY_SECRET }}

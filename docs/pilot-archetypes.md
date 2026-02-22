@@ -226,6 +226,13 @@ timestamp,node_id,data_type,value,status_code
 - [ ] Generate value reports
 - [ ] Plan transition to active mode
 
+## Future use cases (long-term)
+
+Brief notes on potential long-distance applications:
+
+- **Mars / space:** Life-critical cascades, small crew, no redundancy; CMI-style prioritisation; independence from Earth (air-gapped); pre-validated handshakes and Logic-Lock to prevent physics-violating commands. Munin’s orchestration layer fits closed-loop, multi-system habitats where coordination latency cannot rely on Earth.
+- **Charter cities (e.g. Praxis):** Greenfield deployment, sovereignty by design, regulatory flexibility, and proof-of-concept for nation-states. Early adopters can demonstrate faster coordination and then use that evidence for traditional government sales.
+
 ## Next Steps
 
 See [Pilot-in-a-Box Guide](./pilot-in-a-box.md) for complete deployment package.

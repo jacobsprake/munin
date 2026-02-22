@@ -175,12 +175,12 @@ export async function signDecision(
     throw new Error(`Signer ${signerId} not in policy signers list`);
   }
   
-  // Verify key is active
-  const user = db.prepare(`
-    SELECT key_status FROM users WHERE user_id = ? OR key_id = ?
-  `).get(signerId, keyId) as { key_status: string } | undefined;
+  // Verify key is active and get public key
+  const userRow = db.prepare(`
+    SELECT key_status, public_key FROM users WHERE user_id = ? OR key_id = ?
+  `).get(signerId, keyId) as { key_status: string; public_key: string } | undefined;
   
-  if (!user || user.key_status !== 'ACTIVE') {
+  if (!userRow || userRow.key_status !== 'ACTIVE') {
     throw new Error(`Key ${keyId} is not active for signer ${signerId}`);
   }
   
@@ -188,16 +188,7 @@ export async function signDecision(
   const decisionMessage = createDecisionMessage(decision, actionType, scope);
   
   // Verify Ed25519 signature
-  const user = db.prepare(`
-    SELECT public_key FROM users WHERE user_id = ? OR key_id = ?
-  `).get(signerId, keyId) as { public_key: string } | undefined;
-  
-  if (!user) {
-    throw new Error(`User or key not found: ${signerId}/${keyId}`);
-  }
-  
-  // Verify signature (async, but we'll use sync version for compatibility)
-  const isValid = await verifySignature(decisionMessage, signature, user.public_key);
+  const isValid = await verifySignature(decisionMessage, signature, userRow.public_key);
   if (!isValid) {
     throw new Error('Invalid signature');
   }

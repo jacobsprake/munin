@@ -1,0 +1,107 @@
+id: fukushima_venting_evacuation
+title: Fukushima Venting and Evacuation Coordination Protocol
+version: 1.0
+type: nuclear_emergency
+
+description: |
+  Decision-support playbook for nuclear emergency venting and evacuation,
+  informed by the 2011 Fukushima Daiichi baseline. Pre-simulated cascade
+  scenarios and pre-validated TEPCO–government–prefectural sign-off would
+  have allowed venting and evacuation orders in minutes instead of 7+ hours.
+
+triggers:
+  - condition: reactor_containment_pressure > venting_threshold
+    threshold: 0.6
+    unit: MPa
+    node_id: reactor1_pressure
+    operator: ">"
+  - condition: reactor_core_temperature > critical
+    threshold: 900
+    unit: "°C"
+    node_id: reactor1_core_temp
+    operator: ">"
+  - condition: reactor_water_level_below_fuel_top
+    threshold: 4.0
+    unit: m
+    node_id: reactor1_water_level
+    operator: "<"
+
+actions:
+  - step: 1
+    action: assess_containment_pressure_and_core_status
+    target_nodes:
+      - reactor1_pressure
+      - reactor1_core_temp
+      - reactor1_water_level
+    parameters:
+      check_interval: 5m
+      venting_threshold_MPa: 0.6
+    task_owner: TEPCO Plant Superintendent
+    auto_assign: true
+
+  - step: 2
+    action: execute_pre_validated_venting_authorisation
+    parameters:
+      coordination_layer: [TEPCO, NISA, Prime_Minister_Office, Prefecture]
+      pre_signed_venting_protocol: true
+      single_channel_approval: true
+    task_owner: NISA / Government
+    approval_required: true
+    auto_assign: true
+
+  - step: 3
+    action: issue_evacuation_orders_coordinated
+    parameters:
+      radii: [3km, 10km, 20km]
+      central_and_local_simultaneous: true
+    task_owner: Cabinet Office / Prefecture
+    auto_assign: true
+
+  - step: 4
+    action: continuous_monitoring_and_injection
+    parameters:
+      seawater_injection: pre_authorised_when_cooling_lost
+      check_interval: 2m
+    task_owner: TEPCO Operations
+    auto_assign: true
+
+regulatory_compliance:
+  - act: "Japanese nuclear emergency regulations"
+    requirement: "Coordination between operator, NISA, and government"
+  - act: "INES reporting"
+    requirement: "Event classification and public communication"
+
+approval_required:
+  - role: TEPCO Plant Superintendent
+    authority: plant_operations
+    minimum_sign_off: true
+  - role: NISA / Government
+    authority: venting_and_evacuation
+    minimum_sign_off: true
+  - role: Prefecture
+    authority: evacuation_orders
+    minimum_sign_off: true
+
+expected_outcomes:
+  - Venting authorised and executed within 1–2 hours of threshold breach (not 7+ hours)
+  - Evacuation orders coordinated central/local simultaneously
+  - Reduced core damage and hydrogen explosion risk via earlier venting
+
+metrics:
+  - metric: time_to_venting_authorisation
+    target: < 60 minutes
+    baseline: "7+ hours (Fukushima: need ~Mar 11 21:00, approval/venting Mar 12 05:30–14:30)"
+  - metric: evacuation_coordination_latency
+    target: < 30 minutes
+    baseline: "Hours; improvised and uncoordinated (official reports)"
+
+risks:
+  - risk: Premature or incorrect venting
+    mitigation: Pre-validated scenarios and physics checks (Logic-Lock); humans still authorise
+
+incident_replay:
+  - event: Fukushima Daiichi
+    date: 2011-03-11
+    description: Station blackout, delayed venting, uncoordinated evacuation
+    replay_window: 2011-03-11 to 2011-03-13
+    baseline_data: engine/fixtures/disaster_baselines/fukushima_2011_baseline.json
