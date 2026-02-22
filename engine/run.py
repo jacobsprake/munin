@@ -1,11 +1,13 @@
 """Main pipeline runner: ingest -> infer -> health -> incidents -> packets."""
-import sys
+import json
 import random
 import shutil
-import numpy as np
-from pathlib import Path
-from datetime import datetime
+import sys
 from dataclasses import asdict
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
 
 # Add engine directory to path
 script_dir = Path(__file__).parent
@@ -175,8 +177,7 @@ def main(
     print("\n[3/5] Assessing sensor health and building evidence...")
     logger.start_phase("sensor_health")
     import pandas as pd
-    import json
-    _agent_log(run_id, "H1", "engine/run.py:pandas_import", "Imported pandas/json for health stage", {})
+    _agent_log(run_id, "H1", "engine/run.py:pandas_import", "Imported pandas for health stage", {})
     df_normalized = pd.read_csv(out_dir / "normalized_timeseries.csv", index_col=0, parse_dates=True)
     _agent_log(run_id, "H4", "engine/run.py:health:input", "Loaded normalized_timeseries.csv", {
         "rows": len(df_normalized),

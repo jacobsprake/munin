@@ -87,7 +87,7 @@ Run the full Carlisle flood demo start-to-finish so reviewers can see Munin in 5
 ./scripts/munin demo carlisle-2011
 ```
 
-Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt;4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation.
+Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt; 4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation.
 
 **CLI reference:**
 - `munin demo carlisle` – full pipeline demo

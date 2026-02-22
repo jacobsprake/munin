@@ -84,6 +84,14 @@ export interface Incident {
   };
 }
 
+/** Single approval/signature entry for a handshake packet (one per required role). */
+export interface HandshakeApproval {
+  role: string;
+  signerId?: string;
+  signedTs?: string;
+  signatureHash?: string;
+}
+
 export interface HandshakePacket {
   id: string;
   version: number;
@@ -103,12 +111,8 @@ export interface HandshakePacket {
     overall: number;
     notes: string[];
   };
-  approvals: Array<{
-    role: string;
-    signerId?: string;
-    signedTs?: string;
-    signatureHash?: string;
-  }>;
+  /** Approval/signature entry per required role. */
+  approvals: HandshakeApproval[];
   provenance: {
     modelVersion: string;
     configHash: string;

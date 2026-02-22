@@ -32,13 +32,7 @@ def compute_correlation_with_lag(
     max_lag_samples = min(max_lag_seconds // 60, len(s1) // 4)
     
     for lag in range(-max_lag_samples, max_lag_samples + 1):
-        if lag == 0:
-            s2_shifted = s2
-        elif lag > 0:
-            s2_shifted = s2.shift(lag)
-        else:
-            s2_shifted = s2.shift(lag)
-        
+        s2_shifted = s2 if lag == 0 else s2.shift(lag)
         # Align again after shift
         aligned_idx = s1.index.intersection(s2_shifted.index)
         if len(aligned_idx) < 10:

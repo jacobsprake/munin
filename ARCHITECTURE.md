@@ -2,7 +2,7 @@
 
 **Functional architecture for Sovereign Infrastructure Orchestration**
 
-This document explains the technical logic, mathematical foundations, and design decisions behind Munin's architecture. The core algorithmic foundations are designed to scale to production-grade sovereign infrastructure systems.
+This document is the single source of truth for technical design: protocol translation, dependency inference, Byzantine fault tolerance, and the end-to-end data pipeline. It explains the technical logic, mathematical foundations, and design decisions behind Munin's architecture. The core algorithmic foundations are designed to scale to production-grade sovereign infrastructure systems.
 
 ---
 

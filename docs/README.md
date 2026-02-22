@@ -1,6 +1,6 @@
-# Documentation index
+# Munin documentation index
 
-Grouped index of documentation in this repository.
+This index groups all project documentation for quick reference. For the main project README and quick start, see the [repository root](../README.md).
 
 ---
 
