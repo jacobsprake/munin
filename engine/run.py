@@ -253,7 +253,7 @@ def main(
     # Copy key outputs to engine/out for app compatibility (app and sync read engine/out/graph.json, incidents.json, etc.)
     parent_out = out_dir.parent
     if parent_out != out_dir:
-        for name in ["graph.json", "evidence.json", "incidents.json"]:
+        for name in ["normalized_timeseries.csv", "graph.json", "evidence.json", "incidents.json"]:
             src = out_dir / name
             if src.exists():
                 shutil.copy2(src, parent_out / name)

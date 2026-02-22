@@ -87,7 +87,7 @@ Run the full Carlisle flood demo start-to-finish so reviewers can see Munin in 5
 ./scripts/munin demo carlisle-2011
 ```
 
-Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt; 4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation.
+Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt; 4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation. If you see a connection-refused message for `localhost:3000`, that’s the optional decision API; the demo still completes—start the app with `npm run dev` if you want the full flow.
 
 **CLI reference:**
 - `munin demo carlisle` – full pipeline demo
@@ -1892,12 +1892,14 @@ Edit YAML files in `playbooks/` directory. Playbooks are referenced by incident 
 ### Running Tests
 
 ```bash
-# Python tests
-cd engine
-pytest
+# Python tests (run from repo root so engine package imports resolve)
+python3 -m venv venv && source venv/bin/activate   # if not already in a venv
+pip install -r engine/requirements.txt
+PYTHONPATH=. python -m pytest engine/tests/ -v
 
 # TypeScript tests
-pnpm test
+npm test
+# or: pnpm test
 ```
 
 ---

@@ -53,9 +53,11 @@ def approve_packet(
     Returns:
         Updated packet dictionary
     """
+    if "multiSig" not in packet:
+        raise KeyError("Packet missing required field 'multiSig'")
     if timestamp is None:
         timestamp = datetime.now()
-    
+
     # Find the approval entry for this role
     approval_found = False
     for approval in packet.get('approvals', []):

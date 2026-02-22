@@ -27,16 +27,21 @@ This guide is for evaluators (e.g. investment or grant reviewers) who want to se
 
 ## 5-minute path (command line)
 
+**One-command Carlisle demo (from repo root):** `./demo.sh` — runs the full pipeline and prints Traditional vs Munin comparison. Use a venv and `pip install -r engine/requirements.txt` first.
+
+**Step-by-step from repo root:**
+
 ```bash
 # 1. Shadow Link detection (the "Secret")
-cd engine && python3 detect_shadow_link.py
-# (Requires normalized data: run `npm run engine` or `python3 carlisle_demo.py` first if needed.)
+python3 engine/detect_shadow_link.py
+# (If normalized data is missing, the script runs the pipeline first.)
 
-# 2. Run Carlisle flood demo (real EA data story)
-python3 carlisle_demo.py
+# 2. Run Carlisle flood demo (from repo root)
+./demo.sh
+# Or from engine/: python3 cli.py demo carlisle-2011
 
 # 3. Run disaster demos (Katrina, Fukushima, UK 2007)
-python3 disaster_demos.py
+cd engine && python3 disaster_demos.py
 ```
 
 Then start the app (`npm run dev`) and open `/`, `/demo-path`, `/demos`, `/carlisle-dashboard`, `/handshakes`.
