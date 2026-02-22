@@ -1,6 +1,4 @@
-# The Munin Manifesto: From Atoms to Authority
-
-**"The state is not a software company. It is a physics company. Its job is to prevent cascading failures that propagate at the speed of light through infrastructure that was never designed to be visible."**
+# The Munin Manifesto
 
 Munin is **decision support** for infrastructure operators. Humans always authorise; Munin makes their decisions faster by doing the prep work in advance. Operators review pre-simulated playbooks and authorise via Byzantine multi-sig—we turn 2–6 hours of ad-hoc coordination into 20–30 minutes of reviewing pre-packaged options. *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
@@ -8,9 +6,9 @@ Munin is **decision support** for infrastructure operators. Humans always author
 
 ## The Thesis
 
-**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging the gap between atoms (SCADA) and authority (Law).**
+**Munin is a sovereign orchestration layer for zero-latency crisis response.** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the required regulatory and legal basis.
 
-Modern infrastructure failure is not a data problem—we have enough sensors. It is an **Authority** problem. We have built a bureaucratic culture of liability paralysis that makes it illegal for officials to act at the speed of cascading failures.
+Modern infrastructure failure is not primarily a data problem—we have enough sensors. The bottleneck is the time required for legal authorisation and cross-agency coordination.
 
 ### The Cascade Timeline
 
@@ -29,11 +27,11 @@ The state has two conflicting mandates:
 1. **Act at machine speed** to prevent cascading failures
 2. **Maintain legal accountability** for every action taken
 
-Traditional systems force a choice: **Speed or Safety**. Munin eliminates this false dichotomy by pre-validating playbooks through simulation and generating cryptographic execution packets that carry legal authority.
+Traditional systems force a choice: **Speed or Safety**. Munin addresses this by pre-validating playbooks through simulation and generating cryptographic execution packets that carry the required regulatory basis.
 
 ### Exhaustive pre-simulation of the scenario space
 
-**In peacetime:** Munin maintains exhaustive pre-simulation of the scenario space: single-origin failures by asset type, multi-fault (cross-sector) stress scenarios, and correlated failure modes (e.g. shadow-link pairs). The pipeline runs continuously to keep the scenario library and pre-approved playbooks current. For each scenario it simulates outcomes, validates responses, pre-approves legal authority, maps statutory compliance, and generates handshake packets. That work cannot be done during a crisis—it must be done in advance.
+**In peacetime:** Munin maintains exhaustive pre-simulation of the scenario space: single-origin failures by asset type, multi-fault (cross-sector) stress scenarios, and correlated failure modes (e.g. shadow-link pairs). The pipeline runs continuously to keep the scenario library and pre-approved playbooks current. For each scenario it simulates outcomes, validates responses, maps statutory compliance and regulatory basis, and generates handshake packets. That work cannot be done during a crisis—it must be done in advance.
 
 **In crisis:** Shadow Link detection matches the live situation to the nearest pre-simulated scenario. Munin presents pre-validated playbooks with **outcome confidence** (e.g. “Option A: 85% confidence cascade contained to Zone 3”). Operators review and choose; multi-ministry Byzantine authorisation follows; then execution. Humans still decide—they just decide in 20–30 minutes instead of 2–6 hours.
 
@@ -43,9 +41,7 @@ As the official report on Hurricane Katrina put it: *“Had the simulation taken
 
 ---
 
-## The "Secret": Shadow Links
-
-**The discovery:**
+## Shadow Links: Cross-Sector Dependency Discovery
 
 ### Cross-Sector Dependencies Are Invisible
 
@@ -82,7 +78,7 @@ For node A in sector S1, node B in sector S2:
 
 ### Why This Matters
 
-**The "Blind Spot":**
+**The gap:**
 - Traditional systems: Monitor only within-sector
 - Munin: Monitors cross-sector dependencies via time-series correlation
 - **Result**: Munin can predict cascades that existing systems cannot see
@@ -157,7 +153,7 @@ Traditional crisis response requires:
 **Before any crisis occurs:**
 1. Munin simulates cascading failures for every possible incident type
 2. Pre-validates response playbooks through simulation
-3. Generates "Authoritative Handshake" packets that carry legal authority
+3. Generates handshake packets that carry the required regulatory basis
 4. Stores packets ready for instant authorization
 
 **When a real incident occurs:**
@@ -170,14 +166,14 @@ Traditional crisis response requires:
 
 Each handshake packet contains:
 - **Evidence Bundle**: Statistical proof of dependencies (correlation, lag, stability)
-- **Regulatory Basis**: Legal authority (e.g., "National Emergency Act Section 12")
+- **Regulatory Basis**: Statutory reference (e.g., "National Emergency Act Section 12")
 - **Technical Verification**: Success probability from simulation, physics constraints satisfied
 - **Byzantine Multi-Signature**: M-of-N quorum requirements
 - **Post-Quantum Signature**: DILITHIUM-3 cryptographic proof
 - **TEE Attestation**: Hardware-rooted signature from trusted execution environment
 - **Merkle Receipt**: Immutable audit trail
 
-**This packet is not a "request for permission." It is a pre-validated execution packet that carries legal authority.**
+**This packet is a pre-validated execution packet that carries the required regulatory basis and evidence bundle.**
 
 ---
 
@@ -220,7 +216,7 @@ The state requires:
 
 ---
 
-## The Architecture: Atoms to Bits to Authority
+## System architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -272,48 +268,7 @@ The state requires:
 
 ---
 
-## The "Zero to One" Insight
-
-**What important truth do very few people agree with you on?**
-
-**Our answer:**
-
-**"The state's infrastructure is not a collection of independent systems. It is a single, interconnected physics system that fails as a unit. The dependencies that cause cascading failures are not documented because they exist in the physics, not in the databases. The only way to prevent cascading failures is to infer these dependencies from time-series correlation and pre-validate response playbooks through simulation."**
-
-**Very few people agree with us because:**
-- Traditional infrastructure operators think in sectors (water, power, telecom)
-- Traditional software companies think in databases and APIs
-- Traditional security companies think in firewalls and access control
-
-**We think in physics and authority. This is the "Zero to One" insight.**
-
----
-
-## The Sovereign Research Project
-
-Munin is not a startup. It is a **Sovereign Research Project** that will become the cryptographic skeleton of the state.
-
-**The goal is not to build a "product." The goal is to architect the system that prevents national-scale cascading failures.**
-
-This requires:
-- **Architectural thinking** (not just coding)
-- **Physics understanding** (not just databases)
-- **Authority mapping** (not just APIs)
-- **10-year foresight** (not just today's tech)
-
-**This is why Munin is a research project, not a software company.**
-
----
-
 ## Conclusion
 
-**Munin solves the Liability Paralysis of the state by bridging the gap between atoms (SCADA) and authority (Law).**
-
-The state has two conflicting mandates:
-1. Act at machine speed to prevent cascading failures
-2. Maintain legal accountability for every action taken
-
-**Munin eliminates this false dichotomy by pre-validating playbooks through simulation and generating cryptographic execution packets that carry legal authority.**
-
-**This is the architecture of the future state.**
+The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks through simulation and generating cryptographic execution packets that carry the required regulatory basis. The state must both act at machine speed to prevent cascading failures and maintain legal accountability for every action; Munin supports both by doing the pre-validation and regulatory mapping in advance.
 

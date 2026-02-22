@@ -191,7 +191,7 @@ Munin App → TEE Enclave → Sign Packet → Attestation → Return to App
 - [ ] Create physical verification pipeline:
   - Digital SCADA signal → Physical sensor → Compare → Flag discrepancies
 - [ ] Test with simulated sensors
-- [ ] Document "bits vs atoms" verification
+- [ ] Document digital vs physical verification
 
 **Files to Integrate**:
 - `engine/physics_ingest.py` (exists)
@@ -419,7 +419,6 @@ python3 carlisle_demo.py
 ## 📚 Related Documentation
 
 - `docs/NEXT_STEPS.md` - Detailed next steps for Carlisle demo
-- `NEXT_STEPS_COMPLETE.md` - Completed audit log implementation
 - `docs/AUDIT_LOG_INTEGRITY.md` - Audit log system documentation
 - `ARCHITECTURE.md` - System architecture
 - `CONTRIBUTING.md` - Development philosophy

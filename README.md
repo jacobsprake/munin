@@ -1,6 +1,6 @@
 # Munin: Sovereign Infrastructure Orchestration Platform
 
-**The First Sovereign Orchestration Layer for Zero-Latency Crisis Response**
+**Sovereign orchestration for zero-latency crisis response**
 
 Munin is **decision support** for infrastructure operators. Humans always authorise; Munin makes their decisions faster by doing the prep work in advance. Operators review pre-simulated playbooks and authorise via Byzantine multi-sig—we turn 2–6 hours of ad-hoc coordination into 20–30 minutes of reviewing pre-packaged options. *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
@@ -8,9 +8,7 @@ Munin is **decision support** for infrastructure operators. Humans always author
 
 ## The Thesis
 
-**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging the gap between atoms (SCADA) and authority (Law).**
-
-Modern infrastructure failure is not a data problem—we have enough sensors. It is an **Authority** problem. We have built a bureaucratic culture of liability paralysis that makes it illegal for officials to act at the speed of cascading failures.
+**Munin is a sovereign orchestration layer for zero-latency crisis response.** The main bottleneck in crisis response is not data but the time required to obtain legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the necessary regulatory and legal basis.
 
 **The Cascade Timeline:**
 - **0 seconds**: Power substation fails
@@ -21,13 +19,11 @@ Modern infrastructure failure is not a data problem—we have enough sensors. It
 - **2-6 hours**: Human operators coordinate across agencies, verify legal authorization, execute response
 - **Result**: Cascade has already consumed entire sectors before response can be authorised
 
-**Munin eliminates this false dichotomy by maintaining exhaustive pre-simulation of the scenario space—single-origin failures, multi-fault and correlated (shadow-link) stress scenarios—with a continuously updated library of pre-approved playbooks and cryptographic execution packets that carry legal authority.**
+**Munin maintains exhaustive pre-simulation of the scenario space—single-origin failures, multi-fault and correlated (shadow-link) stress scenarios—with a continuously updated library of pre-approved playbooks and cryptographic execution packets that carry the required regulatory basis.**
 
 ---
 
-## The "Secret": Shadow Links
-
-**The discovery:**
+## Shadow Links: Cross-Sector Dependency Discovery
 
 Infrastructure dependencies are not documented. A water pump failure cascades to power grid instability, but this relationship is not in any database—it exists only in the physics of the system.
 
@@ -182,7 +178,7 @@ sequenceDiagram
     TEE->>Handshake: Hardware-Rooted Signature
     Handshake->>Physical: Execute Command
     
-    Note over Physical: Command Executed<br/>with Legal Authority
+    Note over Physical: Command Executed<br/>(authorised)
 ```
 
 **Latency Comparison:**
@@ -285,7 +281,7 @@ This document provides an exhaustive technical overview of every component, feat
 Munin is a sovereign infrastructure orchestration platform designed for national-scale critical infrastructure management. It provides:
 
 - **Automated Dependency Discovery**: Infers cross-sector infrastructure dependencies from time-series data without manual configuration
-- **Pre-Validated Crisis Response**: Generates authorized execution packets (handshakes) with cryptographic signatures that pre-validate legal authority
+- **Pre-Validated Crisis Response**: Generates authorised execution packets (handshakes) with cryptographic signatures and regulatory basis
 - **Byzantine Fault Tolerance**: M-of-N multi-signature authorization prevents single-point-of-failure sabotage
 - **Real-Time Cascade Prediction**: Simulates cascading failures before they occur, enabling proactive response
 - **Hardware-Rooted Security**: Trusted Execution Environments (TEEs) and post-quantum cryptography ensure command integrity
@@ -309,7 +305,7 @@ Munin is a sovereign infrastructure orchestration platform designed for national
 
 ### The Coordination Latency Problem
 
-Modern infrastructure failure is not a data problem—we have enough sensors. It is an **Authority** problem. We have built a bureaucratic culture of liability paralysis that makes it illegal for officials to act at the speed of cascading failures.
+Modern infrastructure failure is not primarily a data problem—we have enough sensors. The bottleneck is the time required for legal authorisation and cross-agency coordination; liability and process make it difficult for officials to act at the speed of cascading failures.
 
 **The Cascade Timeline:**
 - **0 seconds**: Power substation fails
@@ -671,7 +667,7 @@ timestamp,node_id,value,quality,source_protocol
 
 ### 5. Authoritative Handshake Generation
 
-**What It Does**: Generates cryptographic execution packets with pre-validated legal authority
+**What It Does**: Generates cryptographic execution packets with pre-validated regulatory basis
 
 **Packet Structure**:
 
@@ -688,7 +684,7 @@ timestamp,node_id,value,quality,source_protocol
   };
   situationSummary: string;       // Human-readable description
   proposedAction: string;         // Action to be taken
-  regulatoryBasis: string;        // Legal authority
+  regulatoryBasis: string;        // Regulatory/statutory basis
   playbookId: string;             // Reference to playbook
   evidenceRefs: string[];         // Evidence window IDs
   uncertainty: {
@@ -1950,7 +1946,7 @@ npm test
 
 ### Core Documentation
 
-- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: the "Secret" (Shadow Links), exhaustive scenario space, sovereignty paradox
+- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: Shadow Links, scenario space, tech stack
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and algorithms
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development principles
 - **[TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md)**: Required engineering talent for production hardening

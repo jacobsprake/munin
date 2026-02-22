@@ -1,6 +1,6 @@
 # Foundational Survival: The Four Pillars of Sovereign Prime
 
-This document describes the four "Foundational Survival" requirements that transform Munin from a smart grid tool into an **unkillable** national asset—the kind of system a Prime Minister or Secretary of Defense views as mandatory infrastructure.
+This document describes the four "Foundational Survival" requirements that support high-assurance national infrastructure—the kind of system a Prime Minister or Secretary of Defense may require for critical operations.
 
 ---
 
@@ -71,7 +71,7 @@ It allows the state to act as a **High-Agency Organism.** It moves the nation fr
 
 ---
 
-## 4. Return to Atoms: RF & Acoustic Verification
+## 4. Physical Verification: RF & Acoustic
 
 ### The Threat
 Digital data can be faked (Deepfakes for SCADA). A compromised sensor could report a pump is at 50% RPM when it's actually at 100% RPM, causing system overload or failure.
@@ -79,7 +79,7 @@ Digital data can be faked (Deepfakes for SCADA). A compromised sensor could repo
 ### The Solution
 **Out-of-Band Physical Fingerprinting.** Use Munin to listen to the **Electrical Noise (RF)** or **Acoustics** of a pump or substation.
 
-**The Narrative**: *"The digital signal says the pump is at 50% RPM, but Munin's acoustic sensor detects a 60Hz vibration, meaning the sensor has been hijacked. We verify the bits against the atoms."*
+**The idea**: Digital SCADA readings are compared with physical signals (RF, acoustic). If the digital signal says the pump is at 50% RPM but the acoustic sensor detects a 60Hz signature consistent with 100% RPM, sensor tampering can be detected.
 
 ### Implementation
 - **Location**: `engine/physical_verification.py`
@@ -111,19 +111,17 @@ All four Foundational Survival features integrate seamlessly with Munin's existi
 **Why Munin provides Foundational Survival:**
 
 1. **The Registry**: You own the map of how the country *actually* works (The Graph)
-2. **The Law**: You own the pre-validated legal authority (The Playbooks)
+2. **The playbooks**: You own the pre-validated regulatory basis (The Playbooks)
 3. **The Physics**: You own the hardware-rooted verification (The Handshake + Logic-Lock)
 4. **The Coordination**: You own the multi-agency consensus mechanism (Byzantine Multi-Sig)
-5. **The Truth**: You own the physical verification layer (Return to Atoms)
+5. **Physical verification**: You own the layer that checks digital readings against physical signals
 
 **You are solving the "Coordination of the State" problem.** No competitor can replicate this because it requires:
 - Deep integration with TEE hardware
 - Multi-agency cryptographic consensus
 - Real-time physics validation
 - Physical signal verification
-- Pre-validated legal authority
-
-This is **Civilization Architecture**.
+- Pre-validated regulatory basis
 
 ---
 

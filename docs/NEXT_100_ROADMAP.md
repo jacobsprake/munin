@@ -111,7 +111,7 @@
 
 ### Physical verification
 - [ ] **68. RF/acoustic integration** – Wire existing components; engine/physics_ingest, components.
-- [ ] **69. Bits vs atoms pipeline** – Digital vs physical comparison; engine.
+- [ ] **69. Digital vs physical verification pipeline** – Engine comparison of SCADA vs RF/acoustic.
 - [ ] **70. Document verification flow** – In docs; docs.
 
 ### Integrations

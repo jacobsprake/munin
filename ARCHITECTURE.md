@@ -518,7 +518,7 @@ Total: 20-30 minutes
 
 ---
 
-## 5. The "Secret" Verified: Cross-Sector Cascade Detection
+## 5. Cross-Sector Cascade Detection
 
 ### The Discovery
 During prototype development, the dependency graph inference revealed a critical insight:

@@ -100,7 +100,7 @@ npm run dev
    - Evidence references
    - Uncertainty scores
    - Approval requirements
-5. **Say**: *"This packet carries the authority framework. It's cryptographically signed and links to evidence. Operators review outcome confidence and proposed action, then authorise—no autonomous execution."*
+5. **Say**: *"This packet carries the regulatory framework and evidence bundle. It's cryptographically signed. Operators review outcome confidence and proposed action, then authorise—no autonomous execution."*
 
 #### Scene 4: Decision Workflow (1.5 minutes)
 1. Navigate to `/decisions`
@@ -187,13 +187,13 @@ cd ..
 ## 🎯 Key Talking Points
 
 ### The Problem
-- **Liability Paralysis**: Officials have data but lack pre-validated authority
-- **Cascade Speed**: Failures cascade faster than human coordination
+- **Coordination bottleneck**: Officials have data but lack pre-validated regulatory basis and cross-agency sign-off
+- **Cascade speed**: Failures cascade faster than human coordination
 - **Shadow Links**: Dependencies exist in physics but not in documentation
 
 ### The Solution
-- **Pre-Validation**: Simulate cascades before they happen
-- **Cryptographic Authority**: Packets carry legal authority
+- **Pre-validation**: Simulate cascades before they happen
+- **Regulatory basis**: Packets carry the required statutory reference and evidence
 - **Multi-Signature**: Prevents single points of failure
 - **Physics Verification**: Verify digital signals against physical reality
 

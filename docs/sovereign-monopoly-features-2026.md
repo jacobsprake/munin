@@ -163,7 +163,7 @@ All four features integrate seamlessly with existing Munin components:
 
 ## Summary
 
-> "In 2026, material power is secondary to **Algorithmic Power.** Nations that outsource their infrastructure's 'brain' to foreign clouds are technically no longer sovereign. Munin is the cure for this **Conditional Autonomy.** We provide the air-gapped, post-quantum, and hardware-rooted orchestration layer that turns a collection of pipes and wires into a high-agency, resilient organism. We bridge the siloed atoms of the state with the speed of agentic AI, ensuring that even if the internet goes dark, the nation stays on. Munin is not a utility; it is the **Cryptographic Skeleton of the Modern State.**"
+Munin provides an air-gapped, post-quantum, and hardware-rooted orchestration layer for critical infrastructure. It supports cross-sector coordination and resilience so that core operations can continue even when external connectivity is degraded.
 
 ---
 

@@ -9,7 +9,7 @@ This index groups all project documentation for quick reference. For the main pr
 | Document | Description |
 |----------|-------------|
 | [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | **For evaluators:** 5-minute path (app + CLI), one-sentence pitch, key docs. |
-| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: Shadow Links, sovereignty paradox, exhaustive scenario space, tech stack. |
+| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: Shadow Links, scenario space, tech stack. |
 | [EVIDENCE_COORDINATION_BOTTLENECK.md](EVIDENCE_COORDINATION_BOTTLENECK.md) | Real-world disasters where coordination/authorisation was the bottleneck (Katrina, Fukushima, 9/11, UK floods). |
 | [SCENARIOS_EVIDENCE_LIST.md](SCENARIOS_EVIDENCE_LIST.md) | Tier 1/2/3 list of scenarios where Munin’s thesis applies; criteria for when it does and doesn’t. |
 | [STORM_DESMOND_BASELINE.md](STORM_DESMOND_BASELINE.md) | Baseline analysis for 2–6 hour traditional authorisation; primary demo is Storm Desmond (Carlisle). |

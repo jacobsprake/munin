@@ -115,7 +115,7 @@ The **Sovereign Health** page (`app/sovereign/page.tsx`) displays the integrated
 3. **Cross-Sector Clearinghouse**: Shows active locks, total resources, cross-sector coordination
 
 ### The Score
-The **Coordination Score** measures cross-sector coordination effectiveness. Once you own the "Interface of Authority" between sectors, no one can compete because no one else has the "Trust" or the "Graph."
+The **Coordination Score** measures cross-sector coordination effectiveness. A working cross-sector coordination layer combined with the dependency graph and multi-party trust model is difficult for others to replicate.
 
 ## Demo Script
 
@@ -127,7 +127,7 @@ In the final part of your demo, show the **Sovereign Health** score for the enti
 
 ## Market Position
 
-This system solves the **Coordination Problem**—one of the hardest problems in infrastructure management. Once you own the "Interface of Authority" between sectors, you have a significant competitive advantage because no one else has the "Trust" or the "Graph."
+This system addresses the **Coordination Problem**—one of the hardest problems in infrastructure management. A working cross-sector coordination layer, combined with the dependency graph and multi-party trust, provides a significant advantage.
 
 ## Technical Notes
 

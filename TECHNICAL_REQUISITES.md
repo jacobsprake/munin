@@ -199,7 +199,7 @@
 **If you are interested in any of these roles:**
 
 1. **Read the Architecture**: Start with [ARCHITECTURE.md](./ARCHITECTURE.md) and [docs/MANIFESTO.md](./docs/MANIFESTO.md)
-2. **Understand the Vision**: Read [README.md](./README.md) to understand the "Secret" and the thesis
+2. **Understand the vision**: Read [README.md](./README.md) for the thesis and Shadow Links
 3. **Run the Prototype**: Execute `python engine/run.py` to see the current implementation
 4. **Study the Logic**: Read `engine/infer_graph.py` to understand the Shadow Link detection algorithm
 5. **Contact**: [Your contact information here]
