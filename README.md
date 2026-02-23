@@ -1,20 +1,16 @@
 # Munin: Sovereign Infrastructure Orchestration Platform
 
-Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
+**The First Sovereign Orchestration Layer for Zero-Latency Crisis Response**
 
-*Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
-
----
-
-## Wedge: flood and water (v1)
-
-The current focus is **flood and water infrastructure** (reservoirs, pumps, floodgates) in one geography. Munin provides: cascade prediction from inferred dependencies, pre-approved playbook packets, and an audit trail. Initially **read-only and advisory**—no SCADA write access in v1.
+Munin is **decision support** for infrastructure operators. Humans always authorise; Munin makes their decisions faster by doing the prep work in advance. Operators review pre-simulated playbooks and authorise via Byzantine multi-sig—we turn 2–6 hours of ad-hoc coordination into 20–30 minutes of reviewing pre-packaged options. *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
 ---
 
-## The thesis
+## The Thesis
 
-**The main bottleneck in crisis response is not data but the time required for legal authorisation and cross-agency sign-off.** Munin addresses this by pre-validating playbooks and generating execution packets that carry the necessary regulatory basis.
+**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging the gap between operational systems (SCADA) and authority (Law).**
+
+Modern infrastructure failure is not a data problem—we have enough sensors. It is an **Authority** problem. We have built a bureaucratic culture of liability paralysis that makes it illegal for officials to act at the speed of cascading failures.
 
 **The Cascade Timeline:**
 - **0 seconds**: Power substation fails
@@ -25,15 +21,13 @@ The current focus is **flood and water infrastructure** (reservoirs, pumps, floo
 - **2-6 hours**: Human operators coordinate across agencies, verify legal authorization, execute response
 - **Result**: Cascade has already consumed entire sectors before response can be authorised
 
-**Munin maintains exhaustive pre-simulation of the scenario space—single-origin failures, multi-fault and correlated (shadow-link) stress scenarios—with a continuously updated library of pre-approved playbooks and cryptographic execution packets that carry the required regulatory basis.**
-
-### Trust: why the packet is defensible
-
-The authorisation packet is built for **trust**: an evidence bundle (which dependencies, correlation windows, confounders), explicit uncertainty (e.g. confidence intervals, counterexample windows), safety constraints (Logic-Lock, playbook invariants), and a full audit trail. Operators and agencies see what the recommendation is based on and can reject or approve; Munin never executes.
+**Munin eliminates this false dichotomy by maintaining exhaustive pre-simulation of the scenario space—single-origin failures, multi-fault and correlated (shadow-link) stress scenarios—with a continuously updated library of pre-approved playbooks and cryptographic execution packets that carry legal authority.**
 
 ---
 
-## Shadow Links: Cross-Sector Dependency Discovery
+## Shadow Links: Cross-sector dependencies
+
+**The discovery:**
 
 Infrastructure dependencies are not documented. A water pump failure cascades to power grid instability, but this relationship is not in any database—it exists only in the physics of the system.
 
@@ -76,17 +70,6 @@ graph LR
 
 This enables Munin to prevent cross-sector cascading failures by discovering dependencies that traditional systems cannot see.
 
-### How we avoid false links (evidence and trust)
-
-Correlation with lag is a **candidate generator**, not proof of causation. Confounders (weather, shared controllers, maintenance, load shedding) can produce spurious links. Munin treats trust as the product:
-
-- **Robustness checks**: Stability across time windows, partial correlation, sensor health filtering (missingness, stuck-at, drift). Low-stability or unhealthy-sensor edges are dropped.
-- **Evidence hierarchy**: Each edge has evidence windows with correlation, lag, and quality context. We surface **counterexample windows** (negative or weak correlation) as well as supporting windows, so operators see uncertainty.
-- **Physics and constraints**: Logic-Lock and playbook constraints enforce invariants (e.g. max RPM, valve/pump state). Recommendations that violate constraints are rejected.
-- **Evidence-quality dashboard**: The `munin evidence-quality` CLI and pipeline output HIGH/MEDIUM/LOW confidence and confounder notes so operators can judge reliability.
-
-We do not claim causal identification from correlation alone; we claim *candidate dependencies plus evidence and controls* that make the authorisation packet defensible.
-
 **Try it yourself:**
 ```bash
 python3 engine/detect_shadow_link.py
@@ -117,17 +100,15 @@ Output includes: Shadow Links found, scenarios simulated, playbooks generated, *
 
 ---
 
-## Extended capabilities and future roadmap
-
-*The main story for v1 is the wedge (flood/water, read-only) and trust (evidence, uncertainty, constraints, audit). The sections below describe the full technical stack and future roadmap (e.g. sovereign mesh, satellite verification, digital vault, safety PLCs)—not all are deployed in the initial wedge.*
+## The 2026 Tech Stack
 
 ### Post-Quantum Cryptography (PQC)
 
-**Algorithm**: ML-DSA (FIPS 204), Dilithium3 parameter set
+**Algorithm**: DILITHIUM-3 (NIST FIPS 204)
 
 **Why**: Quantum computers will break current cryptographic signatures (RSA, ECDSA) by 2030. Munin must be future-proof.
 
-**Decision**: All critical commands are signed with ML-DSA (FIPS 204), ensuring that even if quantum decryption becomes available, Munin's authorization packets remain cryptographically secure.
+**Decision**: All critical commands are signed with DILITHIUM-3, ensuring that even if quantum decryption becomes available, Munin's authorization packets remain cryptographically secure.
 
 See [research/pqc-whitepaper.md](./research/pqc-whitepaper.md) for detailed technical analysis.
 
@@ -186,7 +167,7 @@ sequenceDiagram
     Munin->>Sim: Pre-Validate Playbooks
     Sim->>Handshake: Generate Execution Packet
     
-    Note over Handshake: Packet Contains:<br/>- Evidence Bundle<br/>- Regulatory Basis<br/>- Technical Verification<br/>- PQC Signature (ML-DSA, FIPS 204)
+    Note over Handshake: Packet Contains:<br/>- Evidence Bundle<br/>- Regulatory Basis<br/>- Technical Verification<br/>- PQC Signature (DILITHIUM-3)
     
     Handshake->>Ministry1: Request Authorization
     Ministry1->>Handshake: Biometric Signature
@@ -201,7 +182,7 @@ sequenceDiagram
     TEE->>Handshake: Hardware-Rooted Signature
     Handshake->>Physical: Execute Command
     
-    Note over Physical: Command Executed<br/>(authorised)
+    Note over Physical: Command Executed<br/>with Legal Authority
 ```
 
 **Latency Comparison:**
@@ -304,7 +285,7 @@ This document provides an exhaustive technical overview of every component, feat
 Munin is a sovereign infrastructure orchestration platform designed for national-scale critical infrastructure management. It provides:
 
 - **Automated Dependency Discovery**: Infers cross-sector infrastructure dependencies from time-series data without manual configuration
-- **Pre-Validated Crisis Response**: Generates authorised execution packets (handshakes) with cryptographic signatures and regulatory basis
+- **Pre-Validated Crisis Response**: Generates authorized execution packets (handshakes) with cryptographic signatures that pre-validate legal authority
 - **Byzantine Fault Tolerance**: M-of-N multi-signature authorization prevents single-point-of-failure sabotage
 - **Real-Time Cascade Prediction**: Simulates cascading failures before they occur, enabling proactive response
 - **Hardware-Rooted Security**: Trusted Execution Environments (TEEs) and post-quantum cryptography ensure command integrity
@@ -316,8 +297,8 @@ Munin is a sovereign infrastructure orchestration platform designed for national
 3. **Sensor Health Monitoring**: Detects missingness, stuck-at, and drift in sensor data
 4. **Incident Simulation**: Predicts cascading failure timelines with confidence intervals
 5. **Authoritative Handshakes**: Cryptographic execution packets with multi-ministry authorization
-6. **Multi-step planning suggestions**: Recovery plans (multiple steps) for operator review—never execution. Operators approve each step.
-7. **Post-Quantum Cryptography**: ML-DSA (FIPS 204) signatures resistant to quantum attacks
+6. **Agentic AI Reasoning**: Autonomous multi-step recovery planning with cross-data-source analysis
+7. **Post-Quantum Cryptography**: DILITHIUM-3 signatures resistant to quantum attacks
 8. **Zero-Trust Architecture**: Device verification and certificate-based authentication
 9. **Physical Verification**: RF/acoustic sensors verify digital SCADA readings
 10. **Logic-Lock**: Hardware-rooted physics validation prevents invalid commands
@@ -328,7 +309,7 @@ Munin is a sovereign infrastructure orchestration platform designed for national
 
 ### The Coordination Latency Problem
 
-Modern infrastructure failure is not primarily a data problem—we have enough sensors. The bottleneck is the time required for legal authorisation and cross-agency coordination; liability and process make it difficult for officials to act at the speed of cascading failures.
+Modern infrastructure failure is not a data problem—we have enough sensors. It is an **Authority** problem. We have built a bureaucratic culture of liability paralysis that makes it illegal for officials to act at the speed of cascading failures.
 
 **The Cascade Timeline:**
 - **0 seconds**: Power substation fails
@@ -542,7 +523,7 @@ timestamp,node_id,value,quality,source_protocol
 **Components**:
 - **Liability Shield**: Statutory compliance mapping
 - **Handshake Generation**: Cryptographic execution packets
-- **Post-Quantum Crypto**: ML-DSA (FIPS 204) signatures
+- **Post-Quantum Crypto**: DILITHIUM-3 signatures
 - **Audit Log**: Immutable Merkle-chained receipts
 
 **Implementation**: 
@@ -657,8 +638,7 @@ timestamp,node_id,value,quality,source_protocol
 
 1. **Incident Type Definition**
    - Playbooks defined in YAML: `playbooks/flood_event_pump_isolation.yaml`, etc.
-   - Each playbook specifies: incident type, trigger conditions, proposed actions, regulatory_compliance (from law codes), approval_required.
-   - **Playbook designer:** Playbooks can be generated from the regulatory corpus (law codes by jurisdiction and scenario). Run `PYTHONPATH=engine python -m playbook_design --jurisdiction UK` or `--all`; output in `playbooks/generated/`. Humans review before use. See `engine/compliance/regulatory_corpus.py` and `engine/playbook_design.py`.
+   - Each playbook specifies: incident type, trigger conditions, proposed actions
 
 2. **Cascade Simulation Algorithm**
    ```
@@ -691,7 +671,7 @@ timestamp,node_id,value,quality,source_protocol
 
 ### 5. Authoritative Handshake Generation
 
-**What It Does**: Generates cryptographic execution packets with pre-validated regulatory basis
+**What It Does**: Generates cryptographic execution packets with pre-validated legal authority
 
 **Packet Structure**:
 
@@ -708,7 +688,7 @@ timestamp,node_id,value,quality,source_protocol
   };
   situationSummary: string;       // Human-readable description
   proposedAction: string;         // Action to be taken
-  regulatoryBasis: string;        // Regulatory/statutory basis
+  regulatoryBasis: string;        // Legal authority
   playbookId: string;             // Reference to playbook
   evidenceRefs: string[];         // Evidence window IDs
   uncertainty: {
@@ -726,7 +706,7 @@ timestamp,node_id,value,quality,source_protocol
     currentSignatures: number;     // Current count
   };
   pqc?: {
-    algorithm: 'ML-DSA';         // Post-quantum (FIPS 204)
+    algorithm: 'DILITHIUM-3';     // Post-quantum algorithm
     publicKey: string;             // PQC public key
     signature?: string;            // PQC signature
   };
@@ -763,7 +743,7 @@ timestamp,node_id,value,quality,source_protocol
    - For standard actions: 2-of-3 ministries
 
 5. **Cryptographic Signing**
-   - Generate post-quantum signature (ML-DSA, FIPS 204)
+   - Generate post-quantum signature (DILITHIUM-3)
    - Sign in TEE enclave (hardware-rooted)
    - Create Merkle receipt (immutable audit trail)
 
@@ -812,9 +792,9 @@ timestamp,node_id,value,quality,source_protocol
 
 **Implementation**: `engine/byzantine_resilience.py`, `engine/sovereign_handshake.py`
 
-### 7. Multi-step planning suggestions (no autonomous execution)
+### 7. Agentic AI Reasoning
 
-**What It Does**: Suggests multi-step recovery plans for operator review. Operators approve each step; Munin never executes.
+**What It Does**: Autonomous multi-step recovery planning with cross-data-source analysis
 
 **Capabilities**:
 
@@ -833,7 +813,7 @@ timestamp,node_id,value,quality,source_protocol
    - Identifies critical nodes in cascade path
 
 4. **Multi-Step Recovery Planning**
-   - Generates suggested recovery plans (5+ steps) for operator review—never execution
+   - Generates suggested recovery plans (5+ steps) for operator review—no autonomous execution
    - Each step includes: action, target, timing, dependencies
 
 5. **Multi-Agency Coordination**
@@ -844,11 +824,11 @@ timestamp,node_id,value,quality,source_protocol
 
 **Implementation**: `engine/agentic_reasoning.py`
 
-### 8. Post-Quantum Cryptography (ML-DSA, FIPS 204)
+### 8. Post-Quantum Cryptography
 
 **What It Does**: Provides cryptographic signatures resistant to quantum computer attacks
 
-**Algorithm**: ML-DSA (FIPS 204), Dilithium3 parameter set
+**Algorithm**: DILITHIUM-3 (NIST FIPS 204)
 
 **How It Works**:
 
@@ -1529,15 +1509,15 @@ Munin implements multiple layers of security:
 - **TEE-Enforced Logic-Lock**: Hardware-level physics validation
 - **Byzantine Multi-Sig**: M-of-N ministry signatures prevent insider threats
 - **Physical Verification**: RF/acoustic sensors verify digital readings
-- **Post-Quantum Crypto**: ML-DSA (FIPS 204) signatures resistant to quantum attacks (see [research/pqc-whitepaper.md](./research/pqc-whitepaper.md))
+- **Post-Quantum Crypto**: DILITHIUM-3 signatures resistant to quantum attacks (see [research/pqc-whitepaper.md](./research/pqc-whitepaper.md))
 - **Immutable Audit Logs**: Merkle-chained receipts provide mathematical proof
 - **All Operations On-Premises**: No cloud dependencies, no external network access
 
-### Why Post-Quantum Cryptography (ML-DSA, FIPS 204)?
+### Why Post-Quantum Cryptography (DILITHIUM-3)?
 
 **The Threat**: Quantum computers will break current cryptographic signatures (RSA, ECDSA) by 2030. Any system that relies on classical cryptography will be vulnerable to "Harvest Now, Decrypt Later" attacks.
 
-**The Solution**: ML-DSA (FIPS 204) is the standardized post-quantum digital signature algorithm (Dilithium3 parameter set) that provides 128-bit quantum security.
+**The Solution**: DILITHIUM-3 (NIST FIPS 204) is the standardized post-quantum digital signature algorithm that provides 128-bit quantum security.
 
 **Why This Matters**: Munin's handshake packets contain critical infrastructure commands, multi-ministry authorization signatures, and legal compliance proofs. These must remain secure through 2030 and beyond.
 
@@ -1951,7 +1931,7 @@ npm test
 
 ### Cryptographic Specifications
 
-- **Post-Quantum Algorithm**: ML-DSA (FIPS 204)
+- **Post-Quantum Algorithm**: DILITHIUM-3 (NIST FIPS 204)
 - **Hash Algorithm**: SHA-256
 - **Merkle Tree**: Binary Merkle tree with SHA-256
 - **TEE Platform**: Intel SGX, ARM TrustZone, AMD SEV
@@ -1970,14 +1950,14 @@ npm test
 
 ### Core Documentation
 
-- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: Shadow Links, scenario space, tech stack
+- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: Shadow Links, exhaustive scenario space, sovereignty paradox
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and algorithms
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development principles
 - **[TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md)**: Required engineering talent for production hardening
 
 ### Research Papers
 
-- **[research/pqc-whitepaper.md](./research/pqc-whitepaper.md)**: Why ML-DSA (FIPS 204) is required for sovereign infrastructure
+- **[research/pqc-whitepaper.md](./research/pqc-whitepaper.md)**: Why DILITHIUM-3 is required for sovereign infrastructure
 - **[research/statutory-mapping.md](./research/statutory-mapping.md)**: How Munin maps code to National Emergency Laws
 
 ### Technical Guides

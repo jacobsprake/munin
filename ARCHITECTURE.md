@@ -518,7 +518,7 @@ Total: 20-30 minutes
 
 ---
 
-## 5. Cross-Sector Cascade Detection
+## 5. Shadow Links Verified: Cross-Sector Cascade Detection
 
 ### The Discovery
 During prototype development, the dependency graph inference revealed a critical insight:
@@ -614,7 +614,7 @@ The state requires:
 - ⚠️ UI components (Next.js frontend is a directional placeholder)
 - ⚠️ Real-time SCADA integration (currently uses CSV sample data)
 - ⚠️ Hardware TEE integration (Intel SGX/ARM TrustZone - architecture defined, not yet integrated)
-- ⚠️ Post-quantum cryptography (ML-DSA / FIPS 204 - algorithm selected, not yet implemented)
+- ⚠️ Post-quantum cryptography (DILITHIUM-3 - algorithm selected, not yet implemented)
 - ⚠️ Physical verification (RF/acoustic sensors - architecture defined, not yet integrated)
 
 ### What's Next (Production Path)
@@ -631,7 +631,7 @@ The state requires:
    - Distinguish correlation from causation
 
 4. **Production-Grade Security**
-   - Implement ML-DSA (FIPS 204) post-quantum signatures
+   - Implement DILITHIUM-3 post-quantum signatures
    - Deploy air-gapped data diode hardware
 
 ---

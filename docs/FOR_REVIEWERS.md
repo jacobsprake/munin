@@ -8,8 +8,8 @@ This guide is for evaluators (e.g. investment or grant reviewers) who want to se
 
 **Munin is decision support for infrastructure operators.** It does not execute actions autonomously. Operators review pre-simulated playbooks and authorise via Byzantine multi-signature; we turn **2–6 hours** of ad-hoc coordination into **20–30 minutes** of reviewing pre-packaged options. *Humans still decide.*
 
-- **Thesis:** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin pre-validates playbooks and generates cryptographic execution packets that carry the required regulatory basis.
-- **Shadow Links:** Cross-sector dependencies inferred from time-series correlation that traditional monitoring cannot see. Munin discovers them and uses them for cascade prediction.
+- **Thesis:** The state’s bottleneck in crisis response is not data—it’s **authority**. Munin bridges operational systems (SCADA) and legal authority (law) by pre-validating playbooks and generating cryptographic execution packets that carry legal authority.
+- **Core mechanism:** **Shadow Links**—cross-sector dependencies inferred from time-series correlation that traditional monitoring cannot see. Munin discovers them and uses them for cascade prediction.
 - **Evidence:** Real disasters where coordination/authorisation was the primary failure: Hurricane Katrina, Fukushima, UK floods. See [EVIDENCE_COORDINATION_BOTTLENECK.md](EVIDENCE_COORDINATION_BOTTLENECK.md).
 
 ---
@@ -32,7 +32,7 @@ This guide is for evaluators (e.g. investment or grant reviewers) who want to se
 **Step-by-step from repo root:**
 
 ```bash
-# 1. Shadow Link detection
+# 1. Shadow Link detection (core dependency inference)
 python3 engine/detect_shadow_link.py
 # (If normalized data is missing, the script runs the pipeline first.)
 
@@ -53,16 +53,10 @@ Then start the app (`npm run dev`) and open `/`, `/demo-path`, `/demos`, `/carli
 | Document | Purpose |
 |----------|---------|
 | [README.md](../README.md) | Repo entry: thesis, Shadow Links, tech stack, handshake flow |
-| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: scenario space, tech stack |
+| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: exhaustive scenario space, sovereignty paradox |
 | [EVIDENCE_COORDINATION_BOTTLENECK.md](EVIDENCE_COORDINATION_BOTTLENECK.md) | Real disasters (Katrina, Fukushima, 9/11, UK) and Munin counterfactuals |
 | [SCENARIOS_EVIDENCE_LIST.md](SCENARIOS_EVIDENCE_LIST.md) | When Munin applies (and when it doesn’t) |
 | [README_DEMO.md](../README_DEMO.md) | How to run demos and verification |
-
----
-
-## Sovereignty, air-gap, and on-prem
-
-Munin is designed for **sovereign, air-gapped, on-prem** deployment. Nothing in the core pipeline or in the added capabilities (playbook design from law codes, multi-step planning suggestions) requires external APIs or cloud. Data ingestion is via hardware data diodes (one-way); handshake signing in TEEs; no outbound network. Playbook design uses a **local regulatory corpus** (law codes by jurisdiction and scenario) and writes draft YAML for human review—no LLM or external service. Agentic reasoning is local rule- and graph-based suggestion generation; operators always approve. This aligns with the documented ethos: humans decide, regulatory basis is explicit, trust via evidence and audit.
 
 ---
 

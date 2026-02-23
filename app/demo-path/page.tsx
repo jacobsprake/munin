@@ -10,7 +10,7 @@ const SECTIONS = [
   {
     id: 'thesis',
     title: 'The thesis',
-    body: 'Munin is the first Sovereign Orchestration Layer for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging SCADA (atoms) and legal authority (law). Infrastructure failure is not a data problem—we have enough sensors. It is an authority problem. Munin pre-validates playbooks through simulation and generates cryptographic execution packets that carry legal authority. Humans still decide; they just decide in 20–30 minutes instead of 2–6 hours.',
+    body: 'Munin is the first Sovereign Orchestration Layer for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging operational systems (SCADA) and legal authority (law). Infrastructure failure is not a data problem—we have enough sensors. It is an authority problem. Munin pre-validates playbooks through simulation and generates cryptographic execution packets that carry legal authority. Humans still decide; they just decide in 20–30 minutes instead of 2–6 hours.',
   },
   {
     id: 'problem',
@@ -24,7 +24,7 @@ const SECTIONS = [
   },
   {
     id: 'shadow',
-    title: 'The "Secret": Shadow Links',
+    title: 'Shadow Links: cross-sector dependencies',
     body: 'Cross-sector dependencies are not documented—they exist only in physics. Munin infers them from time-series correlation (temporal correlation + lag). So we discover that e.g. Substation_A (power) and Pump_Station_7 (water) are linked before any manual map. That enables cascade prediction and proactive response.',
   },
   {
