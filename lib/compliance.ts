@@ -266,7 +266,7 @@ export function mapPlaybookToStatutes(
       notes: applicableStatutes.length === 0 
         ? 'No pre-mapped statute found. Requires legal review.' 
         : undefined
-    };
+    } as ComplianceMapping['actions'][number];
   });
 
   // Determine overall compliance

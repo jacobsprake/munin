@@ -208,8 +208,9 @@ export async function signPacketInTEE(
   // 7. Generate attestation quote proving execution in enclave
   // 8. Exit enclave (ocall) with signature and attestation
   
+  let attestation: TEEAttestation;
   try {
-    const attestation = await generateTEEAttestation(platform, teeConfig);
+    attestation = await generateTEEAttestation(platform, teeConfig);
   
   // Logic-Lock: Validate physics before signing
   if (validatePhysics) {
@@ -395,21 +396,6 @@ export async function verifyTEESignature(
     platform: teeSignature.attestation.platform,
     enclaveId: teeSignature.attestation.enclaveId
   };
-}
-
-/**
- * Get TEE platform availability
- * In production, this would detect actual hardware support
- */
-export async function detectTEEPlatform(): Promise<TEEPlatform> {
-  // In production, this would:
-  // 1. Check CPUID for SGX support
-  // 2. Check for TrustZone support
-  // 3. Fall back to software if no hardware available
-  
-  // For demo, we'll simulate SGX availability
-  // In real deployment, this would be detected from hardware
-  return 'INTEL_SGX';
 }
 
 /**

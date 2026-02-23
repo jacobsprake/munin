@@ -1,8 +1,10 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import GraphCanvas from '@/components/GraphCanvas';
 import SimulationScrubber from '@/components/SimulationScrubber';
+
+const GraphCanvas = dynamic(() => import('@/components/GraphCanvas'), { ssr: false });
 import CMITierVisualization from '@/components/CMITierVisualization';
 import LatencyImpactWidget from '@/components/LatencyImpactWidget';
 import CommandShell from '@/components/CommandShell';
@@ -258,7 +260,7 @@ export default function SimulationPage() {
       <LatencyImpactWidget
         timeToImpact={
           upcomingEntries.length > 0
-            ? Math.floor((parseISO(upcomingEntries[0].ts).getTime() - (simulationTime || startTime)) / 1000)
+            ? Math.floor((parseISO(upcomingEntries[0].ts).getTime() - (simulationTime ?? (selectedIncident ? parseISO(selectedIncident.startTs).getTime() : Date.now()))) / 1000)
             : undefined
         }
       />
@@ -281,7 +283,7 @@ export default function SimulationPage() {
           const chaosIncident: Incident = {
             id: scenario.id,
             title: scenario.title,
-            type: scenario.scenario_type,
+            type: (scenario.scenario_type ?? 'unknown') as Incident['type'],
             startTs: new Date().toISOString(),
             timeline: scenario.impact_metrics ? [{
               ts: new Date().toISOString(),
@@ -380,7 +382,7 @@ export default function SimulationPage() {
         <div className="absolute top-20 left-4 z-10 w-80">
           <CMITierVisualization
             incidentId={selectedIncident.id}
-            impactedNodes={impactedNodes}
+            impactedNodes={Array.from(impactedNodes)}
           />
         </div>
       )}

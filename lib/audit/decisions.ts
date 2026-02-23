@@ -134,7 +134,7 @@ export async function signDecision(
   keyId: string,
   actionType: string,
   scope: Record<string, any>
-): DecisionSignature {
+): Promise<DecisionSignature> {
   const db = getDb();
   
   // Get decision

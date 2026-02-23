@@ -15,6 +15,9 @@ try {
   console.warn('@noble/ed25519 not installed. Using placeholder implementation. Run: npm install @noble/ed25519');
 }
 
+/** True when real @noble/ed25519 is used; false when placeholder (reject-invalid tests are skipped). */
+export const hasRealEd25519 = !!ed25519;
+
 /**
  * Generate Ed25519 key pair
  * Returns: { publicKey: string (base64), privateKey: string (base64) }

@@ -1913,6 +1913,8 @@ Edit YAML files in `playbooks/` directory. Playbooks are referenced by incident 
 
 ### Running Tests
 
+See **[docs/testing.md](docs/testing.md)** for setup (e.g. `npm rebuild better-sqlite3`, audit Ed25519 placeholder).
+
 ```bash
 # Python tests (run from repo root so engine package imports resolve)
 python3 -m venv venv && source venv/bin/activate   # if not already in a venv

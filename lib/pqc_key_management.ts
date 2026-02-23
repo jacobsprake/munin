@@ -3,7 +3,7 @@
  * 
  * Manages PQC key lifecycle: generation, storage, rotation, revocation
  */
-import { signWithPQC, verifyPQC, generatePQCKeyPair } from './pqc';
+import { signWithPQC, generatePQCKeyPair } from './pqc';
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 

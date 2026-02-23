@@ -104,7 +104,7 @@ class ResourceRegistry {
     const lockStart = new Date(lock.startTime);
     const lockEnd = new Date(lock.endTime);
 
-    for (const existingLockId of existingLocks) {
+    for (const existingLockId of Array.from(existingLocks)) {
       const existingLock = this.locks.get(existingLockId);
       if (!existingLock || existingLock.status !== 'locked') {
         continue;
@@ -169,7 +169,7 @@ class ResourceRegistry {
     const locks = this.resourceLocks.get(resourceId) || new Set();
     let total = 0;
 
-    for (const lockId of locks) {
+    for (const lockId of Array.from(locks)) {
       const lock = this.locks.get(lockId);
       if (!lock || lock.status !== 'locked') {
         continue;
@@ -222,7 +222,7 @@ class ResourceRegistry {
     const now = new Date();
     let expiredCount = 0;
 
-    for (const lock of this.locks.values()) {
+    for (const lock of Array.from(this.locks.values())) {
       if (lock.status === 'locked' && new Date(lock.endTime) < now) {
         lock.status = 'expired';
         this.resourceLocks.get(lock.resourceId)?.delete(lock.id);

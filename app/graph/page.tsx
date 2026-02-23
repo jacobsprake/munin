@@ -1,8 +1,10 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import GraphCanvas from '@/components/GraphCanvas';
 import CommandShell from '@/components/CommandShell';
+
+const GraphCanvas = dynamic(() => import('@/components/GraphCanvas'), { ssr: false });
 import RightPanel from '@/components/RightPanel';
 import Tabs from '@/components/ui/Tabs';
 import Card from '@/components/ui/Card';

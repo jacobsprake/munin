@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import CommandShell from '@/components/CommandShell';
 import RightPanel from '@/components/RightPanel';
 import Table from '@/components/ui/Table';
@@ -15,7 +15,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Search, Filter, Download } from 'lucide-react';
 
-export default function HandshakesPage() {
+function HandshakesContent() {
   const [packets, setPackets] = useState<HandshakePacket[]>([]);
   const [selectedPacket, setSelectedPacket] = useState<HandshakePacket | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -194,5 +194,13 @@ export default function HandshakesPage() {
         </div>
       </div>
     </CommandShell>
+  );
+}
+
+export default function HandshakesPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[400px] text-text-muted">Loading...</div>}>
+      <HandshakesContent />
+    </Suspense>
   );
 }
