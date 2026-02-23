@@ -1,5 +1,7 @@
 name: Build
 
+# npm ci requires package-lock.json; do not remove it from the repo.
+
 on:
   push:
     branches: [main, master]

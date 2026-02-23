@@ -22,12 +22,12 @@
 
 **Requirements**:
 - Deep expertise in Rust systems programming
-- Experience with post-quantum cryptography (specifically DILITHIUM-3 or Kyber)
+- Experience with post-quantum cryptography (specifically ML-DSA / FIPS 204 or Kyber)
 - Understanding of cryptographic signature schemes
 - Ability to implement hardware-rooted TEE integration (Intel SGX, ARM TrustZone)
 
 **Deliverables**:
-- Production-grade DILITHIUM-3 signature implementation
+- Production-grade ML-DSA (FIPS 204) signature implementation
 - TEE enclave integration for handshake signing
 - Hardware attestation quote generation
 - Performance optimization for sub-100ms signing latency
@@ -37,7 +37,7 @@
 - Performance requirements for real-time signing
 - TEE SDK compatibility (Intel SGX SDK supports Rust)
 
-**Current Status**: Algorithm selected (DILITHIUM-3), architecture defined, not yet implemented
+**Current Status**: Algorithm selected (ML-DSA / FIPS 204), architecture defined, not yet implemented
 
 ---
 
@@ -169,7 +169,7 @@
 ## Development Roadmap
 
 ### Phase 1: Core Hardening (Months 1-3)
-- **Rust Expert**: Implement DILITHIUM-3 PQC signatures
+- **Rust Expert**: Implement ML-DSA (FIPS 204) PQC signatures
 - **SCADA Engineer**: Build real-time DNP3/Modbus drivers
 - **TEE Engineer**: Integrate Intel SGX/ARM TrustZone for handshake signing
 
@@ -199,7 +199,11 @@
 **If you are interested in any of these roles:**
 
 1. **Read the Architecture**: Start with [ARCHITECTURE.md](./ARCHITECTURE.md) and [docs/MANIFESTO.md](./docs/MANIFESTO.md)
+<<<<<<< HEAD
+2. **Understand the vision**: Read [README.md](./README.md) for the thesis and Shadow Links
+=======
 2. **Understand the Vision**: Read [README.md](./README.md) to understand the core Shadow Link mechanism and the thesis
+>>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
 3. **Run the Prototype**: Execute `python engine/run.py` to see the current implementation
 4. **Study the Logic**: Read `engine/infer_graph.py` to understand the Shadow Link detection algorithm
 5. **Contact**: [Your contact information here]

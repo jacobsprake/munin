@@ -1,5 +1,7 @@
 # Deploy workflow (roadmap item 36) – staging/deploy job
 # Trigger manually or on push to main after tests pass.
+# npm ci requires package-lock.json; do not remove it from the repo.
+
 name: Deploy
 
 on:
