@@ -237,6 +237,7 @@ export async function signPacketInTEE(
       }
       // For other errors, continue (may be non-command packets)
     }
+  }
   } catch (error: any) {
     // Handle TEE failures with well-defined failure modes
     if (error.message.includes('Logic-Lock') || error.message.includes('PHYSICS_VIOLATION')) {

@@ -4,15 +4,13 @@ Munin is **decision support** for critical infrastructure operators. It reduces 
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
+**Repository structure:** Product entry point is this README and [docs/README.md](docs/README.md) (documentation index). Core app: `app/`, `components/`, `lib/`. Inference engine: `engine/`. Playbooks: `playbooks/`. Research and compliance: `research/`. Scripts: `scripts/` (demo setup, deploy, migrations). Internal and archived docs: `docs/internal/`.
+
 ---
 
 ## Wedge: flood and water (v1)
 
-<<<<<<< HEAD
-The current focus is **flood and water infrastructure** (reservoirs, pumps, floodgates) in one geography. Munin provides: cascade prediction from inferred dependencies, pre-approved playbook packets, and an audit trail. Initially **read-only and advisory**—no SCADA write access in v1.
-=======
-**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging the gap between operational systems (SCADA) and authority (Law).**
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
+The current focus is **flood and water infrastructure** (reservoirs, pumps, floodgates) in one geography. Munin provides: cascade prediction from inferred dependencies, pre-approved playbook packets, and an audit trail. Initially **read-only and advisory**—no SCADA write access in v1. Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response, bridging the gap between operational systems (SCADA) and authority (Law).
 
 ---
 
@@ -37,13 +35,7 @@ The authorisation packet is built for **trust**: an evidence bundle (which depen
 
 ---
 
-<<<<<<< HEAD
-## Shadow Links: Cross-Sector Dependency Discovery
-=======
-## Shadow Links: Cross-sector dependencies
-
-**The discovery:**
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
+## Shadow Links: Cross-sector dependency discovery
 
 Infrastructure dependencies are not documented. A water pump failure cascades to power grid instability, but this relationship is not in any database—it exists only in the physics of the system.
 
@@ -1980,11 +1972,7 @@ npm test
 
 ### Core Documentation
 
-<<<<<<< HEAD
 - **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: Shadow Links, scenario space, tech stack
-=======
-- **[docs/MANIFESTO.md](./docs/MANIFESTO.md)**: Thesis whitepaper: Shadow Links, exhaustive scenario space, sovereignty paradox
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Detailed technical architecture and algorithms
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and development principles
 - **[TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md)**: Required engineering talent for production hardening

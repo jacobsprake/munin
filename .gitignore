@@ -55,3 +55,7 @@ ENV/
 /data/*.db-wal
 /data/*.db-shm
 
+# generated / internal
+playbooks/generated/
+.hypothesis/
+.pytest_cache/

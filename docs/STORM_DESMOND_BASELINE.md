@@ -1,6 +1,6 @@
 # Storm Desmond Baseline Analysis
 
-**Primary demo for evidence:** The live demo that illustrates this baseline is the **Carlisle / Storm Desmond demo**. See [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) for setup and [README_DEMO.md](../README_DEMO.md) for routes (e.g. `/carlisle-dashboard`). Run with `npm run dev` then open `/carlisle-dashboard`, or from `engine`: `python carlisle_demo.py`.
+**Primary demo for evidence:** The live demo that illustrates this baseline is the **Carlisle / Storm Desmond demo**. See [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) for setup and the [repository README](../README.md) (One-Command Demo, CLI reference) for routes (e.g. `/carlisle-dashboard`). Run with `npm run dev` then open `/carlisle-dashboard`, or from `engine`: `python carlisle_demo.py`.
 
 ---
 

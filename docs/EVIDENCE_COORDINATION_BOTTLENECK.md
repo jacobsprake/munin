@@ -2,7 +2,7 @@
 
 This document summarises real-world disasters where **multi-agency coordination and authorisation delays** were the primary or major bottleneck—the problem Munin is designed to address.
 
-**Primary demo for evidence:** The live demo that illustrates coordination latency and Munin’s response is the **Storm Desmond (Carlisle) flood demo**. See [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) and [STORM_DESMOND_BASELINE.md](STORM_DESMOND_BASELINE.md). Run the Carlisle demo via `engine/carlisle_demo.py` or the `/carlisle-dashboard` route (see [README_DEMO.md](../README_DEMO.md)).
+**Primary demo for evidence:** The live demo that illustrates coordination latency and Munin’s response is the **Storm Desmond (Carlisle) flood demo**. See [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) and [STORM_DESMOND_BASELINE.md](STORM_DESMOND_BASELINE.md). Run the Carlisle demo via `engine/carlisle_demo.py` or the `/carlisle-dashboard` route (see [README](../README.md) One-Command Demo section).
 
 ---
 
