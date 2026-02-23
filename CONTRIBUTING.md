@@ -28,7 +28,7 @@
 - ⚠️ UI components (Next.js frontend is a directional placeholder)
 - ⚠️ Real-time SCADA integration (currently uses CSV sample data)
 - ⚠️ Hardware TEE integration (Intel SGX/ARM TrustZone - architecture defined, not yet integrated)
-- ⚠️ Post-quantum cryptography (DILITHIUM-3 - algorithm selected, not yet implemented)
+- ⚠️ Post-quantum cryptography (ML-DSA / FIPS 204 - algorithm selected, not yet implemented)
 - ⚠️ Physical verification (RF/acoustic sensors - architecture defined, not yet integrated)
 
 ### Development Approach
@@ -58,7 +58,7 @@ We are being intellectually honest about our development approach:
 - Harden the stack for national security standards
 - Implement production-grade TEE integration
 - Build real-time SCADA protocol drivers
-- Implement post-quantum cryptography (DILITHIUM-3)
+- Implement post-quantum cryptography (ML-DSA, FIPS 204)
 
 **See [TECHNICAL_REQUISITES.md](./TECHNICAL_REQUISITES.md) for specific requirements.**
 

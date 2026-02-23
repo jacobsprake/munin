@@ -16,9 +16,9 @@ Munin is transitioning from **Functional Logic Prototype** → **Production-Read
 - ⚠️ **Production Gaps**: TEE integration, PQC, real-time SCADA, hardware integration
 
 ### Vision
-**Munin as the first Sovereign Orchestration Layer for zero-latency crisis response**, with:
+**Munin as the first Sovereign Orchestration Layer for fast crisis response**, with:
 - Hardware-rooted trust (TEE + Logic-Lock)
-- Post-quantum cryptography (DILITHIUM-3)
+- Post-quantum cryptography (ML-DSA, FIPS 204)
 - Real-time cross-sector visibility
 - Sub-minute authorized response
 
@@ -111,13 +111,13 @@ EA API → Poll Script → Threshold Check → Playbook Trigger → Packet Gener
 
 ### 4. Post-Quantum Cryptography (PQC) 🔐
 
-**Status**: Algorithm selected (DILITHIUM-3), not yet implemented
+**Status**: Algorithm selected (ML-DSA / FIPS 204), not yet implemented
 
 **Actions**:
-- [ ] Research DILITHIUM-3 libraries (NIST FIPS 204)
-- [ ] Replace Ed25519 with DILITHIUM-3 for handshake signatures
+- [ ] Research ML-DSA (FIPS 204) libraries
+- [ ] Replace Ed25519 with ML-DSA for handshake signatures
 - [ ] Update key management for PQC keys
-- [ ] Migrate existing Ed25519 keys to DILITHIUM-3
+- [ ] Migrate existing Ed25519 keys to ML-DSA
 - [ ] Update documentation
 
 **Why Critical**: Quantum computers will break Ed25519 by 2030. Munin must be future-proof.
@@ -208,10 +208,10 @@ Munin App → TEE Enclave → Sign Packet → Attestation → Return to App
 **Status**: Engine exists, not integrated with Carlisle
 
 **Actions**:
-- [ ] Integrate `engine/agentic_reasoning.py` with flood playbook
+- [ ] Integrate `engine/agentic_reasoning.py` (multi-step planning suggestions) with flood playbook
 - [ ] Enable dynamic playbook adaptation
 - [ ] Test counterfactual analysis for flood scenarios
-- [ ] Add agentic reasoning to handshake packets
+- [ ] Add multi-step planning suggestions to handshake packets
 
 **Timeline**: 2 weeks
 
@@ -411,7 +411,7 @@ python3 carlisle_demo.py
 - Add metrics to dashboard
 
 **Next Research Task** (2 hours):
-- Research DILITHIUM-3 libraries
+- Research ML-DSA (FIPS 204) libraries
 - Research TEE platforms (SGX vs TrustZone)
 
 ---

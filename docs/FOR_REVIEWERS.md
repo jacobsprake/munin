@@ -60,6 +60,12 @@ Then start the app (`npm run dev`) and open `/`, `/demo-path`, `/demos`, `/carli
 
 ---
 
+## Sovereignty, air-gap, and on-prem
+
+Munin is designed for **sovereign, air-gapped, on-prem** deployment. Nothing in the core pipeline or in the added capabilities (playbook design from law codes, multi-step planning suggestions) requires external APIs or cloud. Data ingestion is via hardware data diodes (one-way); handshake signing in TEEs; no outbound network. Playbook design uses a **local regulatory corpus** (law codes by jurisdiction and scenario) and writes draft YAML for human review—no LLM or external service. Agentic reasoning is local rule- and graph-based suggestion generation; operators always approve. This aligns with the documented ethos: humans decide, regulatory basis is explicit, trust via evidence and audit.
+
+---
+
 ## One-sentence pitch
 
 Munin is decision support for infrastructure: pre-simulated playbooks and multi-ministry authorisation in minutes instead of hours, so operators can act at the speed of the cascade instead of the speed of the bureaucracy.

@@ -6,7 +6,7 @@ Munin is **decision support** for infrastructure operators. Humans always author
 
 ## The Thesis
 
-**Munin is a sovereign orchestration layer for zero-latency crisis response.** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the required regulatory and legal basis.
+**Munin is a sovereign orchestration layer for fast crisis response.** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the required regulatory and legal basis.
 
 Modern infrastructure failure is not primarily a data problem—we have enough sensors. The bottleneck is the time required for legal authorisation and cross-agency coordination.
 
@@ -91,11 +91,11 @@ This enables Munin to prevent cross-sector cascading failures by discovering dep
 
 ### 1. Post-Quantum Cryptography (PQC)
 
-**Algorithm**: DILITHIUM-3 (NIST FIPS 204)
+**Algorithm**: ML-DSA (FIPS 204), Dilithium3 parameter set
 
 **Why**: Quantum computers will break current cryptographic signatures (RSA, ECDSA) by 2030. Munin must be future-proof.
 
-**Decision**: All critical commands are signed with DILITHIUM-3, ensuring that even if quantum decryption becomes available, Munin's authorization packets remain cryptographically secure.
+**Decision**: All critical commands are signed with ML-DSA (FIPS 204), ensuring that even if quantum decryption becomes available, Munin's authorization packets remain cryptographically secure.
 
 ### 2. Hardware Data Diodes
 
@@ -169,7 +169,7 @@ Each handshake packet contains:
 - **Regulatory Basis**: Statutory reference (e.g., "National Emergency Act Section 12")
 - **Technical Verification**: Success probability from simulation, physics constraints satisfied
 - **Byzantine Multi-Signature**: M-of-N quorum requirements
-- **Post-Quantum Signature**: DILITHIUM-3 cryptographic proof
+- **Post-Quantum Signature**: ML-DSA (FIPS 204) cryptographic proof
 - **TEE Attestation**: Hardware-rooted signature from trusted execution environment
 - **Merkle Receipt**: Immutable audit trail
 

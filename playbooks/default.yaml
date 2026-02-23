@@ -1,0 +1,46 @@
+# Default playbook – fallback when incident type has no specific playbook mapping.
+# Used by engine/packetize.py when playbook_map has no entry for the incident type.
+# Operators should assign a proper playbook for production; this is for demos and unknown types.
+
+id: default
+title: Default Response Protocol
+version: 1.0
+type: default
+
+description: |
+  Minimal fallback protocol when no scenario-specific playbook is mapped.
+  Use for unknown incident types or demos only. In production, map all incident types
+  to jurisdiction- and scenario-specific playbooks (e.g. via playbook_design or hand-authored YAML).
+
+triggers:
+  - condition: incident_detected
+    severity: unknown
+
+actions:
+  - step: 1
+    action: assess_situation
+    parameters:
+      check_interval: 5m
+  - step: 2
+    action: escalate_to_human_operator
+    parameters:
+      require_review: true
+
+regulatory_compliance:
+  - act: "General emergency protocols"
+    section: "N/A"
+    requirement: "Human operator must review and assign appropriate playbook before authorisation"
+
+approval_required:
+  - role: Senior Operator
+    authority: operational_control
+    minimum_sign_off: true
+    biometric_handshake: false
+
+expected_outcomes:
+  - Situation assessed and escalated
+  - Appropriate playbook assigned by operator before any authorisation
+
+risks:
+  - risk: No scenario-specific regulatory basis
+    mitigation: Use only as fallback; map incident types to proper playbooks for production

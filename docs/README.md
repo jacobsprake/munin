@@ -34,6 +34,7 @@ This index groups all project documentation for quick reference. For the main pr
 | [AUDIT_LOG_SYSTEM.md](AUDIT_LOG_SYSTEM.md), [AUDIT_LOG_INTEGRITY.md](AUDIT_LOG_INTEGRITY.md) | Audit log design and integrity. |
 | [OBSERVABILITY.md](OBSERVABILITY.md) | Observability. |
 | [DATA_SOURCE.md](DATA_SOURCE.md) | Data source: engine output vs database. |
+| [DOCUMENTATION_VS_REPO.md](DOCUMENTATION_VS_REPO.md) | Checklist: what is documented vs what exists in the repo (avoid drift). |
 
 ---
 

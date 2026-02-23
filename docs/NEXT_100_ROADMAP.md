@@ -63,7 +63,7 @@
 - [x] **38. Rollback procedure** – Document or script rollback; [docs/ROLLBACK.md](ROLLBACK.md).
 
 ### Security & crypto
-- [ ] **39. PQC (DILITHIUM-3)** – Replace Ed25519 for handshake signatures; lib/audit, research.
+- [ ] **39. PQC (ML-DSA, FIPS 204)** – Replace Ed25519 for handshake signatures; lib/audit, research.
 - [ ] **40. Key management for PQC** – Key generation and storage; lib.
 - [ ] **41. TEE integration plan** – Document or stub TEE for signing; docs or lib/tee.
 - [ ] **42. No hardcoded secrets** – Audit and remove; codebase.
@@ -115,7 +115,7 @@
 - [ ] **70. Document verification flow** – In docs; docs.
 
 ### Integrations
-- [ ] **71. Agentic reasoning + Carlisle** – Integrate agentic_reasoning with flood playbook; engine.
+- [ ] **71. Multi-step planning + Carlisle** – Integrate agentic_reasoning (suggestions only) with flood playbook; engine.
 - [ ] **72. Byzantine 2-of-3 workflow** – Test and document; engine, app.
 - [ ] **73. Multi-river Caldew** – Add Caldew station, update playbook; engine/carlisle_config.
 - [ ] **74. Rainfall telemetry** – EA rainfall data, playbook triggers; ea_flood_client, carlisle_config.
