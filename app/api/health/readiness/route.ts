@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -13,43 +13,23 @@ export async function GET() {
     const checks: Record<string, boolean> = {};
     let allReady = true;
 
-    // Check 1: Engine output directory exists
-    try {
-      const engineOutDir = join(process.cwd(), 'engine', 'out');
-      await readFile(engineOutDir);
-      checks.engine_output_dir = true;
-    } catch {
-      checks.engine_output_dir = false;
-      allReady = false;
-    }
+    const root = process.cwd();
+
+    // Check 1: Engine output directory exists with graph data
+    const engineOutDir = join(root, 'engine', 'out');
+    const graphExists = existsSync(join(engineOutDir, 'graph.json'));
+    checks.engine_output = graphExists;
+    if (!graphExists) allReady = false;
 
     // Check 2: Configuration files exist
-    try {
-      const configPath = join(process.cwd(), 'engine', 'config.py');
-      await readFile(configPath);
-      checks.config_files = true;
-    } catch {
-      checks.config_files = false;
-      allReady = false;
-    }
+    checks.config_files = existsSync(join(root, 'engine', 'config.py'));
+    if (!checks.config_files) allReady = false;
 
-                // Check 3: Data directory accessible
-                try {
-                  const dataDir = join(process.cwd(), 'engine', 'sample_data');
-                  await readFile(dataDir);
-                  checks.data_directory = true;
-                } catch {
-                  checks.data_directory = false;
-                  // Not critical for readiness
-                }
-                
-                // Check 4: Data ingestion sources health
-                try {
-                  // In production, would check data ingestion status
-                  checks.data_ingestion = true;
-                } catch {
-                  checks.data_ingestion = false;
-                }
+    // Check 3: Sample data directory accessible
+    checks.data_directory = existsSync(join(root, 'engine', 'sample_data'));
+
+    // Check 4: Playbooks exist
+    checks.playbooks = existsSync(join(root, 'playbooks'));
 
     if (allReady) {
       return NextResponse.json({

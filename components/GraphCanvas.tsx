@@ -133,10 +133,6 @@ export default function GraphCanvas({ data, onNodeClick, onEdgeClick }: GraphCan
         nodeColor={(node: Node) => getNodeColor(node)}
         nodeVal={(node: Node) => 8 + node.health.score * 4}
         nodeOpacity={(node: Node) => (highlightedNodes.has(node.id) ? 1 : 0.2)}
-        linkLabel={(link: Edge) => {
-          const shadowNote = link.isShadowLink ? '\n[SHADOW LINK]' : '';
-          return `Confidence: ${(link.confidenceScore * 100).toFixed(1)}%\nLag: ${link.inferredLagSeconds}s${shadowNote}`;
-        }}
         linkColor={(link: Edge) => getEdgeColor(link)}
         linkWidth={(link: Edge) => {
           if (selectedEdgeId === link.id) return 3;
