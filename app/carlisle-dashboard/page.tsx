@@ -407,8 +407,8 @@ export default function CarlisleDashboard() {
               <div className="text-sm text-text-secondary mb-1">Time-to-Task</div>
               <div className="text-2xl font-bold">
                 {metrics.timeToTask.current !== null
-                  ? `&lt; ${metrics.timeToTask.current} min`
-                  : '&lt; 1 min'}
+                  ? `< ${metrics.timeToTask.current} min`
+                  : '< 1 min'}
               </div>
               {metrics.timeToTask.improvement !== null && (
                 <div className="text-xs text-green-500 mt-1">
@@ -420,8 +420,8 @@ export default function CarlisleDashboard() {
               <div className="text-sm text-text-secondary mb-1">Coordination Latency</div>
               <div className="text-2xl font-bold">
                 {metrics.coordinationLatency.current !== null
-                  ? `&lt; ${metrics.coordinationLatency.current} min`
-                  : '&lt; 5 min'}
+                  ? `< ${metrics.coordinationLatency.current} min`
+                  : '< 5 min'}
               </div>
               {metrics.coordinationLatency.improvement !== null && (
                 <div className="text-xs text-green-500 mt-1">
