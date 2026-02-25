@@ -37,9 +37,9 @@ export async function POST(request: Request) {
     // In production, this would call the Python engine
     const check = {
       command_id,
-      safety_level: 'safe',
-      violated_invariants: [],
-      block_reason: null,
+      safety_level: 'safe' as string,
+      violated_invariants: [] as string[],
+      block_reason: null as string | null,
       timestamp: new Date().toISOString(),
       checked_by: 'Safety_PLC_v1.0'
     };

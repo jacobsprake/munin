@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { Mirror, Play, FileText, AlertTriangle } from 'lucide-react';
+import { FlipHorizontal, Play, FileText, AlertTriangle } from 'lucide-react';
+const Mirror = FlipHorizontal;
 
 interface SimulationResult {
   simulationId: string;

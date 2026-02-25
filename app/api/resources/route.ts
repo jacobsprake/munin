@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     }
 
     // Get available resources
-    const reservations = getAvailableResources(type, sector, startTime || undefined, endTime || undefined);
+    const reservations = getAvailableResources(type ?? undefined, sector ?? undefined, startTime || undefined, endTime || undefined);
     return NextResponse.json({ success: true, reservations });
   } catch (error) {
     console.error('Error fetching resources:', error);

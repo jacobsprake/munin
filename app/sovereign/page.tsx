@@ -16,7 +16,8 @@ import BiometricTabletPanel from '@/components/BiometricTabletPanel';
 import QuantumSensorsPanel from '@/components/QuantumSensorsPanel';
 import SovereignDigitalTwinPanel from '@/components/SovereignDigitalTwinPanel';
 import Card from '@/components/ui/Card';
-import { Shield, Brain, Plug, FileText, Lock, Radio, Archive, Tablet, Radio as SensorIcon, Mirror } from 'lucide-react';
+import { Shield, Brain, Plug, FileText, Lock, Radio, Archive, Tablet, Radio as SensorIcon, FlipHorizontal } from 'lucide-react';
+const Mirror = FlipHorizontal;
 
 export default function SovereignFeaturesPage() {
   return (

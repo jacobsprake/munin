@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface ButtonProps {
   children?: ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'authorize';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'authorize' | 'outline';
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
@@ -27,6 +27,7 @@ export default function Button({
     ghost: 'bg-transparent border-transparent text-text-secondary hover:bg-base-800 hover:text-text-primary',
     danger: 'bg-base-800 border-red-500/50 text-red-400 hover:bg-red-500/10',
     authorize: 'bg-safety-cobalt/20 border-safety-cobalt text-safety-cobalt hover:bg-safety-cobalt/30 glow-cobalt border-2',
+    outline: 'bg-transparent border-base-600 text-text-primary hover:bg-base-800',
   };
 
   return (
