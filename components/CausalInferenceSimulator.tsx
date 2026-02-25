@@ -28,7 +28,7 @@ export default function CausalInferenceSimulator() {
             CAUSAL INFERENCE SIMULATOR
           </div>
           <div className="text-body-mono mono text-text-muted">
-            "What-If" Mode
+            &quot;What-If&quot; Mode
           </div>
         </div>
       </div>

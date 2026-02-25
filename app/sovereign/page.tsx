@@ -83,7 +83,7 @@ export default function SovereignFeaturesPage() {
                 <div className="text-label mono font-semibold text-text-primary">5. Sovereign Air-Gap</div>
               </div>
               <div className="text-sm font-mono text-text-secondary">
-                Hardware Data Diodes. The only "Safe AI" for air-gapped infrastructure.
+                Hardware Data Diodes. The only &quot;Safe AI&quot; for air-gapped infrastructure.
               </div>
             </Card>
           </div>
@@ -96,7 +96,7 @@ export default function SovereignFeaturesPage() {
               <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                 <div className="text-xs text-text-muted font-mono mb-2">THE STRATEGIC ADVANTAGE</div>
                 <div className="text-sm font-mono text-text-primary leading-relaxed">
-                  You aren't just selling "secure software"; you are selling <strong>Mathematical Certainty</strong> rooted in atoms. 
+                  You aren&apos;t just selling &quot;secure software&quot;; you are selling <strong>Mathematical Certainty</strong> rooted in atoms. 
                   Even if a rogue admin or foreign state-actor has root access to the server, they <strong>physically cannot</strong> 
                   alter a command or fake a signature.
                 </div>
@@ -121,10 +121,10 @@ export default function SovereignFeaturesPage() {
                   <div className="bg-base-800 p-3 rounded border border-base-700">
                     <div className="text-xs text-text-muted font-mono mb-2">THE COMPETITIVE ADVANTAGE</div>
                     <div className="text-sm font-mono text-text-primary leading-relaxed">
-                      Instead of just correlating "Power Drop" with "Pump Failure," Munin builds a <strong>Counterfactual Simulation</strong>. 
-                      It runs 10,000 "What-If" scenarios per second with 99% probability predictions. Over time, Munin learns the 
-                      "Physics of the State" better than the original engineers. This creates a <strong>Data Network Effect</strong>: 
-                      the more crises you observe, the more your "Causal Map" becomes an uncopyable asset.
+                      Instead of just correlating &quot;Power Drop&quot; with &quot;Pump Failure,&quot; Munin builds a <strong>Counterfactual Simulation</strong>. 
+                      It runs 10,000 &quot;What-If&quot; scenarios per second with 99% probability predictions. Over time, Munin learns the 
+                      &quot;Physics of the State&quot; better than the original engineers. This creates a <strong>Data Network Effect</strong>: 
+                      the more crises you observe, the more your &quot;Causal Map&quot; becomes an uncopyable asset.
                     </div>
                   </div>
                   <div className="text-xs text-text-muted font-mono">
@@ -140,8 +140,8 @@ export default function SovereignFeaturesPage() {
               <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                 <div className="text-xs text-text-muted font-mono mb-2">THE PITCH</div>
                 <div className="text-sm font-mono text-text-primary leading-relaxed">
-                  Tell the Minister: <em>"You don't need to buy new hardware. We drop a Munin Edge-Node into your control room, 
-                  and it 'inhales' your legacy assets in 24 hours."</em> This makes adoption <strong>straightforward</strong> because 
+                  Tell the Minister: <em>&quot;You don&apos;t need to buy new hardware. We drop a Munin Edge-Node into your control room, 
+                  and it &apos;inhales&apos; your legacy assets in 24 hours.&quot;</em> This makes adoption <strong>straightforward</strong> because 
                   it requires minimal infrastructure changes.
                 </div>
               </div>
@@ -156,10 +156,10 @@ export default function SovereignFeaturesPage() {
               <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                 <div className="text-xs text-text-muted font-mono mb-2">THE COMPETITIVE ADVANTAGE</div>
                 <div className="text-sm font-mono text-text-primary leading-relaxed">
-                  The person in a control room doesn't care about "AI"; they care about <strong>not going to jail</strong> if a dam breaks. 
-                  Every Munin Playbook is hard-linked to <strong>National Emergency Statutes</strong>. When a human hits the "Handshake," 
-                  Munin generates a legal certificate: <em>"This action was performed in accordance with Article 4 of the National Water Act."</em> 
-                  You are selling <strong>Legal Protection</strong>. You become the "Insurance Policy" for every bureaucrat in the country.
+                  The person in a control room doesn&apos;t care about &quot;AI&quot;; they care about <strong>not going to jail</strong> if a dam breaks. 
+                  Every Munin Playbook is hard-linked to <strong>National Emergency Statutes</strong>. When a human hits the &quot;Handshake,&quot; 
+                  Munin generates a legal certificate: <em>&quot;This action was performed in accordance with Article 4 of the National Water Act.&quot;</em> 
+                  You are selling <strong>Legal Protection</strong>. You become the &quot;Insurance Policy&quot; for every bureaucrat in the country.
                 </div>
               </div>
             </div>
@@ -170,9 +170,9 @@ export default function SovereignFeaturesPage() {
               <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                 <div className="text-xs text-text-muted font-mono mb-2">THE STRATEGIC ADVANTAGE</div>
                 <div className="text-sm font-mono text-text-primary leading-relaxed">
-                  In 2026, the cloud is a target. Governments want "AI on an Island." Munin is designed to run on hardware that allows 
+                  In 2026, the cloud is a target. Governments want &quot;AI on an Island.&quot; Munin is designed to run on hardware that allows 
                   data to flow <em>in</em> (telemetry) but makes it physically impossible for data to flow <em>out</em> (to the internet). 
-                  This provides a "Safe AI" approach. While many systems send data to cloud servers, Munin 
+                  This provides a &quot;Safe AI&quot; approach. While many systems send data to cloud servers, Munin 
                   <strong> respects the Air-Gap</strong>.
                 </div>
               </div>
@@ -197,7 +197,7 @@ export default function SovereignFeaturesPage() {
                   <div className="text-sm font-mono text-text-primary leading-relaxed">
                     In a total grid collapse or cyberwar, the first thing that fails is the cellular network.
                     Munin-Link Mesh Transceivers create a <strong>private, parallel network</strong> that survives
-                    even when the nation's internet is cut. This provides <strong>Communication Sovereignty</strong>.
+                    even when the nation&apos;s internet is cut. This provides <strong>Communication Sovereignty</strong>.
                   </div>
                 </div>
               </div>
@@ -208,8 +208,8 @@ export default function SovereignFeaturesPage() {
                 <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                   <div className="text-xs text-text-muted font-mono mb-2">THE STRATEGIC VALUE</div>
                   <div className="text-sm font-mono text-text-primary leading-relaxed">
-                    When servers are wiped by ransomware, you don't call IT. You go to the Black-Box, turn the physical key,
-                    and Munin restores the state's brain from a physical master-record. This provides <strong>comprehensive disaster recovery</strong>.
+                    When servers are wiped by ransomware, you don&apos;t call IT. You go to the Black-Box, turn the physical key,
+                    and Munin restores the state&apos;s brain from a physical master-record. This provides <strong>comprehensive disaster recovery</strong>.
                   </div>
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function SovereignFeaturesPage() {
                   <div className="text-xs text-text-muted font-mono mb-2">THE IDENTITY CRISIS SOLUTION</div>
                   <div className="text-sm font-mono text-text-primary leading-relaxed">
                     High-consequence commands require physical, biometric authorization. A hacker in a distant country
-                    can't authorize a disaster because they don't have the physical, biometric <strong>"Key of the State."</strong>
+                    can&apos;t authorize a disaster because they don&apos;t have the physical, biometric <strong>&quot;Key of the State.&quot;</strong>
                     Multi-Factor: Iris + Palm + FIPS 140-3 Token.
                   </div>
                 </div>
@@ -233,9 +233,9 @@ export default function SovereignFeaturesPage() {
                 <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                   <div className="text-xs text-text-muted font-mono mb-2">FUTURE-PROOF SOVEREIGNTY</div>
                   <div className="text-sm font-mono text-text-primary leading-relaxed">
-                    By 2026, standard encryption is vulnerable to "Store Now, Decrypt Later" from quantum computers.
+                    By 2026, standard encryption is vulnerable to &quot;Store Now, Decrypt Later&quot; from quantum computers.
                     Munin-Q sensors use <strong>Post-Quantum Cryptography (NIST FIPS 203/204)</strong> at the hardware level.
-                    This protects the state's data from the quantum threats of the 2030s.
+                    This protects the state&apos;s data from the quantum threats of the 2030s.
                   </div>
                 </div>
               </div>
@@ -246,9 +246,9 @@ export default function SovereignFeaturesPage() {
                 <div className="mt-4 bg-base-800 p-4 rounded border border-base-700">
                   <div className="text-xs text-text-muted font-mono mb-2">SIMULATION-AS-A-SERVICE</div>
                   <div className="text-sm font-mono text-text-primary leading-relaxed">
-                    Governments need to "practice" for catastrophes without breaking things. Munin-Mirror runs stress tests
+                    Governments need to &quot;practice&quot; for catastrophes without breaking things. Munin-Mirror runs stress tests
                     (500-year floods, cyber-attacks on 50% of the grid) and allows officials to rehearse Authoritative Handshakes
-                    in a sandbox. You sell this as a <strong>"National Resilience Audit"</strong> - every year, the government
+                    in a sandbox. You sell this as a <strong>&quot;National Resilience Audit&quot;</strong> - every year, the government
                     pays you to prove they *could* survive a catastrophe.
                   </div>
                 </div>
@@ -261,15 +261,15 @@ export default function SovereignFeaturesPage() {
             <Card variant="packet" className="border-safety-cobalt/50 bg-safety-cobalt/5">
               <div className="text-label mono text-text-muted mb-4">THE CONTRARIAN TRUTH</div>
               <div className="text-panel-title mono font-semibold text-text-primary mb-4">
-                "What is one important truth that very few people agree with you on?"
+                &quot;What is one important truth that very few people agree with you on?&quot;
               </div>
               <div className="bg-base-800 p-6 rounded border border-base-700">
                 <div className="text-body mono text-text-primary leading-relaxed italic">
-                  "Most people believe that the failure of modern infrastructure is an <strong>Engineering</strong> problem that more 
+                  &quot;Most people believe that the failure of modern infrastructure is an <strong>Engineering</strong> problem that more 
                   sensors will solve. I believe it is a <strong>Coordination</strong> problem caused by <strong>Liability Paralysis</strong>. 
                   We already have the data to see every crisis coming, but we have built a bureaucratic culture where it is illegal for 
-                  officials to act at the speed of the grid. The solution isn't another dashboard; it's a <strong>Sovereign Orchestration Layer</strong> 
-                  that pre-validates authority, turning the state back into a high-agency organism that can act as fast as its atoms."
+                  officials to act at the speed of the grid. The solution isn&apos;t another dashboard; it&apos;s a <strong>Sovereign Orchestration Layer</strong> 
+                  that pre-validates authority, turning the state back into a high-agency organism that can act as fast as its atoms.&quot;
                 </div>
               </div>
             </Card>

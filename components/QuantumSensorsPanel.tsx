@@ -177,7 +177,7 @@ export default function QuantumSensorsPanel() {
         <div className="text-xs font-mono text-text-secondary">
           Data is encrypted using Post-Quantum Cryptography (NIST FIPS 203/204)
           at the hardware level before it ever leaves the sensor. Protects against
-          "Store Now, Decrypt Later" attacks from quantum computers.
+          &quot;Store Now, Decrypt Later&quot; attacks from quantum computers.
         </div>
         <div className="flex items-center gap-2 mt-2 text-[10px] font-mono text-safety-emerald">
           <Lock className="w-3 h-3" />

@@ -180,7 +180,7 @@ export default function SovereignMeshPanel() {
         </div>
         <div className="text-xs font-mono text-text-secondary">
           This private mesh network operates independently of the internet.
-          Even if the nation's internet is cut, Munin's nervous system stays alive.
+          Even if the nation&apos;s internet is cut, Munin&apos;s nervous system stays alive.
         </div>
       </div>
     </Card>
