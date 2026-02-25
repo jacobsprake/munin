@@ -28,10 +28,25 @@
 
 ### Testing commands
 
-- JS tests: `npm test` (Jest, 18/18 suites pass, 76/76 tests)
-- Python tests: `source venv/bin/activate && PYTHONPATH=. python -m pytest engine/tests/ -v --ignore=engine/tests/test_brownfield_integration.py --ignore=engine/tests/test_shadow_mode_regression.py`
+- JS tests: `npm test` (Jest, 18/18 suites, 76/76 tests)
+- Python tests: `source venv/bin/activate && PYTHONPATH=engine python -m pytest engine/tests/ -v` (59 pass, 5 skipped)
 - Lint: `npm run lint`
+- Build: `npm run build`
 - Demo: `./demo.sh`
-- Byzantine multi-sig standalone: `python3 engine/byzantine_resilience.py`
-- Sovereign handshake standalone: `python3 engine/sovereign_handshake.py`
-- Shadow link detection: `python3 engine/detect_shadow_link.py`
+
+### Standalone engine modules (all 13 work)
+
+All require `source venv/bin/activate`. Some need `PYTHONPATH=engine` or `PYTHONPATH=.`:
+- `python3 engine/detect_shadow_link.py` — shadow link detection
+- `python3 engine/byzantine_resilience.py` — M-of-N quorum demo
+- `python3 engine/sovereign_handshake.py` — biometric handshake demo
+- `python3 engine/logic_lock.py` — physics constraint validation
+- `python3 engine/cmi_prioritization.py` — civilian-military asset prioritization
+- `python3 engine/physical_verification.py` — RF/acoustic verification
+- `PYTHONPATH=engine python3 engine/safety_plc.py` — hardware safety PLC
+- `PYTHONPATH=engine python3 engine/n_version_programming.py` — N-version diversity
+- `PYTHONPATH=engine python3 engine/digital_asset_vault.py` — EMP-shielded vault
+- `PYTHONPATH=engine python3 engine/sovereign_mesh.py` — sovereign mesh network
+- `PYTHONPATH=engine python3 engine/satellite_verification.py` — satellite truth
+- `PYTHONPATH=. python3 engine/shadow_simulation.py` — shadow mode simulation
+- `PYTHONPATH=engine python3 engine/agentic_reasoning.py` — multi-step recovery plans
