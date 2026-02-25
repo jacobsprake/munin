@@ -152,7 +152,8 @@ class ByzantineResilienceEngine:
         high_consequence_actions = [
             'open_dam', 'close_dam', 'shutdown_grid_sector',
             'divert_water_major', 'isolate_power_station',
-            'emergency_shutdown', 'critical_valve_operation'
+            'emergency_shutdown', 'critical_valve_operation',
+            'black_start'
         ]
         
         is_high_consequence = any(action in action_type.lower() for action in high_consequence_actions)

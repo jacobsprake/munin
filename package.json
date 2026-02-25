@@ -20,6 +20,7 @@
     "node": ">=18 <=22"
   },
   "dependencies": {
+    "@noble/ed25519": "^3.0.0",
     "better-sqlite3": "^9.2.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
