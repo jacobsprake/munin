@@ -1,0 +1,109 @@
+{
+  "nodes": [
+    {
+      "id": "pump_station_01",
+      "sector": "water",
+      "label": "Pump Station 01",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7657071035725331,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "pump_station_02",
+      "sector": "water",
+      "label": "Pump Station 02",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8566683330843212,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "reservoir_alpha",
+      "sector": "water",
+      "label": "Reservoir Alpha",
+      "kind": "reservoir",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.96043805316151,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "reservoir_beta",
+      "sector": "water",
+      "label": "Reservoir Beta",
+      "kind": "reservoir",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7760369300247698,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "substation_north_01",
+      "sector": "power",
+      "label": "Substation North 01",
+      "kind": "substation",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9423690717202836,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "substation_south_01",
+      "sector": "power",
+      "label": "Substation South 01",
+      "kind": "substation",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7956015724980704,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "tower_north_01",
+      "sector": "telecom",
+      "label": "Tower North 01",
+      "kind": "tower",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7051268935238687,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "tower_south_01",
+      "sector": "telecom",
+      "label": "Tower South 01",
+      "kind": "tower",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7850933489492763,
+        "status": "degraded"
+      }
+    }
+  ],
+  "edges": []
+}

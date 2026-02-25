@@ -1,20 +1,13 @@
 /**
  * Utility functions for Munin
+ * Client-safe utilities that can be used in both client and server components
  */
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 /**
- * Get the correct Python executable path
- * Checks for venv/bin/python first, falls back to python3
+ * Merge Tailwind CSS classes with proper precedence
  */
-export function getPythonPath(): string {
-  const root = process.cwd();
-  const venvPython = join(root, 'venv', 'bin', 'python');
-  
-  if (existsSync(venvPython)) {
-    return venvPython;
-  }
-  
-  return 'python3';
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }

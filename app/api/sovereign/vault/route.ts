@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
-import { getPythonPath } from '@/lib/utils';
+import { getPythonPath } from '@/lib/server-utils';
 
 const execAsync = promisify(exec);
 
