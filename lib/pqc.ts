@@ -93,7 +93,13 @@ export async function verifyPQCSignature(
   // In production, use actual PQC verification
   // For demo, we'll verify the signature format and timestamp
   
-  if (!signature.signature.startsWith('PQCSIG-')) {
+  // Decode base64 signature and check prefix
+  try {
+    const decoded = atob(signature.signature);
+    if (!decoded.startsWith('PQCSIG-')) {
+      return false;
+    }
+  } catch {
     return false;
   }
   
