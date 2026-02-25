@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import { engineJobsRepo } from '@/lib/db/repositories';
 import { spawn } from 'child_process';
 import { join } from 'path';
-import { getPythonPath } from '@/lib/utils';
+import { getPythonPath } from '@/lib/serverUtils';
 
 export async function POST(request: Request) {
   try {

@@ -7,7 +7,7 @@ import { packetsRepo, auditLogRepo } from '@/lib/db/repositories';
 import { signWithPQC } from '@/lib/pqc';
 import { signPacketInTEE, detectTEEPlatform } from '@/lib/tee';
 import { generateLegalCertificate } from '@/lib/compliance';
-import { getPythonPath } from '@/lib/utils';
+import { getPythonPath } from '@/lib/serverUtils';
 import yaml from 'js-yaml';
 
 export async function POST(request: Request) {
