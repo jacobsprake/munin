@@ -57,6 +57,7 @@ export default function DigitalTwinShadow({ graphData, onShadowChange }: Digital
       setShadowGraph(null);
       setSimulationTime(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, selectedScenario]);
 
   useEffect(() => {

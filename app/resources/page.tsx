@@ -50,6 +50,7 @@ export default function ResourcesPage() {
     fetchResources();
     const interval = setInterval(fetchResources, 10000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterType, filterSector]);
 
   const fetchResources = async () => {

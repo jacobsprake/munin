@@ -47,6 +47,7 @@ export default function SovereignDigitalTwinPanel() {
 
   useEffect(() => {
     loadDigitalTwinStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDigitalTwinStatus = async () => {

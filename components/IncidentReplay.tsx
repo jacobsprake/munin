@@ -48,6 +48,7 @@ export default function IncidentReplay({ incident, onTimeChange }: IncidentRepla
       const currentTime = parseISO(currentEntry.ts).getTime();
       onTimeChange?.(currentTime);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTimeIndex, timeline, onTimeChange]);
 
   const handlePlay = () => {

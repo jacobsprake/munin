@@ -45,6 +45,7 @@ export function ShadowModeReportPanel() {
 
   useEffect(() => {
     loadReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filterIncidentId]);
 
   const loadReport = async () => {

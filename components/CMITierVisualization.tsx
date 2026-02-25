@@ -27,6 +27,7 @@ export default function CMITierVisualization({
 
   useEffect(() => {
     loadCMITiers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incidentId, impactedNodes]);
 
   const loadCMITiers = async () => {
