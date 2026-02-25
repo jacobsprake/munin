@@ -28,7 +28,10 @@
 
 ### Testing commands
 
-- JS tests: `npm test` (Jest, 17/18 suites pass)
+- JS tests: `npm test` (Jest, 18/18 suites pass, 76/76 tests)
 - Python tests: `source venv/bin/activate && PYTHONPATH=. python -m pytest engine/tests/ -v --ignore=engine/tests/test_brownfield_integration.py --ignore=engine/tests/test_shadow_mode_regression.py`
 - Lint: `npm run lint`
 - Demo: `./demo.sh`
+- Byzantine multi-sig standalone: `python3 engine/byzantine_resilience.py`
+- Sovereign handshake standalone: `python3 engine/sovereign_handshake.py`
+- Shadow link detection: `python3 engine/detect_shadow_link.py`
