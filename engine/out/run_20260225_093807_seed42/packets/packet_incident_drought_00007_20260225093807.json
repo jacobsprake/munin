@@ -1,0 +1,118 @@
+{
+  "id": "packet_incident_drought_00007_20260225093807",
+  "version": 1,
+  "createdTs": "2026-02-25T09:38:07.372856",
+  "firstApprovalTs": null,
+  "authorizedTs": null,
+  "timeToAuthorize": null,
+  "timeToAuthorizeSeconds": null,
+  "status": "ready",
+  "scope": {
+    "regions": [
+      "south"
+    ],
+    "nodeIds": [
+      "reservoir_beta"
+    ]
+  },
+  "situationSummary": "Drought conditions detected. Reservoir levels critical. Predicted impact to 1 dependent nodes.",
+  "proposedAction": "Divert 40% flow from Reservoir Alpha to Reservoir Beta",
+  "regulatoryBasis": "Complies with 2026 Drought Resilience Act, Section 4 Statutory compliance: 2026 Drought Resilience Act, Section 4, Water Resource Management Standards, WRM-2026-03, National Water Act, 4.2.",
+  "playbookId": "drought_reservoir_diversion.yaml",
+  "evidenceRefs": [],
+  "uncertainty": {
+    "overall": 0.3,
+    "notes": [
+      "Limited historical evidence for this scenario"
+    ]
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "9ef4dee58f8ecefdbb2fcdca349936f50a70cb077471f8908d23066f9386a23a"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "outcomeConfidence": 0.95,
+  "outcomeSummary": "95% confidence reservoir diversion limits impact to pre-defined sectors.",
+  "multiSig": {
+    "required": 2,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_drought_00007_20260225093807",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_drought_00007_20260225093807_20260225093807",
+    "issued": "2026-02-25T09:38:07.372969",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "full",
+    "certificateStatement": "This action was performed in accordance with Section 4 of the 2026 Drought Resilience Act: Maintain minimum service levels during declared drought conditions, WRM-2026-03 of the Water Resource Management Standards: Document all diversion actions with evidence and approval chain. The authorized operator is protected under the statutory framework for emergency response actions during declared drought incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "2026 Drought Resilience Act",
+        "section": "Section 4",
+        "article": null,
+        "requirement": "Maintain minimum service levels during declared drought conditions"
+      },
+      {
+        "actName": "Water Resource Management Standards",
+        "section": "WRM-2026-03",
+        "article": null,
+        "requirement": "Document all diversion actions with evidence and approval chain"
+      },
+      {
+        "actName": "National Water Act",
+        "section": "4.2",
+        "article": null,
+        "requirement": "Authorized personnel may take necessary actions to prevent water system failure during declared emergencies"
+      },
+      {
+        "actName": "National Water Act",
+        "section": "4.3",
+        "article": null,
+        "requirement": "Water authorities must coordinate with emergency services during crisis events"
+      },
+      {
+        "actName": "Flood Resilience Act",
+        "section": "4.2",
+        "article": null,
+        "requirement": "Maintain service continuity during declared flood emergencies"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "3a6e1fece619f708ae2883edaa18fb4662387b3d0bcf1c1d96e84b664c27a49c",
+    "packetHash": "362b946f616aa36e8988d7a7528bfebeb978049b4d078c670966b9989f15f139",
+    "receiptHash": "5f25cd1fbf6b18d4e57aa0c6255f639ce70db4f04443207cd083d8d9d0d08da8"
+  }
+}

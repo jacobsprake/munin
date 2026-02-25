@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
-import { getPythonPath } from '@/lib/utils';
+import { getPythonPath } from '@/lib/server-utils';
 
 interface AuditLogEntry {
   timestamp: string;

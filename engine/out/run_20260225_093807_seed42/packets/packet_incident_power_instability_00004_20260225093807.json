@@ -1,0 +1,115 @@
+{
+  "id": "packet_incident_power_instability_00004_20260225093807",
+  "version": 1,
+  "createdTs": "2026-02-25T09:38:07.361684",
+  "firstApprovalTs": null,
+  "authorizedTs": null,
+  "timeToAuthorize": null,
+  "timeToAuthorizeSeconds": null,
+  "status": "ready",
+  "scope": {
+    "regions": [
+      "north"
+    ],
+    "nodeIds": [
+      "substation_north_01"
+    ]
+  },
+  "situationSummary": "Power frequency instability detected. Grid stability at risk. 1 nodes predicted to be impacted.",
+  "proposedAction": "Initiate frequency stabilization protocol and load shedding",
+  "regulatoryBasis": "Complies with NERC Reliability Standards, EOP-011 Statutory compliance: NERC Reliability Standards, EOP-011, Grid Stability Protocols, GSP-2026-02, NERC Reliability Standards, EOP-011.",
+  "playbookId": "power_frequency_instability.yaml",
+  "evidenceRefs": [],
+  "uncertainty": {
+    "overall": 0.3,
+    "notes": [
+      "Limited historical evidence for this scenario"
+    ]
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "9ef4dee58f8ecefdbb2fcdca349936f50a70cb077471f8908d23066f9386a23a"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "outcomeConfidence": 0.95,
+  "outcomeSummary": "95% confidence frequency restored within stability band; load shed minimised.",
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_power_instability_00004_20260225093807",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_power_instability_00004_20260225093807_20260225093807",
+    "issued": "2026-02-25T09:38:07.361797",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "full",
+    "certificateStatement": "This action was performed in accordance with EOP-011 of the NERC Reliability Standards: Maintain frequency within operational limits and coordinate with regional operators, GSP-2026-02 of the Grid Stability Protocols: Document all load shedding actions and restoration procedures. The authorized operator is protected under the statutory framework for emergency response actions during declared power_instability incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      },
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "5bde954bdd714c1bff58e27a5489580b6296273fc091b7191dc6202027d620b2",
+    "packetHash": "edf963ce3a4c0cdbb2e385bd168b3a25f8c42280d24e212f9c12c8561eebb605",
+    "receiptHash": "201a07c9846903b84c5ef1413f3f2e45fbe9af51343fc230038ace3e374b0d82"
+  }
+}

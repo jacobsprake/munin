@@ -1,0 +1,50 @@
+{
+  "engine_config_version": "1.0.0",
+  "seed": 42,
+  "rng_config": {
+    "base_seed": 42,
+    "ingest_seed_offset": 0,
+    "graph_seed_offset": 1000,
+    "incidents_seed_offset": 2000,
+    "synthetic_seed_offset": 3000
+  },
+  "config": {
+    "version": "1.0.0",
+    "graph": {
+      "min_correlation": 0.5,
+      "min_stability": 0.3,
+      "max_lag_seconds": 300,
+      "top_k_edges_per_node": 3,
+      "min_samples_per_pair": 10,
+      "stability_window_hours": 24,
+      "stability_num_windows": 5
+    },
+    "sensor_health": {
+      "max_missing_ratio": 0.1,
+      "min_coefficient_of_variation": 0.01,
+      "drift_mean_diff_multiplier": 2.0,
+      "missingness_weight": 0.4,
+      "noise_weight": 0.3,
+      "drift_weight": 0.2,
+      "skew_weight": 0.1
+    },
+    "evidence": {
+      "window_size_hours": 24,
+      "min_samples_per_window": 10,
+      "min_window_correlation": 0.3
+    },
+    "incidents": {
+      "default_time_horizon_minutes": 120,
+      "confidence_interval_percentile": 0.95
+    },
+    "rng": {
+      "base_seed": 42,
+      "ingest_seed_offset": 0,
+      "graph_seed_offset": 1000,
+      "incidents_seed_offset": 2000,
+      "synthetic_seed_offset": 3000
+    }
+  },
+  "run_id": "run_20260225_093807_seed42",
+  "timestamp": "2026-02-25T09:38:07.210716"
+}

@@ -1,0 +1,572 @@
+{
+  "incidents": [
+    {
+      "id": "incident_flood_00000",
+      "title": "Flood - pump_station_01",
+      "type": "flood",
+      "startTs": "2026-01-01T00:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T00:00:00",
+          "impactedNodeIds": [
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_flood_00001",
+      "title": "Flood - pump_station_02",
+      "type": "flood",
+      "startTs": "2026-01-01T01:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T01:00:00",
+          "impactedNodeIds": [
+            "pump_station_02"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_flood_00002",
+      "title": "Flood - reservoir_alpha",
+      "type": "flood",
+      "startTs": "2026-01-01T02:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T02:00:00",
+          "impactedNodeIds": [
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_flood_00003",
+      "title": "Flood - reservoir_beta",
+      "type": "flood",
+      "startTs": "2026-01-01T03:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T03:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_power_instability_00004",
+      "title": "Power Instability - substation_north_01",
+      "type": "power_instability",
+      "startTs": "2026-01-01T02:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T02:00:00",
+          "impactedNodeIds": [
+            "substation_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_power_instability_00005",
+      "title": "Power Instability - substation_south_01",
+      "type": "power_instability",
+      "startTs": "2026-01-01T03:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T03:00:00",
+          "impactedNodeIds": [
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_drought_00006",
+      "title": "Drought - reservoir_alpha",
+      "type": "drought",
+      "startTs": "2026-01-01T04:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T04:00:00",
+          "impactedNodeIds": [
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_drought_00007",
+      "title": "Drought - reservoir_beta",
+      "type": "drought",
+      "startTs": "2026-01-01T05:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T05:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00008",
+      "title": "Chaos multi-fault pump_station_01 + pump_station_02",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T00:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T00:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00009",
+      "title": "Chaos multi-fault pump_station_01 + reservoir_alpha",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T01:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T01:00:00",
+          "impactedNodeIds": [
+            "reservoir_alpha",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00010",
+      "title": "Chaos multi-fault pump_station_01 + reservoir_beta",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T02:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T02:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00011",
+      "title": "Chaos multi-fault pump_station_02 + reservoir_alpha",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T03:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T03:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00012",
+      "title": "Chaos multi-fault pump_station_02 + reservoir_beta",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T04:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T04:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "reservoir_beta"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00013",
+      "title": "Chaos multi-fault reservoir_alpha + reservoir_beta",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T05:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T05:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00014",
+      "title": "Chaos multi-fault pump_station_01 + substation_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T06:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T06:00:00",
+          "impactedNodeIds": [
+            "substation_north_01",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00015",
+      "title": "Chaos multi-fault pump_station_01 + substation_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T07:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T07:00:00",
+          "impactedNodeIds": [
+            "substation_south_01",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00016",
+      "title": "Chaos multi-fault pump_station_02 + substation_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T08:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T08:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "substation_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00017",
+      "title": "Chaos multi-fault pump_station_02 + substation_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T09:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T09:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00018",
+      "title": "Chaos multi-fault reservoir_alpha + substation_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T10:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T10:00:00",
+          "impactedNodeIds": [
+            "substation_north_01",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00019",
+      "title": "Chaos multi-fault reservoir_alpha + substation_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T11:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T11:00:00",
+          "impactedNodeIds": [
+            "substation_south_01",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00020",
+      "title": "Chaos multi-fault reservoir_beta + substation_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T12:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T12:00:00",
+          "impactedNodeIds": [
+            "substation_north_01",
+            "reservoir_beta"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00021",
+      "title": "Chaos multi-fault reservoir_beta + substation_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T13:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T13:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta",
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00022",
+      "title": "Chaos multi-fault pump_station_01 + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T14:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T14:00:00",
+          "impactedNodeIds": [
+            "tower_north_01",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00023",
+      "title": "Chaos multi-fault pump_station_01 + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T15:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T15:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "pump_station_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00024",
+      "title": "Chaos multi-fault pump_station_02 + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T16:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T16:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "tower_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00025",
+      "title": "Chaos multi-fault pump_station_02 + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T17:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T17:00:00",
+          "impactedNodeIds": [
+            "pump_station_02",
+            "tower_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00026",
+      "title": "Chaos multi-fault reservoir_alpha + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T18:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T18:00:00",
+          "impactedNodeIds": [
+            "tower_north_01",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00027",
+      "title": "Chaos multi-fault reservoir_alpha + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T19:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T19:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "reservoir_alpha"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00028",
+      "title": "Chaos multi-fault reservoir_beta + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T20:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T20:00:00",
+          "impactedNodeIds": [
+            "reservoir_beta",
+            "tower_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00029",
+      "title": "Chaos multi-fault reservoir_beta + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T21:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T21:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "reservoir_beta"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00030",
+      "title": "Chaos multi-fault substation_north_01 + substation_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T22:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T22:00:00",
+          "impactedNodeIds": [
+            "substation_north_01",
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00031",
+      "title": "Chaos multi-fault substation_north_01 + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T23:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T23:00:00",
+          "impactedNodeIds": [
+            "substation_north_01",
+            "tower_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00032",
+      "title": "Chaos multi-fault substation_north_01 + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T00:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T00:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "substation_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00033",
+      "title": "Chaos multi-fault substation_south_01 + tower_north_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T01:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T01:00:00",
+          "impactedNodeIds": [
+            "tower_north_01",
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00034",
+      "title": "Chaos multi-fault substation_south_01 + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T02:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T02:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "substation_south_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "id": "incident_chaos_multi_fault_00035",
+      "title": "Chaos multi-fault tower_north_01 + tower_south_01",
+      "type": "chaos_multi_fault",
+      "startTs": "2026-01-01T03:00:00",
+      "timeline": [
+        {
+          "ts": "2026-01-01T03:00:00",
+          "impactedNodeIds": [
+            "tower_south_01",
+            "tower_north_01"
+          ],
+          "confidence": 0.95
+        }
+      ]
+    }
+  ]
+}

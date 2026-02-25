@@ -1,0 +1,105 @@
+{
+  "id": "packet_incident_chaos_multi_fault_00011_20260225093807",
+  "version": 1,
+  "createdTs": "2026-02-25T09:38:07.387925",
+  "firstApprovalTs": null,
+  "authorizedTs": null,
+  "timeToAuthorize": null,
+  "timeToAuthorizeSeconds": null,
+  "status": "ready",
+  "scope": {
+    "regions": [
+      "north",
+      "unknown"
+    ],
+    "nodeIds": [
+      "pump_station_02",
+      "reservoir_alpha"
+    ]
+  },
+  "situationSummary": "Multi-fault chaos scenario affecting 2 nodes. Cross-sector cascade.",
+  "proposedAction": "Coordinate cross-sector response; isolate fault origins and contain cascade",
+  "regulatoryBasis": "Complies with Civil Contingencies Act 2004, multi-sector coordination Statutory compliance: 2026 Flood Resilience Act, Section 4.2, Water Quality Protection Standards, WQP-2026-01.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": [],
+  "uncertainty": {
+    "overall": 0.3,
+    "notes": [
+      "Limited historical evidence for this scenario"
+    ]
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "9ef4dee58f8ecefdbb2fcdca349936f50a70cb077471f8908d23066f9386a23a"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "outcomeConfidence": 0.95,
+  "outcomeSummary": "95% confidence multi-fault cascade contained with cross-sector coordination.",
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_chaos_multi_fault_00011_20260225093807",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_chaos_multi_fault_00011_20260225093807_20260225093807",
+    "issued": "2026-02-25T09:38:07.388032",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "none",
+    "certificateStatement": "This action was performed in accordance with Section 4.2 of the 2026 Flood Resilience Act: Maintain service continuity during declared flood emergencies, WQP-2026-01 of the Water Quality Protection Standards: Isolate affected systems to prevent contamination spread. The authorized operator is protected under the statutory framework for emergency response actions during declared unknown incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "2026 Flood Resilience Act",
+        "section": "Section 4.2",
+        "article": null,
+        "requirement": "Maintain service continuity during declared flood emergencies"
+      },
+      {
+        "actName": "Water Quality Protection Standards",
+        "section": "WQP-2026-01",
+        "article": null,
+        "requirement": "Isolate affected systems to prevent contamination spread"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "5657fd8a26dcd364aa1d938653bd8ad2b9fcb821445458753d805457cf1610f4",
+    "packetHash": "7950951b48f35aae4d646e7bef162fb24c1cff27dc442b36b29dfbe567e82afa",
+    "receiptHash": "bdbf2d38f67757e67297dd4d35fc971a6e13d569b044e061998799bc032118e0"
+  }
+}
