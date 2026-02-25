@@ -34,11 +34,11 @@ function initializeSchema(database: Database.Database) {
       timestamp DATETIME NOT NULL,
       value REAL NOT NULL,
       source_file TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_node_timestamp (node_id, timestamp),
-      INDEX idx_timestamp (timestamp)
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_node_timestamp ON sensor_readings(node_id, timestamp)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_timestamp ON sensor_readings(timestamp)`);
 
   // Nodes table
   database.exec(`
@@ -138,11 +138,11 @@ function initializeSchema(database: Database.Database) {
       multi_sig_required INTEGER DEFAULT 1,
       multi_sig_threshold INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_merkle_previous (merkle_previous_hash),
-      INDEX idx_merkle_receipt (merkle_receipt_hash)
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_merkle_previous ON handshake_packets(merkle_previous_hash)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_merkle_receipt ON handshake_packets(merkle_receipt_hash)`);
 
   // Audit log table (enhanced with hash chaining and signatures)
   database.exec(`
@@ -277,9 +277,9 @@ function initializeSchema(database: Database.Database) {
     )
   `);
 
-  // Users table
+  // Operators table (login credentials for operators)
   database.exec(`
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS operators (
       id TEXT PRIMARY KEY,
       operator_id TEXT UNIQUE NOT NULL,
       role TEXT NOT NULL,
@@ -301,14 +301,14 @@ function initializeSchema(database: Database.Database) {
       resource_type TEXT,
       user_id TEXT,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      read_at DATETIME,
-      INDEX idx_notifications_user (user_id),
-      INDEX idx_notifications_type (type),
-      INDEX idx_notifications_severity (severity),
-      INDEX idx_notifications_read (read_at),
-      INDEX idx_notifications_created (created_at)
+      read_at DATETIME
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_severity ON notifications(severity)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read_at)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(created_at)`);
 
   // Readiness benchmarks table (NATO-Style Readiness Index)
   database.exec(`
@@ -321,10 +321,10 @@ function initializeSchema(database: Database.Database) {
       scenario_success_rate REAL NOT NULL,
       cascade_containment_rate REAL NOT NULL,
       sector_breakdown TEXT NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_readiness_created (created_at)
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_readiness_created ON readiness_benchmarks(created_at)`);
 
   // Chaos scenarios table
   database.exec(`
@@ -334,11 +334,11 @@ function initializeSchema(database: Database.Database) {
       title TEXT NOT NULL,
       severity REAL NOT NULL,
       impact_metrics TEXT NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      INDEX idx_chaos_type (scenario_type),
-      INDEX idx_chaos_created (created_at)
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_chaos_type ON chaos_scenarios(scenario_type)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_chaos_created ON chaos_scenarios(created_at)`);
 }
 
 export function closeDb() {
