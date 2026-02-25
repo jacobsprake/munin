@@ -121,7 +121,7 @@ export default function DigitalAssetVaultPanel() {
       </div>
 
       <div className="text-body mono text-text-secondary">
-        Physical, EMP-shielded vaults that store immutable snapshots of the system's
+        Physical, EMP-shielded vaults that store immutable snapshots of the system&apos;s
         clean logic and Asset-Dependency Graph. When servers are wiped, restore from
         the Black-Box.
       </div>
@@ -226,9 +226,9 @@ export default function DigitalAssetVaultPanel() {
           <div className="text-label mono text-safety-amber">CIVILIZATION-LEVEL DISASTER RECOVERY</div>
         </div>
         <div className="text-xs font-mono text-text-secondary">
-          When the sirens go off and the servers are wiped, you don't call IT.
+          When the sirens go off and the servers are wiped, you don&apos;t call IT.
           You go to the Black-Box, turn the physical key, and Munin restores
-          the state's brain from a physical master-record.
+          the state&apos;s brain from a physical master-record.
         </div>
       </div>
     </Card>

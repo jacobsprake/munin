@@ -18,16 +18,13 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
 }
 
-// Polyfill Web Crypto API for hash/merkle/pqc tests
-// jsdom defines crypto but without subtle; override with Node's webcrypto
+// Polyfill Web Crypto API (jsdom lacks crypto.subtle)
 const { webcrypto } = require('crypto');
-if (!globalThis.crypto?.subtle) {
-  Object.defineProperty(globalThis, 'crypto', {
-    value: webcrypto,
-    writable: true,
-    configurable: true,
-  });
-}
+Object.defineProperty(globalThis, 'crypto', {
+  value: webcrypto,
+  writable: true,
+  configurable: true,
+});
 
 // Polyfill btoa/atob for PQC tests
 if (typeof globalThis.btoa === 'undefined') {

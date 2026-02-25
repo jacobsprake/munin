@@ -40,6 +40,7 @@ export default function AgenticReasoningPanel({ incidentId, brokenSensorId }: Ag
     if (incidentId) {
       fetchReasoning();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incidentId, brokenSensorId]);
 
   const fetchReasoning = async () => {

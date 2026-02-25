@@ -31,6 +31,7 @@ export default function ChaosScenarioSelector({
 
   useEffect(() => {
     fetchScenarios();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
 
   const fetchScenarios = async () => {

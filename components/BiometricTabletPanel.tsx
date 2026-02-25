@@ -101,8 +101,8 @@ export default function BiometricTabletPanel() {
       <div className="text-body mono text-text-secondary">
         The ONLY device that can authorize high-consequence commands. Uses
         Multi-Factor Biometrics (Iris + Palm) and FIPS 140-3 Security Token.
-        Prevents remote sabotage - hackers can't authorize disasters without
-        the physical, biometric "Key of the State."
+        Prevents remote sabotage - hackers can&apos;t authorize disasters without
+        the physical, biometric &quot;Key of the State.&quot;
       </div>
 
       {tabletStatus ? (

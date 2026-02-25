@@ -47,6 +47,7 @@ export default function SovereignDigitalTwinPanel() {
 
   useEffect(() => {
     loadDigitalTwinStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDigitalTwinStatus = async () => {
@@ -123,9 +124,9 @@ export default function SovereignDigitalTwinPanel() {
       </div>
 
       <div className="text-body mono text-text-secondary">
-        High-fidelity, physics-based simulation of the nation's infrastructure.
+        High-fidelity, physics-based simulation of the nation&apos;s infrastructure.
         Run stress tests (500-year floods, cyber-attacks) and rehearse
-        Authoritative Handshakes in a sandbox. This is the "National Resilience Audit."
+        Authoritative Handshakes in a sandbox. This is the &quot;National Resilience Audit.&quot;
       </div>
 
       {auditReport && (

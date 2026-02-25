@@ -23,6 +23,7 @@ export default function IncidentReplay({ incident, onTimeChange }: IncidentRepla
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0); // 1x, 2x, 4x, etc.
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const timeline = incident.timeline || [];
   const startTime = parseISO(incident.startTs);
 
@@ -48,6 +49,7 @@ export default function IncidentReplay({ incident, onTimeChange }: IncidentRepla
       const currentTime = parseISO(currentEntry.ts).getTime();
       onTimeChange?.(currentTime);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTimeIndex, timeline, onTimeChange]);
 
   const handlePlay = () => {

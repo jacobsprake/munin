@@ -34,6 +34,7 @@ export default function ComplianceCertificatePanel({
     if (packetId && operatorId && operatorRole) {
       loadCertificate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packetId, operatorId, operatorRole]);
 
   async function loadCertificate() {

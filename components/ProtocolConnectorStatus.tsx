@@ -40,7 +40,7 @@ export default function ProtocolConnectorStatus() {
           <div className="text-xs text-text-muted font-mono mb-2">THE LIBRARY OF ANCESTRY</div>
           <div className="text-sm font-mono text-text-primary leading-relaxed">
             Pre-built drivers for every legacy industrial protocol. Drop a Munin Edge-Node 
-            into your control room, and it 'inhales' your legacy assets in 24 hours. 
+            into your control room, and it &apos;inhales&apos; your legacy assets in 24 hours. 
             No hardware replacement required.
           </div>
         </div>

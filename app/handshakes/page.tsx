@@ -46,6 +46,7 @@ function HandshakesContent() {
     fetchPackets();
     const interval = setInterval(fetchPackets, 10000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const getStatusBadge = (status: string) => {

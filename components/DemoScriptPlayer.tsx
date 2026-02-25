@@ -62,7 +62,7 @@ export default function DemoScriptPlayer({ scriptId, onClose }: DemoScriptPlayer
     return (
       <Card>
         <div className="p-4 text-center text-muted-foreground">
-          Demo script '{scriptId}' not found
+          Demo script &apos;{scriptId}&apos; not found
         </div>
       </Card>
     );

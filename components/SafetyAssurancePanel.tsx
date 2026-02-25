@@ -83,7 +83,7 @@ export default function SafetyAssurancePanel() {
       <div className="bg-base-900 p-6 rounded border border-base-700">
         <div className="text-label mono text-text-muted mb-4">HIGH-ASSURANCE STACK</div>
         <div className="text-sm font-mono text-text-primary leading-relaxed mb-4">
-          Preventing the "Stuxnet" Moment: Mathematical Certainty + Physical Constraints
+          Preventing the &quot;Stuxnet&quot; Moment: Mathematical Certainty + Physical Constraints
         </div>
       </div>
 
@@ -211,7 +211,7 @@ export default function SafetyAssurancePanel() {
           <div>✓ Soak Tested: 99.999% correlation with safe outcomes before production</div>
         </div>
         <div className="mt-4 text-xs text-text-muted italic">
-          "We don't 'test' our Authoritative Handshake; we have a Mathematical Proof that the command packet cannot be altered or spoofed, even if the OS is compromised."
+          &quot;We don&apos;t &apos;test&apos; our Authoritative Handshake; we have a Mathematical Proof that the command packet cannot be altered or spoofed, even if the OS is compromised.&quot;
         </div>
       </div>
     </div>
