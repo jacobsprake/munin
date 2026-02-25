@@ -45,10 +45,24 @@ ENV/
 .venv
 
 # engine outputs
+/engine/out/run_*/
+/engine/out/demo_carlisle/
 /engine/out/*.json
+/engine/out/*.csv
 /engine/out/*.parquet
 /engine/out/packets/*.json
 /engine/out/audit.jsonl
+/engine/out/shadow_links.json
+/engine/out/test_audit/
+/engine/out/test_audit.jsonl
+/engine/out/test_report.md
+
+# debug logs
+.cursor/debug.log
+
+# temp files
+babel.config.js.bak
+scenarios_analysis.md
 
 # database
 /data/*.db

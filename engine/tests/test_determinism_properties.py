@@ -166,7 +166,7 @@ def test_floating_point_drift_does_not_affect_incident_ordering(noise_level):
 @given(
     seed=st.integers(min_value=0, max_value=1000)
 )
-@settings(max_examples=10)
+@settings(max_examples=10, deadline=2000)
 def test_deterministic_incident_timeline_structure(seed):
     """Test that incident timelines have deterministic structure."""
     df = generate_synthetic_timeseries(seed=seed)

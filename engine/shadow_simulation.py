@@ -21,7 +21,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
-from engine.domain_registry import DomainRegistry, default_registry
+try:
+    from engine.domain_registry import DomainRegistry, default_registry
+except ImportError:
+    from domain_registry import DomainRegistry, default_registry
 
 
 @dataclass

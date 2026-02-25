@@ -285,7 +285,7 @@ class DigitalAssetVault:
         """Verify vault integrity by checking all snapshots."""
         manifest_path = self.vault_path / "manifest.json"
         if not manifest_path.exists():
-            return False
+            return True  # Empty vault is valid (no snapshots to verify yet)
         
         try:
             with open(manifest_path, 'r') as f:

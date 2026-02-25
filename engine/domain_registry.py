@@ -4,9 +4,14 @@ Domain registry for multi-domain support.
 Maps domains to handlers, cost models, and playbooks.
 """
 from typing import Dict, List, Optional, Type
-from engine.domains.water import WaterDomainHandler
-from engine.domains.power import PowerDomainHandler
-from engine.domains.transport import TransportDomainHandler
+try:
+    from engine.domains.water import WaterDomainHandler
+    from engine.domains.power import PowerDomainHandler
+    from engine.domains.transport import TransportDomainHandler
+except ImportError:
+    from domains.water import WaterDomainHandler
+    from domains.power import PowerDomainHandler
+    from domains.transport import TransportDomainHandler
 
 
 class DomainRegistry:

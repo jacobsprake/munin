@@ -287,10 +287,10 @@ class SafetyPLC:
             return self._check_state_dependency(command, invariant)
         
         elif invariant.invariant_type == PhysicalInvariantType.RATE_LIMIT:
-            return self._check_rate_limit(command, invariant, parameters)
+            return self._check_rate_limit(command, invariant)
         
         elif invariant.invariant_type == PhysicalInvariantType.MATERIAL_LIMIT:
-            return self._check_material_limit(command, invariant, parameters)
+            return self._check_material_limit(command, invariant)
         
         elif invariant.invariant_type == PhysicalInvariantType.CONSERVATION_LAW:
             return self._check_conservation_law(command, invariant)
