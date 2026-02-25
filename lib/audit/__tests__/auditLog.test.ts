@@ -13,12 +13,22 @@ import {
 } from '../auditLog';
 import { createDecision, signDecision, getDecision, createDecisionMessage } from '../decisions';
 import { registerUser, rotateUserKey, revokeUserKey } from '../keyManagement';
-import { signMessage, verifySignature, generateKeyPair, hasRealEd25519 } from '../ed25519';
+import { signMessage, verifySignature, generateKeyPair, generateKeyPairSync, signMessageSync, hasRealEd25519 } from '../ed25519';
 
 describe('Audit Log System', () => {
   beforeEach(() => {
-    // Clear audit log before each test
-    // In production, use test database
+    // Clear test tables before each test
+    try {
+      const { getDb } = require('../../db');
+      const db = getDb();
+      db.exec('DELETE FROM audit_log');
+      db.exec('DELETE FROM decisions');
+      db.exec('DELETE FROM decision_signatures');
+      db.exec('DELETE FROM users');
+      db.exec('DELETE FROM checkpoints');
+    } catch {
+      // DB may not be initialized yet
+    }
   });
 
   describe('Canonical JSON', () => {
@@ -261,10 +271,10 @@ describe('Audit Log System', () => {
 
   describe('Key Management', () => {
     it('should support key rotation', () => {
-      const { publicKey: oldKey, privateKey: oldPrivate } = generateKeyPair();
+      const { publicKey: oldKey, privateKey: oldPrivate } = generateKeyPairSync();
       const user = registerUser('Test User', 'OPERATOR', oldKey, 'key_old');
       
-      const { publicKey: newKey } = generateKeyPair();
+      const { publicKey: newKey } = generateKeyPairSync();
       const rotated = rotateUserKey(user.user_id, newKey, 'key_new');
       
       expect(rotated.key_id).toBe('key_new');
@@ -272,8 +282,8 @@ describe('Audit Log System', () => {
       expect(rotated.key_status).toBe('ACTIVE');
     });
 
-    it('should prevent signing with revoked key', () => {
-      const { publicKey, privateKey } = generateKeyPair();
+    it('should prevent signing with revoked key', async () => {
+      const { publicKey, privateKey } = generateKeyPairSync();
       const user = registerUser('Test User', 'OPERATOR', publicKey, 'key_001');
       
       // Revoke key
@@ -294,11 +304,11 @@ describe('Audit Log System', () => {
         scope: {},
         created_at: decision.created_at.toISOString()
       });
-      const signature = signMessage(message, privateKey);
+      const signature = signMessageSync(message, privateKey);
       
-      expect(() => {
-        signDecision(decision.decision_id, user.user_id, signature, 'key_001', 'TEST', {});
-      }).toThrow('not active');
+      await expect(async () => {
+        await signDecision(decision.decision_id, user.user_id, signature, 'key_001', 'TEST', {});
+      }).rejects.toThrow('not active');
     });
   });
 

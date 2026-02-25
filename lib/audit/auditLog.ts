@@ -176,11 +176,13 @@ export function appendAuditLogEntry(
   const id = randomBytes(16).toString('hex');
   const ts = new Date();
   
+  const sequenceNumber = getCurrentSequenceNumber() + 1;
+  
   db.prepare(`
     INSERT INTO audit_log (
       id, ts, event_type, payload_json, prev_hash, entry_hash, 
-      signer_id, signature, key_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      signer_id, signature, key_id, sequence_number
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id,
     ts.toISOString(),
@@ -190,7 +192,8 @@ export function appendAuditLogEntry(
     entryHash,
     signerId || null,
     signature || null,
-    keyId || null
+    keyId || null,
+    sequenceNumber
   );
   
   return {
@@ -217,7 +220,7 @@ export function verifyChainIntegrity(): {
   const db = getDb();
   const entries = db.prepare(`
     SELECT * FROM audit_log 
-    ORDER BY ts ASC, id ASC
+    ORDER BY sequence_number ASC, ts ASC
   `).all() as any[];
   
   const errors: string[] = [];
@@ -225,8 +228,11 @@ export function verifyChainIntegrity(): {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     
-    // Canonicalize payload
-    const canonicalPayload = canonicalizeJSON(entry.payload_json);
+    // Canonicalize payload (stored as JSON string in DB, parse first)
+    const payloadObj = typeof entry.payload_json === 'string' 
+      ? JSON.parse(entry.payload_json) 
+      : entry.payload_json;
+    const canonicalPayload = canonicalizeJSON(payloadObj);
     
     // Recompute entry hash
     const expectedEntryHash = computeEntryHash(

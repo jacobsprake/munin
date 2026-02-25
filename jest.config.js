@@ -13,6 +13,10 @@ const config = {
     '**/?(*.)+(spec|test).ts',
     '**/?(*.)+(spec|test).tsx',
   ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/tests/e2e/',
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

@@ -156,6 +156,7 @@ function initializeSchema(database: Database.Database) {
       signer_id TEXT,
       signature TEXT,
       key_id TEXT,
+      sequence_number INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
