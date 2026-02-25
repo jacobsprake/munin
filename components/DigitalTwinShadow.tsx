@@ -146,7 +146,7 @@ export default function DigitalTwinShadow({ graphData, onShadowChange }: Digital
       {!isActive ? (
         <div className="space-y-3">
           <div className="text-body mono text-text-secondary">
-            Run "What-If" scenarios in a parallel shadow environment while the live grid continues operating.
+            Run &quot;What-If&quot; scenarios in a parallel shadow environment while the live grid continues operating.
           </div>
           
           <div className="text-label mono text-text-muted mb-2">AVAILABLE SCENARIOS:</div>

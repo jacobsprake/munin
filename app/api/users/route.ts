@@ -9,7 +9,7 @@ import { getDb } from '@/lib/db';
 export async function GET(request: Request) {
   try {
     const db = getDb();
-    const users = db.prepare('SELECT id, operator_id, role, created_at, last_login_at FROM users ORDER BY created_at DESC').all() as any[];
+    const users = db.prepare('SELECT id, operator_id, role, created_at, last_login_at FROM operators ORDER BY created_at DESC').all() as any[];
     
     return NextResponse.json({
       success: true,

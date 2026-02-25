@@ -16,7 +16,7 @@ export async function PUT(
     const userId = params.id;
 
     const db = getDb();
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    const user = db.prepare('SELECT * FROM operators WHERE id = ?').get(userId) as any;
 
     if (!user) {
       return NextResponse.json(
@@ -34,16 +34,16 @@ export async function PUT(
           { status: 400 }
         );
       }
-      db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, userId);
+      db.prepare('UPDATE operators SET role = ? WHERE id = ?').run(role, userId);
     }
 
     // Update passphrase if provided
     if (passphrase) {
       const passphraseHash = await hashPassphrase(passphrase);
-      db.prepare('UPDATE users SET passphrase_hash = ? WHERE id = ?').run(passphraseHash, userId);
+      db.prepare('UPDATE operators SET passphrase_hash = ? WHERE id = ?').run(passphraseHash, userId);
     }
 
-    const updatedUser = db.prepare('SELECT id, operator_id, role, created_at, last_login_at FROM users WHERE id = ?').get(userId) as any;
+    const updatedUser = db.prepare('SELECT id, operator_id, role, created_at, last_login_at FROM operators WHERE id = ?').get(userId) as any;
 
     return NextResponse.json({
       success: true,
@@ -72,7 +72,7 @@ export async function DELETE(
     const userId = params.id;
     const db = getDb();
 
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as any;
+    const user = db.prepare('SELECT * FROM operators WHERE id = ?').get(userId) as any;
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -81,7 +81,7 @@ export async function DELETE(
     }
 
     // Delete user
-    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    db.prepare('DELETE FROM operators WHERE id = ?').run(userId);
 
     return NextResponse.json({
       success: true,

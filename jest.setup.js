@@ -18,6 +18,20 @@ if (typeof globalThis.ReadableStream === 'undefined') {
   }
 }
 
+// Polyfill Web Crypto API (jsdom lacks crypto.subtle)
+const { webcrypto } = require('crypto');
+Object.defineProperty(globalThis, 'crypto', {
+  value: webcrypto,
+  writable: true,
+  configurable: true,
+});
+
+// Polyfill btoa/atob for PQC tests
+if (typeof globalThis.btoa === 'undefined') {
+  globalThis.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
+  globalThis.atob = (b64) => Buffer.from(b64, 'base64').toString('binary');
+}
+
 // Polyfill Web API Request/Response for Next.js API route tests (Jest runs in Node)
 if (typeof globalThis.Request === 'undefined') {
   const { Request, Response, Headers } = require('undici');

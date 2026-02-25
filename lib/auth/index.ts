@@ -32,7 +32,7 @@ export async function verifyPassphrase(passphrase: string, hash: string): Promis
  */
 export async function authenticate(operatorId: string, passphrase: string): Promise<AuthUser | null> {
   const db = getDb();
-  const user: any = db.prepare('SELECT * FROM users WHERE operator_id = ?').get(operatorId);
+  const user: any = db.prepare('SELECT * FROM operators WHERE operator_id = ?').get(operatorId);
   
   if (!user) {
     return null;
@@ -44,7 +44,7 @@ export async function authenticate(operatorId: string, passphrase: string): Prom
   }
 
   // Update last login
-  db.prepare('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
+  db.prepare('UPDATE operators SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
 
   return {
     id: user.id,
@@ -62,7 +62,7 @@ export async function createUser(operatorId: string, passphrase: string, role: s
   const id = randomUUID();
 
   db.prepare(`
-    INSERT INTO users (id, operator_id, role, passphrase_hash)
+    INSERT INTO operators (id, operator_id, role, passphrase_hash)
     VALUES (?, ?, ?, ?)
   `).run(id, operatorId, role, passphraseHash);
 
@@ -78,7 +78,7 @@ export async function createUser(operatorId: string, passphrase: string, role: s
  */
 export function userExists(operatorId: string): boolean {
   const db = getDb();
-  const user: any = db.prepare('SELECT id FROM users WHERE operator_id = ?').get(operatorId);
+  const user: any = db.prepare('SELECT id FROM operators WHERE operator_id = ?').get(operatorId);
   return !!user;
 }
 
@@ -87,7 +87,7 @@ export function userExists(operatorId: string): boolean {
  */
 export function getUser(operatorId: string): AuthUser | null {
   const db = getDb();
-  const user: any = db.prepare('SELECT * FROM users WHERE operator_id = ?').get(operatorId);
+  const user: any = db.prepare('SELECT * FROM operators WHERE operator_id = ?').get(operatorId);
   
   if (!user) {
     return null;

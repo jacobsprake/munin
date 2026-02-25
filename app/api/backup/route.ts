@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         packets: db.prepare('SELECT * FROM handshake_packets').all(),
         decisions: db.prepare('SELECT * FROM decisions').all(),
         audit_log: db.prepare('SELECT * FROM audit_log ORDER BY ts ASC').all(),
-        users: db.prepare('SELECT id, operator_id, role, created_at FROM users').all(), // Exclude passwords
+        operators: db.prepare('SELECT id, operator_id, role, created_at FROM operators').all(), // Exclude passwords
       }
     };
     
