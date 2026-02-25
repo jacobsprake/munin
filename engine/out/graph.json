@@ -1,0 +1,325 @@
+{
+  "nodes": [
+    {
+      "id": "pump_station_01",
+      "sector": "water",
+      "label": "Pump Station 01",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7657071035725331,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "reservoir_alpha",
+      "sector": "water",
+      "label": "Reservoir Alpha",
+      "kind": "reservoir",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.96043805316151,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "substation_north_01",
+      "sector": "power",
+      "label": "Substation North 01",
+      "kind": "substation",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9423690717202836,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "substation_south_01",
+      "sector": "power",
+      "label": "Substation South 01",
+      "kind": "substation",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7956015724980704,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "tower_north_01",
+      "sector": "telecom",
+      "label": "Tower North 01",
+      "kind": "tower",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7051268935238687,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "treatment_plant_01",
+      "sector": "other",
+      "label": "Treatment Plant 01",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.950858386969391,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "water_pressure_01",
+      "sector": "other",
+      "label": "Water Pressure 01",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8038177383073432,
+        "status": "warning"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_0000",
+      "source": "pump_station_01",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.9491565613961185,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.690647290319533,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0001",
+      "source": "pump_station_01",
+      "target": "treatment_plant_01",
+      "confidenceScore": 0.9457584530816393,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_2"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.7157566899282849,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0002",
+      "source": "pump_station_01",
+      "target": "tower_north_01",
+      "confidenceScore": 0.8810497809101328,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_3"
+      ],
+      "isShadowLink": true,
+      "stabilityScore": 0.3730873312551495,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0003",
+      "source": "reservoir_alpha",
+      "target": "treatment_plant_01",
+      "confidenceScore": 0.899145390685477,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_4"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.6718310388517137,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0004",
+      "source": "reservoir_alpha",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.7398856341680223,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_5"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.46206241590531816,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0006",
+      "source": "substation_north_01",
+      "target": "substation_south_01",
+      "confidenceScore": 0.8375559095196533,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_7"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.3966422889941453,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0007",
+      "source": "substation_north_01",
+      "target": "tower_north_01",
+      "confidenceScore": 0.7825510320790593,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_8"
+      ],
+      "isShadowLink": true,
+      "stabilityScore": 0.34092227759845767,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0008",
+      "source": "substation_north_01",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.7193869961189456,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_9"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.40626708014439145,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0009",
+      "source": "substation_south_01",
+      "target": "tower_north_01",
+      "confidenceScore": 0.7426323863237528,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_10"
+      ],
+      "isShadowLink": true,
+      "stabilityScore": 0.3967465621075827,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0010",
+      "source": "substation_south_01",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.7362061340483094,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_11"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.5797752671153618,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0011",
+      "source": "substation_south_01",
+      "target": "treatment_plant_01",
+      "confidenceScore": 0.664615780345678,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_12"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.5163596621141601,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0012",
+      "source": "tower_north_01",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.9470945402157059,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_13"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.41865260188804865,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0013",
+      "source": "tower_north_01",
+      "target": "treatment_plant_01",
+      "confidenceScore": 0.8389883407309711,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_14"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.3296082900048407,
+      "evidenceWindowCount": 2,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0014",
+      "source": "treatment_plant_01",
+      "target": "water_pressure_01",
+      "confidenceScore": 0.9529617546839654,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_15"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.6765540159611302,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    }
+  ]
+}

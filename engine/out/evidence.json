@@ -1,0 +1,228 @@
+{
+  "windows": [
+    {
+      "id": "ev_0000",
+      "edgeId": "edge_0000",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.9432763588661339,
+      "lagSeconds": 300,
+      "robustness": 0.9491565613961185,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.06736037791530304
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0001",
+      "edgeId": "edge_0001",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.9370290265591308,
+      "lagSeconds": 300,
+      "robustness": 0.9457584530816393,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.06736037791530304
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0002",
+      "edgeId": "edge_0002",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.864682285633446,
+      "lagSeconds": 300,
+      "robustness": 0.8810497809101328,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.06736037791530304
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0003",
+      "edgeId": "edge_0003",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.8763163145401567,
+      "lagSeconds": 300,
+      "robustness": 0.899145390685477,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.10671682640305354
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0004",
+      "edgeId": "edge_0004",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.7082455574699958,
+      "lagSeconds": 300,
+      "robustness": 0.7398856341680223,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.10671682640305354
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0005",
+      "edgeId": "edge_0006",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.823912934408321,
+      "lagSeconds": 300,
+      "robustness": 0.8375559095196533,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 0.9922455812201215,
+        "driftScore": 0.12234641521093213
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0006",
+      "edgeId": "edge_0007",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.770532138869074,
+      "lagSeconds": 300,
+      "robustness": 0.7825510320790593,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.12234641521093213
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0007",
+      "edgeId": "edge_0008",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.6970752244414142,
+      "lagSeconds": 300,
+      "robustness": 0.7193869961189456,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.12234641521093213
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0008",
+      "edgeId": "edge_0009",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.7426323863237528,
+      "lagSeconds": 0,
+      "robustness": 0.7426323863237528,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 0.9922455812201215,
+        "driftScore": 0.06934091820755538
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0009",
+      "edgeId": "edge_0010",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.7271924516079673,
+      "lagSeconds": 300,
+      "robustness": 0.7362061340483094,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 0.9922455812201215,
+        "driftScore": 0.06934091820755538
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0010",
+      "edgeId": "edge_0011",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.6456794626794138,
+      "lagSeconds": 300,
+      "robustness": 0.664615780345678,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 0.9922455812201215,
+        "driftScore": 0.06934091820755538
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0011",
+      "edgeId": "edge_0012",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.9345017106563374,
+      "lagSeconds": 300,
+      "robustness": 0.9470945402157059,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.19858050174240127
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0012",
+      "edgeId": "edge_0013",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.8131500700644054,
+      "lagSeconds": 300,
+      "robustness": 0.8389883407309711,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.19858050174240127
+      },
+      "supportType": "support"
+    },
+    {
+      "id": "ev_0013",
+      "edgeId": "edge_0014",
+      "startTs": "2026-01-01T00:00:00",
+      "endTs": "2026-01-02T23:59:00",
+      "correlation": 0.9379296378553903,
+      "lagSeconds": 300,
+      "robustness": 0.9529617546839654,
+      "notes": "Window 1/1: 2880 samples",
+      "qualityContext": {
+        "missingness": 0.0,
+        "noiseScore": 1.0,
+        "driftScore": 0.029373037907624737
+      },
+      "supportType": "support"
+    }
+  ]
+}

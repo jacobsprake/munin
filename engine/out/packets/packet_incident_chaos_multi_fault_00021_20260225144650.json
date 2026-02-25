@@ -1,0 +1,115 @@
+{
+  "id": "packet_incident_chaos_multi_fault_00021_20260225144650",
+  "version": 1,
+  "createdTs": "2026-02-25T14:46:50.701663",
+  "firstApprovalTs": null,
+  "authorizedTs": null,
+  "timeToAuthorize": null,
+  "timeToAuthorizeSeconds": null,
+  "status": "ready",
+  "scope": {
+    "regions": [
+      "north",
+      "unknown",
+      "south"
+    ],
+    "nodeIds": [
+      "substation_south_01",
+      "tower_north_01",
+      "treatment_plant_01",
+      "water_pressure_01"
+    ]
+  },
+  "situationSummary": "Multi-fault chaos scenario affecting 4 nodes. Cross-sector cascade.",
+  "proposedAction": "Coordinate cross-sector response; isolate fault origins and contain cascade",
+  "regulatoryBasis": "Complies with Civil Contingencies Act 2004, multi-sector coordination Statutory compliance: 2026 Flood Resilience Act, Section 4.2, Water Quality Protection Standards, WQP-2026-01.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": [
+    "ev_0000",
+    "ev_0001",
+    "ev_0002",
+    "ev_0003",
+    "ev_0004"
+  ],
+  "uncertainty": {
+    "overall": 0.1687865218351836,
+    "notes": []
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "2e406290489a2d6225f23f11adeef92f354d6cfe43c94a07e006b1a4824e9b21"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "outcomeConfidence": 0.95,
+  "outcomeSummary": "95% confidence multi-fault cascade contained with cross-sector coordination.",
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_chaos_multi_fault_00021_20260225144650",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_chaos_multi_fault_00021_20260225144650_20260225144650",
+    "issued": "2026-02-25T14:46:50.701880",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "none",
+    "certificateStatement": "This action was performed in accordance with Section 4.2 of the 2026 Flood Resilience Act: Maintain service continuity during declared flood emergencies, WQP-2026-01 of the Water Quality Protection Standards: Isolate affected systems to prevent contamination spread. The authorized operator is protected under the statutory framework for emergency response actions during declared unknown incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "2026 Flood Resilience Act",
+        "section": "Section 4.2",
+        "article": null,
+        "requirement": "Maintain service continuity during declared flood emergencies"
+      },
+      {
+        "actName": "Water Quality Protection Standards",
+        "section": "WQP-2026-01",
+        "article": null,
+        "requirement": "Isolate affected systems to prevent contamination spread"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "b085ee3452b9035a9fc6fc01e689a75aad17bb3b9ace9179c39b038683fa7f23",
+    "packetHash": "adb96d54008e9e56f0f8fb5df8303bed6ca0b948d1fdb226d193a529bebfb4b8",
+    "receiptHash": "1634dace8ee530b41cd59de4336f1546eb5e8f9bf5f748cd91186189f8ddf61b"
+  },
+  "metadata": {
+    "decision_id": "76b34132b64338e2d85e8beac877d3f9"
+  }
+}
