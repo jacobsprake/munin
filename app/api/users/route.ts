@@ -32,8 +32,9 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const db = getDb();
     const body = await request.json();
-    const { operator_id, passphrase, role } = body;
+    const { operator_id, passphrase, role, ministry_id, clearance_level } = body;
 
     if (!operator_id || !passphrase || !role) {
       return NextResponse.json(
@@ -43,12 +44,23 @@ export async function POST(request: Request) {
     }
 
     // Validate role
-    const validRoles = ['operator', 'admin', 'viewer', 'ministry_of_defense', 'defense', 'water_authority', 'power_grid_operator', 'regulatory_compliance', 'emergency_services'];
+    const validRoles = ['operator', 'admin', 'viewer', 'supervisor', 'regulator', 'sovereign_architect', 'ministry_of_defense', 'defense', 'water_authority', 'power_grid_operator', 'regulatory_compliance', 'emergency_services'];
     if (!validRoles.includes(role)) {
       return NextResponse.json(
         { error: `Invalid role. Must be one of: ${validRoles.join(', ')}` },
         { status: 400 }
       );
+    }
+
+    // If ministry_id provided, verify it exists
+    if (ministry_id) {
+      const ministry = db.prepare('SELECT id FROM ministries WHERE id = ?').get(ministry_id);
+      if (!ministry) {
+        return NextResponse.json(
+          { error: 'Ministry not found' },
+          { status: 404 }
+        );
+      }
     }
 
     // Check if user already exists
@@ -59,8 +71,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create user
-    const user = await createUser(operator_id, passphrase, role);
+    // Create user with ministry affiliation
+    const user = await createUser(operator_id, passphrase, role, ministry_id, clearance_level);
 
     return NextResponse.json({
       success: true,

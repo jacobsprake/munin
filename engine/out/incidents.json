@@ -16,8 +16,8 @@
         {
           "ts": "2026-01-01T00:05:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 3.0598392890232033
@@ -63,8 +63,8 @@
         {
           "ts": "2026-01-01T02:03:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "substation_south_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 2.348402873348038
@@ -142,8 +142,8 @@
         {
           "ts": "2026-01-01T00:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 3.0598392890232033
@@ -167,9 +167,9 @@
         {
           "ts": "2026-01-01T01:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "substation_south_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 2.472860097540329
@@ -193,8 +193,8 @@
         {
           "ts": "2026-01-01T02:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 3.0598392890232033
@@ -210,17 +210,17 @@
         {
           "ts": "2026-01-01T03:00:00",
           "impactedNodeIds": [
-            "reservoir_alpha",
-            "substation_north_01"
+            "substation_north_01",
+            "reservoir_alpha"
           ],
           "confidence": 0.95
         },
         {
           "ts": "2026-01-01T03:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "substation_south_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 2.472860097540329
@@ -236,16 +236,16 @@
         {
           "ts": "2026-01-01T04:00:00",
           "impactedNodeIds": [
-            "reservoir_alpha",
-            "substation_south_01"
+            "substation_south_01",
+            "reservoir_alpha"
           ],
           "confidence": 0.95
         },
         {
           "ts": "2026-01-01T04:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "treatment_plant_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 3.0598392890232033
@@ -285,8 +285,8 @@
         {
           "ts": "2026-01-01T06:00:00",
           "impactedNodeIds": [
-            "reservoir_alpha",
-            "tower_north_01"
+            "tower_north_01",
+            "reservoir_alpha"
           ],
           "confidence": 0.95
         },
@@ -341,8 +341,8 @@
         {
           "ts": "2026-01-01T08:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
-            "treatment_plant_01"
+            "treatment_plant_01",
+            "tower_north_01"
           ],
           "confidence": 2.445764994766602
         }
@@ -357,8 +357,8 @@
         {
           "ts": "2026-01-01T09:00:00",
           "impactedNodeIds": [
-            "reservoir_alpha",
-            "treatment_plant_01"
+            "treatment_plant_01",
+            "reservoir_alpha"
           ],
           "confidence": 0.95
         },
@@ -380,8 +380,8 @@
         {
           "ts": "2026-01-01T10:00:00",
           "impactedNodeIds": [
-            "reservoir_alpha",
-            "water_pressure_01"
+            "water_pressure_01",
+            "reservoir_alpha"
           ],
           "confidence": 0.95
         },
@@ -403,8 +403,8 @@
         {
           "ts": "2026-01-01T11:00:00",
           "impactedNodeIds": [
-            "substation_north_01",
-            "substation_south_01"
+            "substation_south_01",
+            "substation_north_01"
           ],
           "confidence": 0.95
         },
@@ -428,16 +428,16 @@
         {
           "ts": "2026-01-01T12:00:00",
           "impactedNodeIds": [
-            "substation_north_01",
-            "tower_north_01"
+            "tower_north_01",
+            "substation_north_01"
           ],
           "confidence": 0.95
         },
         {
           "ts": "2026-01-01T12:04:00",
           "impactedNodeIds": [
-            "treatment_plant_01",
             "substation_south_01",
+            "treatment_plant_01",
             "water_pressure_01"
           ],
           "confidence": 2.6153807235817714
@@ -453,8 +453,8 @@
         {
           "ts": "2026-01-01T13:00:00",
           "impactedNodeIds": [
-            "tower_north_01",
-            "substation_south_01"
+            "substation_south_01",
+            "tower_north_01"
           ],
           "confidence": 0.95
         },
@@ -477,16 +477,16 @@
         {
           "ts": "2026-01-01T14:00:00",
           "impactedNodeIds": [
-            "substation_north_01",
-            "treatment_plant_01"
+            "treatment_plant_01",
+            "substation_north_01"
           ],
           "confidence": 0.95
         },
         {
           "ts": "2026-01-01T14:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
             "substation_south_01",
+            "tower_north_01",
             "water_pressure_01"
           ],
           "confidence": 2.348402873348038
@@ -510,8 +510,8 @@
         {
           "ts": "2026-01-01T15:04:00",
           "impactedNodeIds": [
-            "tower_north_01",
-            "substation_south_01"
+            "substation_south_01",
+            "tower_north_01"
           ],
           "confidence": 1.3786103712538542
         },
@@ -533,8 +533,8 @@
         {
           "ts": "2026-01-01T16:00:00",
           "impactedNodeIds": [
-            "treatment_plant_01",
-            "substation_south_01"
+            "substation_south_01",
+            "treatment_plant_01"
           ],
           "confidence": 0.95
         },
@@ -667,16 +667,16 @@
         {
           "ts": "2026-01-01T02:00:00",
           "impactedNodeIds": [
-            "substation_north_01",
-            "tower_north_01"
+            "tower_north_01",
+            "substation_north_01"
           ],
           "confidence": 0.95
         },
         {
           "ts": "2026-01-01T02:05:00",
           "impactedNodeIds": [
-            "treatment_plant_01",
             "substation_south_01",
+            "treatment_plant_01",
             "water_pressure_01"
           ],
           "confidence": 2.6153807235817714
@@ -692,8 +692,8 @@
         {
           "ts": "2026-01-01T03:00:00",
           "impactedNodeIds": [
-            "tower_north_01",
-            "substation_south_01"
+            "substation_south_01",
+            "tower_north_01"
           ],
           "confidence": 0.95
         },

@@ -1,0 +1,128 @@
+{
+  "id": "packet_incident_power_instability_00002_20260301003343",
+  "version": 1,
+  "createdTs": "2026-03-01T00:33:43.409238",
+  "firstApprovalTs": null,
+  "authorizedTs": null,
+  "timeToAuthorize": null,
+  "timeToAuthorizeSeconds": null,
+  "status": "ready",
+  "scope": {
+    "regions": [
+      "north",
+      "south",
+      "unknown"
+    ],
+    "nodeIds": [
+      "substation_north_01",
+      "substation_south_01",
+      "tower_north_01",
+      "treatment_plant_01",
+      "water_pressure_01"
+    ]
+  },
+  "situationSummary": "Power frequency instability detected. Grid stability at risk. 5 nodes predicted to be impacted.",
+  "proposedAction": "Initiate frequency stabilization protocol and load shedding",
+  "regulatoryBasis": "Complies with NERC Reliability Standards, EOP-011 Statutory compliance: NERC Reliability Standards, EOP-011, Grid Stability Protocols, GSP-2026-02, NERC Reliability Standards, EOP-011.",
+  "playbookId": "power_frequency_instability.yaml",
+  "evidenceRefs": [
+    "ev_0000",
+    "ev_0001",
+    "ev_0002",
+    "ev_0003",
+    "ev_0004"
+  ],
+  "uncertainty": {
+    "overall": 0.1687865218351836,
+    "notes": []
+  },
+  "approvals": [
+    {
+      "role": "Senior Operator"
+    },
+    {
+      "role": "Regulatory Compliance Officer"
+    },
+    {
+      "role": "Defense Coordination Officer"
+    }
+  ],
+  "provenance": {
+    "modelVersion": "prototype_v1",
+    "configHash": "05ee9897a93a367c7854339583c91b0b5f8f7dcbfc25485db0df5d9a210f251a",
+    "dataHash": "2e406290489a2d6225f23f11adeef92f354d6cfe43c94a07e006b1a4824e9b21"
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.95,
+    "constraintsSatisfied": [
+      "Valve capacity within limits",
+      "Pressure limits respected",
+      "Safety interlocks verified"
+    ]
+  },
+  "actuatorBoundary": {
+    "writesToHardware": false,
+    "notes": "No direct OT writes. Human authorization required for all actuator commands. This packet provides permission and coordination framework only."
+  },
+  "outcomeConfidence": 0.95,
+  "outcomeSummary": "95% confidence frequency restored within stability band; load shed minimised.",
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0
+  },
+  "byzantineMultiSig": {
+    "actionId": "packet_incident_power_instability_00002_20260301003343",
+    "consequenceLevel": "high",
+    "requiredMinistries": [
+      "water_authority",
+      "regulatory_compliance",
+      "emergency_services"
+    ],
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signatures": [],
+    "authorized": false
+  },
+  "statutoryCompliance": {
+    "certificateId": "cert_packet_incident_power_instability_00002_20260301003343_20260301003343",
+    "issued": "2026-03-01T00:33:43.409464",
+    "complianceStatus": "compliant",
+    "legalProtectionLevel": "full",
+    "certificateStatement": "This action was performed in accordance with EOP-011 of the NERC Reliability Standards: Maintain frequency within operational limits and coordinate with regional operators, GSP-2026-02 of the Grid Stability Protocols: Document all load shedding actions and restoration procedures. The authorized operator is protected under the statutory framework for emergency response actions during declared power_instability incidents.",
+    "statutoryBasis": [
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      },
+      {
+        "actName": "NERC Reliability Standards",
+        "section": "EOP-011",
+        "article": null,
+        "requirement": "Maintain frequency within operational limits and coordinate with regional operators"
+      },
+      {
+        "actName": "Grid Stability Protocols",
+        "section": "GSP-2026-02",
+        "article": null,
+        "requirement": "Document all load shedding actions and restoration procedures"
+      }
+    ]
+  },
+  "merkle": {
+    "previousHash": "8947f8ce8b27e88e34473f82faa35584993e93b7b9e8148038c8fb37faccaec2",
+    "packetHash": "64c2c7b3350a303af6ef6087e11490cfb5dd7bb693d429461de2cd9334fe9d7d",
+    "receiptHash": "18299f7cdf87a3b126b3cd74313532980b6e517d6576ce323bb223e018d52288"
+  },
+  "metadata": {
+    "decision_id": "bfb9b86c9160acc1c2285c60e3da4d39"
+  }
+}

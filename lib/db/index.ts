@@ -278,17 +278,63 @@ function initializeSchema(database: Database.Database) {
     )
   `);
 
-  // Operators table (login credentials for operators)
+  // Ministries table (government agencies that sign handshakes)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS ministries (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL UNIQUE,
+      code TEXT NOT NULL UNIQUE,
+      type TEXT NOT NULL DEFAULT 'government',
+      status TEXT NOT NULL DEFAULT 'active',
+      quorum_policy_json TEXT,
+      public_key TEXT,
+      key_id TEXT,
+      contact_name TEXT,
+      contact_role TEXT,
+      jurisdiction TEXT DEFAULT 'UK',
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_ministries_code ON ministries(code)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_ministries_status ON ministries(status)`);
+
+  // Operators table (login credentials for ministry personnel)
   database.exec(`
     CREATE TABLE IF NOT EXISTS operators (
       id TEXT PRIMARY KEY,
       operator_id TEXT UNIQUE NOT NULL,
       role TEXT NOT NULL,
+      ministry_id TEXT,
       passphrase_hash TEXT NOT NULL,
+      clearance_level TEXT DEFAULT 'standard',
+      status TEXT DEFAULT 'active',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      last_login_at DATETIME
+      last_login_at DATETIME,
+      FOREIGN KEY (ministry_id) REFERENCES ministries(id)
     )
   `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_operators_ministry ON operators(ministry_id)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_operators_status ON operators(status)`);
+
+  // Sessions table (air-gap safe HMAC token sessions, no cloud JWT)
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      operator_id TEXT NOT NULL,
+      token_hash TEXT NOT NULL UNIQUE,
+      ip_address TEXT,
+      user_agent TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      expires_at DATETIME NOT NULL,
+      last_activity_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      revoked_at DATETIME,
+      FOREIGN KEY (operator_id) REFERENCES operators(id)
+    )
+  `);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token_hash)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_sessions_operator ON sessions(operator_id)`);
+  database.exec(`CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)`);
 
   // Notifications table (internal-only, air-gapped compliant)
   database.exec(`

@@ -56,15 +56,21 @@ export async function authenticate(operatorId: string, passphrase: string): Prom
 /**
  * Create a new user
  */
-export async function createUser(operatorId: string, passphrase: string, role: string = 'operator'): Promise<AuthUser> {
+export async function createUser(
+  operatorId: string,
+  passphrase: string,
+  role: string = 'operator',
+  ministryId?: string,
+  clearanceLevel: string = 'standard'
+): Promise<AuthUser> {
   const db = getDb();
   const passphraseHash = await hashPassphrase(passphrase);
   const id = randomUUID();
 
   db.prepare(`
-    INSERT INTO operators (id, operator_id, role, passphrase_hash)
-    VALUES (?, ?, ?, ?)
-  `).run(id, operatorId, role, passphraseHash);
+    INSERT INTO operators (id, operator_id, role, passphrase_hash, ministry_id, clearance_level, status)
+    VALUES (?, ?, ?, ?, ?, ?, 'active')
+  `).run(id, operatorId, role, passphraseHash, ministryId || null, clearanceLevel);
 
   return {
     id,

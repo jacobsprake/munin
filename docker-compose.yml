@@ -1,18 +1,71 @@
+###############################################################################
+# Munin — Air-Gapped On-Premises Deployment
+#
+# This compose file runs the complete Munin stack in an isolated environment
+# with zero external network dependencies. All assets are bundled.
+#
+# Services:
+#   app     — Next.js frontend + API (port 3000)
+#   engine  — Python inference pipeline (runs on demand)
+#
+# Usage:
+#   docker compose up -d app        # Start the platform
+#   docker compose run engine       # Run the inference pipeline
+#   docker compose down             # Stop everything
+#
+# Air-gap verification:
+#   docker compose exec app wget -q --spider https://google.com && echo "FAIL: NOT AIR-GAPPED" || echo "OK: AIR-GAPPED"
+###############################################################################
+
 version: '3.8'
+
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "${MUNIN_PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET:-}
+      - SESSION_TTL_HOURS=${SESSION_TTL_HOURS:-8}
+      - DATABASE_PATH=/app/data/munin.db
     volumes:
-      - ./engine/out:/app/engine/out
-      - ./data:/app/data
-  # Optional: run engine pipeline (manual or cron)
-  # engine:
-  #   image: python:3.11-slim
-  #   working_dir: /app
-  #   volumes:
-  #     - .:/app
-  #   command: python engine/run.py --quick
+      - munin-data:/app/data
+      - munin-engine-out:/app/engine/out
+    restart: unless-stopped
+    # Air-gap: no external network access
+    networks:
+      - munin-internal
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+    environment:
+      - PYTHONPATH=/app/engine
+    volumes:
+      - munin-engine-out:/app/engine/out
+      - munin-data:/app/data
+    networks:
+      - munin-internal
+    profiles:
+      - pipeline
+    command: python3 engine/run.py
+
+volumes:
+  munin-data:
+    driver: local
+  munin-engine-out:
+    driver: local
+
+networks:
+  munin-internal:
+    driver: bridge
+    internal: true  # No external internet access
