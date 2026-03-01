@@ -15,7 +15,52 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Simple in-memory rate limiter (no external dependencies)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 60;   // 60 requests per minute per IP
+const AUTH_RATE_LIMIT_MAX = 5;        // 5 auth attempts per minute per IP
+
+function getRateLimitKey(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+}
+
+function isRateLimited(key: string, maxRequests: number): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > maxRequests;
+}
+
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // HTTPS enforcement in production
+  if (process.env.NODE_ENV === 'production' && process.env.ENFORCE_HTTPS === 'true') {
+    const proto = request.headers.get('x-forwarded-proto');
+    if (proto === 'http') {
+      const httpsUrl = request.nextUrl.clone();
+      httpsUrl.protocol = 'https';
+      return NextResponse.redirect(httpsUrl, 301);
+    }
+  }
+
+  // Rate limiting
+  const clientKey = getRateLimitKey(request);
+  const isAuthRoute = pathname.startsWith('/api/auth/');
+  const maxReqs = isAuthRoute ? AUTH_RATE_LIMIT_MAX : RATE_LIMIT_MAX_REQUESTS;
+
+  if (isRateLimited(clientKey, maxReqs)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Try again later.' },
+      { status: 429, headers: { 'Retry-After': '60' } }
+    );
+  }
+
   const response = NextResponse.next();
 
   // Air-gap Content Security Policy — no external resources allowed
