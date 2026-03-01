@@ -1,0 +1,51 @@
+{
+  "id": "incident-flood-city-x-v3",
+  "version": 3,
+  "createdTs": "2025-10-10T10:12:30Z",
+  "status": "authorized",
+  "scope": {
+    "regions": ["sector_4", "sector_3", "sector_2"],
+    "nodeIds": ["substation_A", "pump_station_7", "tower_central", "hospital_cumberland", "treatment_plant", "reservoir_alpha"],
+    "services": ["power_distribution", "flood_pumping", "telecom", "healthcare", "water_treatment"]
+  },
+  "situationSummary": "Multi-agency authorization obtained. Environment Agency (EA) and National Grid ESO have signed. Cascade fully mapped: 6 nodes impacted across 3 sectors. Reservoir Alpha at 87% — 8 minutes to overflow threshold at current inflow rate. All safety constraints verified. Playbook ready for execution.",
+  "proposedAction": "1. Isolate Pump Station 7 from Substation A fault. 2. Open reservoir preemptive release gate to reduce flood risk. 3. Activate backup water supply route to hospital. 4. Notify National Grid ESO for Sub A restoration priority.",
+  "regulatoryBasis": "Civil Contingencies Act 2004, Section 2. Flood and Water Management Act 2010, Section 14. Environment Agency operational protocol EA-OP-372. Emergency Powers Act 2004.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": ["ev_subA_trip_001", "ev_shadow_link_subA_ps7_001", "ev_cascade_tower_001", "ev_reservoir_rising_001", "ev_rainfall_sector4_001", "ev_hospital_backup_001", "ev_reservoir_overflow_prediction_001"],
+  "uncertainty": {
+    "overall": 0.91,
+    "notes": [
+      "High confidence: cascade confirmed, all constraints satisfied",
+      "Reservoir overflow timing validated against EA flood model",
+      "Minor uncertainty: Sub A auto-recovery still possible but unlikely after 12 minutes"
+    ],
+    "counterexampleCount": 0
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.94,
+    "constraintsSatisfied": [
+      "reservoir_level_below_90pct",
+      "backup_pump_available",
+      "hospital_backup_generator_active",
+      "gate_mechanism_operational",
+      "downstream_capacity_sufficient"
+    ],
+    "constraintsFailed": []
+  },
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 2,
+    "signers": ["environment_agency", "national_grid_eso"]
+  },
+  "pqc": {
+    "algorithm": "ML-DSA",
+    "publicKey": "PQCPUB-DILITHIUM3-ea-flood-signing-key-2025",
+    "signature": "PQCSIG-DILITHIUM3-incident-flood-city-x-v3-signed"
+  },
+  "merkle": {
+    "previousHash": "a1b2c3d4e5f6789012345678abcdef01",
+    "receiptHash": "f9e8d7c6b5a4321098765432fedcba10"
+  }
+}

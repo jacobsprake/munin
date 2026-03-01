@@ -1,0 +1,57 @@
+{
+  "id": "incident-flood-city-x-v4",
+  "version": 4,
+  "createdTs": "2025-10-10T10:14:00Z",
+  "status": "executed",
+  "scope": {
+    "regions": ["sector_4", "sector_3", "sector_2"],
+    "nodeIds": ["substation_A", "pump_station_7", "tower_central", "hospital_cumberland", "treatment_plant", "reservoir_alpha"],
+    "services": ["power_distribution", "flood_pumping", "telecom", "healthcare", "water_treatment"]
+  },
+  "situationSummary": "Playbook executed. Pump Station 7 isolated. Reservoir preemptive release gate opened. Backup water supply to hospital activated. National Grid ESO dispatched repair crew to Substation A. Total time from detection to execution: 12 minutes 30 seconds (traditional process: 2-6 hours).",
+  "proposedAction": "EXECUTED — Monitor recovery. Substation A repair ETA 45 minutes. Reservoir release reducing level from 87% at 0.5%/min.",
+  "regulatoryBasis": "Civil Contingencies Act 2004, Section 2. Flood and Water Management Act 2010, Section 14. Environment Agency operational protocol EA-OP-372. Emergency Powers Act 2004.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": ["ev_subA_trip_001", "ev_shadow_link_subA_ps7_001", "ev_cascade_tower_001", "ev_reservoir_rising_001", "ev_rainfall_sector4_001", "ev_hospital_backup_001", "ev_reservoir_overflow_prediction_001", "ev_execution_confirmation_001"],
+  "uncertainty": {
+    "overall": 0.95,
+    "notes": [
+      "Execution confirmed by SCADA readings",
+      "Reservoir level stabilising",
+      "Remaining uncertainty: Sub A repair timeline"
+    ],
+    "counterexampleCount": 0
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.94,
+    "constraintsSatisfied": [
+      "reservoir_level_below_90pct",
+      "backup_pump_available",
+      "hospital_backup_generator_active",
+      "gate_mechanism_operational",
+      "downstream_capacity_sufficient"
+    ],
+    "constraintsFailed": []
+  },
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 2,
+    "signers": ["environment_agency", "national_grid_eso"]
+  },
+  "pqc": {
+    "algorithm": "ML-DSA",
+    "publicKey": "PQCPUB-DILITHIUM3-ea-flood-signing-key-2025",
+    "signature": "PQCSIG-DILITHIUM3-incident-flood-city-x-v4-executed"
+  },
+  "tee": {
+    "platform": "INTEL_SGX",
+    "enclaveId": "munin-enclave-001-sector4",
+    "quote": "TEE-QUOTE-SGX-DCAP-2025-verified",
+    "signature": "TEE-SIG-enclave-verified-execution-flood-city-x"
+  },
+  "merkle": {
+    "previousHash": "f9e8d7c6b5a4321098765432fedcba10",
+    "receiptHash": "1234567890abcdef1234567890abcdef"
+  }
+}

@@ -1,0 +1,75 @@
+###############################################################################
+# Munin — Sovereign Single-Tenant Deployment
+#
+# Air-gapped, on-premises deployment for government secure facilities.
+# All services run on an internal-only network with zero internet access.
+#
+# Services:
+#   munin-api     — Next.js API server (read-only to SCADA, no write-back)
+#   munin-ui      — Next.js frontend (served by same container)
+#   munin-engine  — Python inference pipeline (runs on demand or cron)
+#   munin-audit-db — Append-only SQLite for packets and evidence
+#
+# Usage:
+#   docker compose -f infra/docker-compose.sovereign.yml up -d
+#   docker compose -f infra/docker-compose.sovereign.yml run munin-engine
+###############################################################################
+
+version: '3.8'
+
+services:
+  munin-api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "${MUNIN_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SESSION_TTL_HOURS=${SESSION_TTL_HOURS:-8}
+      - DATABASE_PATH=/app/data/munin.db
+      - ENFORCE_HTTPS=${ENFORCE_HTTPS:-false}
+      - DATA_RESIDENCY_REGION=${DATA_RESIDENCY_REGION:-UK}
+      - SCADA_INGEST_MODE=${SCADA_INGEST_MODE:-DATA_DIODE}
+    volumes:
+      - munin-data:/app/data
+      - munin-engine-out:/app/engine/out
+      - munin-audit:/app/audit
+    restart: unless-stopped
+    networks:
+      - munin-sovereign
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  munin-engine:
+    build:
+      context: ..
+      dockerfile: Dockerfile.engine
+    environment:
+      - PYTHONPATH=/app/engine
+      - DATA_RESIDENCY_REGION=${DATA_RESIDENCY_REGION:-UK}
+    volumes:
+      - munin-engine-out:/app/engine/out
+      - munin-data:/app/data
+      - munin-audit:/app/audit
+    networks:
+      - munin-sovereign
+    profiles:
+      - pipeline
+
+volumes:
+  munin-data:
+    driver: local
+  munin-engine-out:
+    driver: local
+  munin-audit:
+    driver: local
+
+networks:
+  munin-sovereign:
+    driver: bridge
+    internal: true  # No external internet access — air-gapped

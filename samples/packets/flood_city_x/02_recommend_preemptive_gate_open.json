@@ -1,0 +1,42 @@
+{
+  "id": "incident-flood-city-x-v2",
+  "version": 2,
+  "createdTs": "2025-10-10T10:06:45Z",
+  "status": "ready",
+  "scope": {
+    "regions": ["sector_4", "sector_3", "sector_2"],
+    "nodeIds": ["substation_A", "pump_station_7", "tower_central", "hospital_cumberland", "treatment_plant"],
+    "services": ["power_distribution", "flood_pumping", "telecom", "healthcare", "water_treatment"]
+  },
+  "situationSummary": "Substation A has NOT recovered after 5 minutes. Cascade confirmed: Pump Station 7 flow at 68% (was 100%). Tower Central signal degraded to 95% (battery backup active, 2h remaining). Shadow link analysis shows treatment_plant will be impacted within 15 minutes. Hospital Cumberland on backup generator (72h reserve). Reservoir Alpha at 82% and rising — approaching 95% overflow threshold.",
+  "proposedAction": "1. Isolate Pump Station 7 from Substation A fault. 2. Open reservoir preemptive release gate to reduce flood risk. 3. Activate backup water supply route to hospital. 4. Notify National Grid ESO for Sub A restoration priority.",
+  "regulatoryBasis": "Civil Contingencies Act 2004, Section 2. Flood and Water Management Act 2010, Section 14. Environment Agency operational protocol EA-OP-372.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": ["ev_subA_trip_001", "ev_shadow_link_subA_ps7_001", "ev_cascade_tower_001", "ev_reservoir_rising_001", "ev_rainfall_sector4_001", "ev_hospital_backup_001"],
+  "uncertainty": {
+    "overall": 0.82,
+    "notes": [
+      "Cascade path confirmed by 3 independent shadow links",
+      "Reservoir overflow prediction based on rainfall extrapolation (±15 min)",
+      "Hospital backup generator capacity verified by BMS data"
+    ],
+    "counterexampleCount": 0
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.94,
+    "constraintsSatisfied": [
+      "reservoir_level_below_90pct",
+      "backup_pump_available",
+      "hospital_backup_generator_active",
+      "gate_mechanism_operational",
+      "downstream_capacity_sufficient"
+    ],
+    "constraintsFailed": []
+  },
+  "multiSig": {
+    "required": 3,
+    "threshold": 2,
+    "currentSignatures": 0,
+    "signers": []
+  }
+}

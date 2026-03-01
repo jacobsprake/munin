@@ -1,80 +1,155 @@
-# For reviewers: Munin in 5 minutes
+# Munin — 10-Minute Reviewer Tour
 
-This guide is for evaluators (e.g. investment or grant reviewers) who want to see the system and thesis quickly.
-
----
-
-## What Munin is
-
-**Munin is decision support for infrastructure operators.** It does not execute actions autonomously. Operators review pre-simulated playbooks and authorise via Byzantine multi-signature; we turn **2–6 hours** of ad-hoc coordination into **20–30 minutes** of reviewing pre-packaged options. *Humans still decide.*
-
-<<<<<<< HEAD
-- **Thesis:** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin pre-validates playbooks and generates cryptographic execution packets that carry the required regulatory basis.
-- **Shadow Links:** Cross-sector dependencies inferred from time-series correlation that traditional monitoring cannot see. Munin discovers them and uses them for cascade prediction.
-=======
-- **Thesis:** The state’s bottleneck in crisis response is not data—it’s **authority**. Munin bridges operational systems (SCADA) and legal authority (law) by pre-validating playbooks and generating cryptographic execution packets that carry legal authority.
-- **Core mechanism:** **Shadow Links**—cross-sector dependencies inferred from time-series correlation that traditional monitoring cannot see. Munin discovers them and uses them for cascade prediction.
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
-- **Evidence:** Real disasters where coordination/authorisation was the primary failure: Hurricane Katrina, Fukushima, UK floods. See [EVIDENCE_COORDINATION_BOTTLENECK.md](EVIDENCE_COORDINATION_BOTTLENECK.md).
+> See the entire system in action: from raw SCADA telemetry to signed authorisation packet.
 
 ---
 
-## 5-minute path (in the app)
-
-1. **Landing** (`/`) — Read the one-screen thesis and “Traditional vs Munin” comparison.
-2. **5-min demo path** (`/demo-path`) — Scroll through: thesis → problem (2–6 h) → solution (20–30 min) → Shadow Links → evidence. Then use the buttons to open Graph, Demos, Carlisle, Simulation.
-3. **Dependency graph** (`/graph`) — Shows inferred dependencies (and Shadow Links). Click edges for confidence and lag.
-4. **Disaster demos** (`/demos`) — Index of Katrina, Fukushima, UK 2007. Click an event for timeline + Munin counterfactual.
-5. **Carlisle dashboard** (`/carlisle-dashboard`) — Live-style flood demo with Storm Desmond context; metrics (time-to-authorise, coordination latency).
-6. **Handshakes** (`/handshakes`) — Open a packet; see **outcome confidence** (e.g. “85% confidence cascade contained to Zone 3”) and proposed action. This is the pre-validated playbook output that operators review and authorise.
-
----
-
-## 5-minute path (command line)
-
-**One-command Carlisle demo (from repo root):** `./demo.sh` — runs the full pipeline and prints Traditional vs Munin comparison. Use a venv and `pip install -r engine/requirements.txt` first.
-
-**Step-by-step from repo root:**
+## 00:00–02:00 — Run the Demo
 
 ```bash
-<<<<<<< HEAD
-# 1. Shadow Link detection
-=======
-# 1. Shadow Link detection (core dependency inference)
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
-python3 engine/detect_shadow_link.py
-# (If normalized data is missing, the script runs the pipeline first.)
-
-# 2. Run Carlisle flood demo (from repo root)
+# One command: run the full Carlisle flood scenario
 ./demo.sh
-# Or from engine/: python3 cli.py demo carlisle-2011
 
-# 3. Run disaster demos (Katrina, Fukushima, UK 2007)
-cd engine && python3 disaster_demos.py
+# Expected output:
+# ✓ Loading Carlisle flood data...
+# ✓ Detecting Shadow Links...
+#   (Found 5 cross-sector dependencies, 7 edges total)
+# ✓ Simulating cascade...
+#   (Testing 38 scenarios)
+# ✓ Generating playbooks...
+#   (38 packets, 4 response options)
+#
+# Traditional response: 2–6 hours
+# Munin response: 1.5 seconds
 ```
 
-Then start the app (`npm run dev`) and open `/`, `/demo-path`, `/demos`, `/carlisle-dashboard`, `/handshakes`.
+Then open the platform:
+
+```bash
+npm run dev
+# Open http://localhost:3000
+```
+
+You'll see the government-grade login screen with classification banners.
+Click **"ENTER AS OBSERVER"** to access the command interface.
 
 ---
 
-## Key documents
+## 02:00–05:00 — Explore the Authorisation Packet Lifecycle
 
-| Document | Purpose |
-|----------|---------|
-| [README.md](../README.md) | Repo entry: thesis, Shadow Links, tech stack, handshake flow |
-| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: scenario space, tech stack |
-| [EVIDENCE_COORDINATION_BOTTLENECK.md](EVIDENCE_COORDINATION_BOTTLENECK.md) | Real disasters (Katrina, Fukushima, 9/11, UK) and Munin counterfactuals |
-| [SCENARIOS_EVIDENCE_LIST.md](SCENARIOS_EVIDENCE_LIST.md) | When Munin applies (and when it doesn’t) |
-| [README.md](../README.md) (One-Command Demo, CLI reference) | How to run demos and verification |
+### In the UI
+
+Navigate to **Handshakes** in the left sidebar:
+- See 29+ handshake packets, each with status (READY), region, and timestamp
+- Click any packet to see the **Packet Preview** panel:
+  - **Situation Summary**: What happened and why
+  - **Proposed Action**: What Munin recommends
+  - **Audit Integrity**: VERIFIED (Merkle chain)
+
+### Sample packet lifecycle (in the repo)
+
+Open `samples/packets/flood_city_x/`:
+
+| File | Status | What it shows |
+|------|--------|---------------|
+| `01_detection.json` | draft | Initial detection, uncertainty 62%, 3 evidence refs |
+| `02_recommend_preemptive_gate_open.json` | ready | Scope expanded to 5 nodes, confidence 82%, action plan |
+| `03_ministry_sign_off.json` | authorized | 2-of-3 ministry signatures, PQC signed |
+| `04_executed.json` | executed | TEE attestation, Merkle chain linked, 12 min total |
+
+Each packet has every field from the spec: `scope`, `regulatoryBasis`, `uncertainty`, `technicalVerification`, `multiSig`, `pqc`, `tee`, `merkle`.
 
 ---
 
-## Sovereignty, air-gap, and on-prem
+## 05:00–07:00 — Inspect Shadow Links and Evidence Quality
 
-Munin is designed for **sovereign, air-gapped, on-prem** deployment. Nothing in the core pipeline or in the added capabilities (playbook design from law codes, multi-step planning suggestions) requires external APIs or cloud. Data ingestion is via hardware data diodes (one-way); handshake signing in TEEs; no outbound network. Playbook design uses a **local regulatory corpus** (law codes by jurisdiction and scenario) and writes draft YAML for human review—no LLM or external service. Agentic reasoning is local rule- and graph-based suggestion generation; operators always approve. This aligns with the documented ethos: humans decide, regulatory basis is explicit, trust via evidence and audit.
+```bash
+# Run evidence quality dashboard
+./scripts/munin evidence-quality
+
+# Run shadow link detection standalone
+python3 engine/detect_shadow_link.py
+# Output:
+# [MATCH] 88.1% Temporal Correlation found.
+# [WARNING] Physical Shadow Link detected. Cross-sector vulnerability confirmed.
+```
+
+### What makes shadow links trustworthy
+
+The system doesn't just find correlations — it checks:
+- **Stability**: Does the correlation hold across multiple time windows?
+- **Confounders**: Is weather/load shedding causing a spurious link?
+- **Counterexamples**: Are there windows where the correlation breaks?
+- **Sensor health**: Is the source data degraded (missing, stuck, drifting)?
+
+See `engine/infer_graph.py` for the algorithm and `engine/sensor_health.py` for quality checks.
 
 ---
 
-## One-sentence pitch
+## 07:00–10:00 — Review the Security and Institutional Depth
 
-Munin is decision support for infrastructure: pre-simulated playbooks and multi-ministry authorisation in minutes instead of hours, so operators can act at the speed of the cascade instead of the speed of the bureaucracy.
+### Security Architecture
+- **`SECURITY.md`** — Authentication (Argon2id), session management (HMAC), air-gap enforcement (CSP), cryptographic status table
+- **`docs/PRODUCTION_SECURITY_ROADMAP.md`** — 5-phase roadmap from prototype to government certification, with budgets and timelines
+- **`docs/threat_model.md`** — STRIDE threat model: assets, adversaries, attack paths, countermeasures
+
+### Institutional Integration
+- **`research/sops/munin_integration_sop_v1.md`** — Standard Operating Procedure for multi-agency flood response using Munin
+- **`research/reg_mapping.md`** — Regulatory mapping: every packet field mapped to CCA 2004, NIS2, NERC CIP
+- **`docs/risk_register.md`** — 10 risks (technical + sociopolitical) with likelihood, impact, and product-level mitigations
+
+### UX Rationale
+- **`docs/ux/authorisation_console.md`** — Why each UI element exists: failure modes addressed, design decisions
+- **`docs/ux/failure_modes.md`** — 6 adversarial operator scenarios and how the system mitigates them
+
+### SCADA Integration
+- **`docs/SCADA_INGESTION_GUIDE.md`** — How Munin inhales data from Modbus, DNP3, OPC UA, PI Historian, etc.
+- **`config/connectors.example.yaml`** — Template for connecting to real SCADA systems
+
+---
+
+## Key Files at a Glance
+
+| What | Where |
+|------|-------|
+| End-to-end demo | `./demo.sh` |
+| Engine pipeline | `engine/run.py` |
+| Shadow link detection | `engine/detect_shadow_link.py` |
+| Graph inference | `engine/infer_graph.py` |
+| Packet types | `lib/packet/types.ts` |
+| Packet validation | `lib/packet/validate.ts` |
+| Packet diff engine | `lib/packet/diff.ts` |
+| Handshake state machine | `lib/packet/handshake_state_machine.ts` |
+| Sample packet lifecycle | `samples/packets/flood_city_x/` |
+| City topology | `data/topology/city-x.json` |
+| Byzantine multi-sig | `engine/byzantine_resilience.py` |
+| Sovereign handshake | `engine/sovereign_handshake.py` |
+| All 8 playbooks | `playbooks/*.yaml` |
+| Merkle chain | `lib/merkle.ts` |
+| PQC (Dilithium-3) | `lib/pqc.ts` |
+| TEE (SGX) | `lib/tee.ts` |
+| Zero-trust | `lib/zeroTrust.ts` |
+| Ministry API | `app/api/ministries/route.ts` |
+| Session auth | `lib/auth/sessions.ts` |
+| 44 test suites (216 tests) | `npm test` |
+| 59 Python tests | `PYTHONPATH=engine pytest engine/tests/` |
+
+---
+
+## What's Real vs Roadmap
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Shadow link detection | ✅ Real | Finds cross-sector dependencies from telemetry |
+| Cascade simulation | ✅ Real | 29+ scenarios with timeline prediction |
+| Byzantine M-of-N multi-sig | ✅ Real | Biometric handshake + quorum verification |
+| Merkle-chained audit log | ✅ Real | Tamper-evident, hash-chained, verifiable |
+| Ed25519 signatures | ✅ Real | @noble/ed25519 v3 |
+| Argon2id password hashing | ✅ Real | OWASP recommended |
+| Air-gap CSP enforcement | ✅ Real | Zero external network requests |
+| Session management | ✅ Real | HMAC-SHA256 tokens, no cloud JWT |
+| PQC (Dilithium-3) | ⚠️ Demo | Architecture ready; needs liboqs bindings |
+| TEE (Intel SGX) | ⚠️ Demo | Architecture ready; needs SGX hardware |
+| ZKP proofs | ⚠️ Demo | Architecture ready; needs circom/snarkjs |
+| HSM key storage | 🗺️ Roadmap | Requires FIPS 140-3 HSM procurement |
+| Hardware data diode | 🗺️ Roadmap | Requires Owl/Waterfall hardware |

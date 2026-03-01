@@ -1,0 +1,207 @@
+{
+  "id": "city-x",
+  "name": "City X — Carlisle-type Flood Scenario",
+  "description": "Multi-sector infrastructure topology for a mid-size UK city with flood risk from converging rivers, power grid dependency, and downstream telecom/hospital cascades.",
+  "coordinate_system": "EPSG:27700",
+  "nodes": [
+    {
+      "id": "substation_A",
+      "sector": "power",
+      "kind": "substation",
+      "label": "Substation A (132kV Primary)",
+      "region": "sector_4",
+      "lat": 54.8951,
+      "lon": -2.9382,
+      "attributes": {
+        "voltage_kv": 132,
+        "capacity_mva": 60,
+        "elevation_m": 18.2,
+        "flood_risk_zone": "zone_3a",
+        "backup_power": false
+      }
+    },
+    {
+      "id": "substation_B",
+      "sector": "power",
+      "kind": "substation",
+      "label": "Substation B (33kV Secondary)",
+      "region": "sector_2",
+      "lat": 54.8903,
+      "lon": -2.9201,
+      "attributes": {
+        "voltage_kv": 33,
+        "capacity_mva": 20,
+        "elevation_m": 22.5,
+        "flood_risk_zone": "zone_2",
+        "backup_power": true
+      }
+    },
+    {
+      "id": "pump_station_7",
+      "sector": "water",
+      "kind": "pump",
+      "label": "Pump Station 7 (Caldew Basin)",
+      "region": "sector_4",
+      "lat": 54.8935,
+      "lon": -2.9415,
+      "attributes": {
+        "capacity_m3_per_hour": 1500,
+        "elevation_m": 15.8,
+        "power_feed": "substation_A",
+        "flood_risk_zone": "zone_3b"
+      }
+    },
+    {
+      "id": "pump_station_12",
+      "sector": "water",
+      "kind": "pump",
+      "label": "Pump Station 12 (Petteril)",
+      "region": "sector_3",
+      "lat": 54.8870,
+      "lon": -2.9150,
+      "attributes": {
+        "capacity_m3_per_hour": 800,
+        "elevation_m": 19.1,
+        "power_feed": "substation_B",
+        "flood_risk_zone": "zone_2"
+      }
+    },
+    {
+      "id": "reservoir_alpha",
+      "sector": "water",
+      "kind": "reservoir",
+      "label": "Reservoir Alpha (Castle Carrock)",
+      "region": "sector_1",
+      "lat": 54.8650,
+      "lon": -2.7800,
+      "attributes": {
+        "capacity_megalitres": 450,
+        "current_level_pct": 78,
+        "elevation_m": 210,
+        "overflow_threshold_pct": 95
+      }
+    },
+    {
+      "id": "treatment_plant",
+      "sector": "water",
+      "kind": "treatment",
+      "label": "Water Treatment Plant (Dalston)",
+      "region": "sector_2",
+      "lat": 54.8750,
+      "lon": -2.9800,
+      "attributes": {
+        "capacity_ml_per_day": 45,
+        "power_feed": "substation_B",
+        "backup_hours": 4
+      }
+    },
+    {
+      "id": "tower_central",
+      "sector": "telecom",
+      "kind": "tower",
+      "label": "BT Tower Carlisle Central",
+      "region": "sector_4",
+      "lat": 54.8945,
+      "lon": -2.9350,
+      "attributes": {
+        "coverage_radius_km": 5,
+        "power_feed": "substation_A",
+        "battery_backup_hours": 2
+      }
+    },
+    {
+      "id": "hospital_cumberland",
+      "sector": "emergency",
+      "kind": "hospital",
+      "label": "Cumberland Infirmary",
+      "region": "sector_3",
+      "lat": 54.8920,
+      "lon": -2.9300,
+      "attributes": {
+        "beds": 440,
+        "icu_beds": 24,
+        "power_feed": "substation_B",
+        "backup_generator_hours": 72,
+        "water_feed": "treatment_plant",
+        "critical": true
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_power_feed_1",
+      "source": "substation_A",
+      "target": "pump_station_7",
+      "type": "power_feed",
+      "documented": true,
+      "notes": "Direct 11kV feed from Substation A to pump station motors"
+    },
+    {
+      "id": "edge_power_feed_2",
+      "source": "substation_B",
+      "target": "pump_station_12",
+      "type": "power_feed",
+      "documented": true
+    },
+    {
+      "id": "edge_power_feed_3",
+      "source": "substation_A",
+      "target": "tower_central",
+      "type": "power_feed",
+      "documented": true,
+      "notes": "Tower runs on mains from Sub A, 2h battery backup"
+    },
+    {
+      "id": "edge_power_feed_4",
+      "source": "substation_B",
+      "target": "hospital_cumberland",
+      "type": "power_feed",
+      "documented": true,
+      "notes": "Dual feed with 72h diesel backup generator"
+    },
+    {
+      "id": "edge_power_feed_5",
+      "source": "substation_B",
+      "target": "treatment_plant",
+      "type": "power_feed",
+      "documented": true
+    },
+    {
+      "id": "edge_water_supply",
+      "source": "treatment_plant",
+      "target": "hospital_cumberland",
+      "type": "water_supply",
+      "documented": true,
+      "notes": "Potable water supply to hospital"
+    },
+    {
+      "id": "edge_grid_interconnect",
+      "source": "substation_A",
+      "target": "substation_B",
+      "type": "grid_interconnect",
+      "documented": true,
+      "notes": "33kV tie-line between substations"
+    }
+  ],
+  "undocumented_dependencies": {
+    "note": "These are the 'shadow links' that Munin discovers from telemetry correlation — they exist in physics but not in any registry.",
+    "expected_discoveries": [
+      {
+        "source": "substation_A",
+        "target": "pump_station_7",
+        "type": "shadow_link",
+        "expected_correlation": 0.98,
+        "expected_lag_seconds": 45,
+        "mechanism": "Power frequency instability at Sub A causes pump motor speed variation at PS7 within 45 seconds"
+      },
+      {
+        "source": "pump_station_7",
+        "target": "tower_central",
+        "type": "shadow_link",
+        "expected_correlation": 0.87,
+        "expected_lag_seconds": 120,
+        "mechanism": "Pump station flooding reduces ground water table, destabilising tower foundation sensors"
+      }
+    ]
+  }
+}

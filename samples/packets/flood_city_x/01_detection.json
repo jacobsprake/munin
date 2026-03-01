@@ -1,0 +1,30 @@
+{
+  "id": "incident-flood-city-x-v1",
+  "version": 1,
+  "createdTs": "2025-10-10T10:01:30Z",
+  "status": "draft",
+  "scope": {
+    "regions": ["sector_4"],
+    "nodeIds": ["substation_A", "pump_station_7"],
+    "services": ["power_distribution", "flood_pumping"]
+  },
+  "situationSummary": "Substation A (132kV) has tripped. Grid frequency dropped from 50.0Hz to 48.1Hz. Shadow link detected: Pump Station 7 flow rate declining with 45-second lag, consistent with loss of power feed. Reservoir Alpha level rising due to heavy rainfall in Caldew catchment.",
+  "proposedAction": "Monitor cascade propagation. Prepare playbook for preemptive pump isolation if Sub A does not recover within 5 minutes.",
+  "regulatoryBasis": "Civil Contingencies Act 2004, Section 2 — duty to assess risk. Flood and Water Management Act 2010.",
+  "playbookId": "flood_event_pump_isolation.yaml",
+  "evidenceRefs": ["ev_subA_trip_001", "ev_shadow_link_subA_ps7_001", "ev_rainfall_sector4_001"],
+  "uncertainty": {
+    "overall": 0.62,
+    "notes": [
+      "Shadow link confidence 98% but based on 3 evidence windows",
+      "Rainfall intensity may be confounding pump flow readings",
+      "Sub A may auto-recover — waiting for grid operator confirmation"
+    ],
+    "counterexampleCount": 1
+  },
+  "technicalVerification": {
+    "simulatedSuccessProb": 0.78,
+    "constraintsSatisfied": ["reservoir_level_below_90pct", "backup_pump_available"],
+    "constraintsFailed": []
+  }
+}
