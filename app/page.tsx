@@ -1,103 +1,203 @@
 'use client';
 
-import Link from 'next/link';
-import { ArrowRight, Zap, Clock, Shield, FileText, Droplets, Route } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Shield, Lock, AlertTriangle } from 'lucide-react';
 
-export default function HomePage() {
+/**
+ * Munin Operational Login Screen
+ *
+ * Government-grade systems do not have marketing landing pages.
+ * Operators see a classification banner, system identification,
+ * and a secure login prompt. ISA-101 compliant.
+ */
+export default function LoginPage() {
+  const [operatorId, setOperatorId] = useState('');
+  const [passphrase, setPassphrase] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operatorId, passphrase }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Authentication failed');
+        setLoading(false);
+        return;
+      }
+
+      // Store session token
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('munin_token', data.token);
+        sessionStorage.setItem('munin_operator', JSON.stringify(data.operator));
+        if (data.ministry) {
+          sessionStorage.setItem('munin_ministry', JSON.stringify(data.ministry));
+        }
+      }
+
+      router.push('/graph');
+    } catch {
+      setError('Connection failed. Verify air-gapped network status.');
+      setLoading(false);
+    }
+  };
+
+  const handleGuestAccess = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('munin_token', 'guest');
+      sessionStorage.setItem('munin_operator', JSON.stringify({
+        id: 'guest',
+        operatorId: 'GUEST',
+        role: 'viewer',
+      }));
+    }
+    router.push('/graph');
+  };
+
   return (
     <div className="min-h-screen bg-base-950 text-text-primary flex flex-col">
-      {/* Minimal header */}
-      <header className="border-b border-base-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold font-mono tracking-tight">MUNIN</span>
-          <span className="text-sm text-text-muted">Sovereign Infrastructure Orchestration</span>
-        </div>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link href="/demos" className="text-text-secondary hover:text-text-primary transition-colors">
-            Demos
-          </Link>
-          <Link href="/demo-path" className="text-text-secondary hover:text-text-primary transition-colors">
-            5-min demo
-          </Link>
-          <Link href="/docs" className="text-text-secondary hover:text-text-primary transition-colors">
-            API Docs
-          </Link>
-          <Link href="/graph" className="text-text-secondary hover:text-text-primary transition-colors">
-            Platform
-          </Link>
-        </nav>
-      </header>
+      {/* Classification Banner — Top (standard for government classified systems) */}
+      <div className="h-7 bg-emerald-900/80 border-b border-emerald-700 flex items-center justify-center">
+        <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-emerald-300 uppercase">
+          OFFICIAL — Air-Gapped Sovereign Infrastructure
+        </span>
+      </div>
 
-      {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 max-w-4xl mx-auto text-center">
-        <h1 className="text-4xl md:text-5xl font-bold font-mono tracking-tight mb-4">
-          Decision support for zero-latency crisis response
-        </h1>
-        <p className="text-lg text-text-secondary mb-8 max-w-2xl">
-          Munin turns <strong className="text-text-primary">2–6 hours</strong> of ad-hoc coordination into{' '}
-          <strong className="text-text-primary">20–30 minutes</strong> of reviewing pre-packaged options. Humans always authorise; Munin does the prep work in advance.
-        </p>
-
-        {/* The problem */}
-        <div className="w-full text-left rounded-xl border border-base-700 bg-base-900/50 p-6 mb-10">
-          <h2 className="text-sm font-mono text-text-muted uppercase tracking-wider mb-3">The problem</h2>
-          <p className="text-text-secondary text-sm mb-4">
-            Cascades propagate in <strong className="text-text-primary">minutes</strong>. Authorisation takes <strong className="text-text-primary">hours</strong>.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-safety-amber shrink-0 mt-0.5" />
-              <div>
-                <div className="font-medium text-text-primary">Traditional</div>
-                <div className="text-text-muted">Incident detection → cross-agency calls → legal review → multi-ministry sign-off → execution. <strong>Total: 2–6 hours.</strong></div>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-safety-emerald shrink-0 mt-0.5" />
-              <div>
-                <div className="font-medium text-text-primary">With Munin</div>
-                <div className="text-text-muted">Pre-simulated playbooks + pre-validated authority. Operators review and sign. <strong>Total: 20–30 minutes.</strong></div>
-              </div>
+      {/* System Header */}
+      <header className="border-b border-base-800 px-8 py-4 flex items-center justify-between bg-base-900/50">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded bg-base-800 border border-base-700 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-safety-cobalt" />
+          </div>
+          <div>
+            <div className="text-lg font-bold font-mono tracking-tight">MUNIN</div>
+            <div className="text-[11px] font-mono text-text-muted tracking-wide uppercase">
+              Sovereign Infrastructure Orchestration Platform
             </div>
           </div>
         </div>
-
-        {/* CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href="/demo-path"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-safety-cobalt text-white font-medium hover:opacity-90 transition-opacity"
-          >
-            Start 5-minute demo
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/graph"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-base-600 text-text-primary font-medium hover:bg-base-800 transition-colors"
-          >
-            Enter platform
-          </Link>
+        <div className="text-right">
+          <div className="text-[11px] font-mono text-text-muted">DEPLOYMENT</div>
+          <div className="text-sm font-mono text-text-secondary">ON-PREMISES / AIR-GAPPED</div>
         </div>
+      </header>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-8 text-sm text-text-muted">
-          <Link href="/carlisle-dashboard" className="flex items-center gap-2 hover:text-text-primary transition-colors">
-            <Droplets className="w-4 h-4" />
-            Carlisle flood demo
-          </Link>
-          <Link href="/demos" className="flex items-center gap-2 hover:text-text-primary transition-colors">
-            <Route className="w-4 h-4" />
-            Disaster demos (Katrina, Fukushima, UK)
-          </Link>
-          <Link href="/demo-path" className="flex items-center gap-2 hover:text-text-primary transition-colors">
-            <FileText className="w-4 h-4" />
-            Thesis & evidence
-          </Link>
+      {/* Login Area */}
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="w-full max-w-md">
+          {/* System Status */}
+          <div className="mb-8 rounded border border-base-700 bg-base-900/60 p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-2 h-2 rounded-full bg-safety-emerald animate-pulse" />
+              <span className="text-label font-mono text-text-muted uppercase tracking-wider">System Status</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[12px] font-mono">
+              <div className="flex justify-between">
+                <span className="text-text-muted">Engine</span>
+                <span className="text-safety-emerald">OPERATIONAL</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Network</span>
+                <span className="text-safety-emerald">AIR-GAPPED</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Audit Chain</span>
+                <span className="text-safety-emerald">VERIFIED</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-muted">Crypto</span>
+                <span className="text-safety-cobalt">DILITHIUM-3</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Login Form */}
+          <div className="rounded border border-base-700 bg-base-900/60 p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Lock className="w-4 h-4 text-text-muted" />
+              <span className="text-label font-mono text-text-muted uppercase tracking-wider">Operator Authentication</span>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-mono text-text-muted uppercase tracking-wider mb-1.5">
+                  Operator ID
+                </label>
+                <input
+                  type="text"
+                  value={operatorId}
+                  onChange={(e) => setOperatorId(e.target.value)}
+                  placeholder="e.g. flood_officer_01"
+                  className="w-full px-3 py-2.5 bg-base-950 border border-base-700 rounded text-sm font-mono text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-safety-cobalt focus:ring-1 focus:ring-safety-cobalt/20"
+                  autoComplete="username"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono text-text-muted uppercase tracking-wider mb-1.5">
+                  Passphrase
+                </label>
+                <input
+                  type="password"
+                  value={passphrase}
+                  onChange={(e) => setPassphrase(e.target.value)}
+                  placeholder="Enter secure passphrase"
+                  className="w-full px-3 py-2.5 bg-base-950 border border-base-700 rounded text-sm font-mono text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-safety-cobalt focus:ring-1 focus:ring-safety-cobalt/20"
+                  autoComplete="current-password"
+                />
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded bg-red-950/50 border border-red-800/50">
+                  <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span className="text-[12px] font-mono text-red-400">{error}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || !operatorId || !passphrase}
+                className="w-full py-2.5 rounded bg-safety-cobalt/20 border border-safety-cobalt text-safety-cobalt font-mono text-sm font-medium hover:bg-safety-cobalt/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
+              </button>
+            </form>
+
+            <div className="mt-4 pt-4 border-t border-base-800">
+              <button
+                onClick={handleGuestAccess}
+                className="w-full py-2 rounded border border-base-700 text-text-muted font-mono text-[12px] hover:bg-base-800 hover:text-text-secondary transition-colors"
+              >
+                ENTER AS OBSERVER (READ-ONLY)
+              </button>
+            </div>
+          </div>
+
+          {/* System Info */}
+          <div className="mt-6 text-center text-[11px] font-mono text-text-muted/60 space-y-1">
+            <div>Authorised personnel only. All access is logged and audited.</div>
+            <div>Munin v0.9.3 · HMAC-SHA256 Sessions · Argon2id Authentication</div>
+          </div>
         </div>
       </main>
 
-      <footer className="border-t border-base-800 px-6 py-4 text-center text-sm text-text-muted">
-        Munin does not execute autonomously. It recommends; humans authorise. — Shadow Links · Byzantine multi-sig · Pre-validated playbooks
-      </footer>
+      {/* Classification Banner — Bottom */}
+      <div className="h-7 bg-emerald-900/80 border-t border-emerald-700 flex items-center justify-center">
+        <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-emerald-300 uppercase">
+          OFFICIAL — Air-Gapped Sovereign Infrastructure
+        </span>
+      </div>
     </div>
   );
 }

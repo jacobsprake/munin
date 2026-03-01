@@ -27,9 +27,20 @@ export default function CommandShell({
   return (
     <div className={`fixed inset-0 flex flex-col text-text-primary overflow-hidden transition-colors ${
       emergencyMode 
-        ? 'bg-black' // Tactical black mode
+        ? 'bg-black'
         : 'bg-base-950'
     }`}>
+      {/* Classification Banner — Top (government standard) */}
+      <div className={`h-6 flex items-center justify-center text-[10px] font-mono font-bold tracking-[0.15em] uppercase ${
+        emergencyMode
+          ? 'bg-red-800 border-b border-red-600 text-red-200'
+          : 'bg-emerald-900/80 border-b border-emerald-700/50 text-emerald-300/90'
+      }`}>
+        {emergencyMode
+          ? 'SECRET — NATIONAL EMERGENCY PROTOCOL ACTIVE — RESTRICTED ACCESS'
+          : 'OFFICIAL — Sovereign Infrastructure Orchestration Platform'
+        }
+      </div>
       <TopBar />
       {emergencyMode && (
         <div className="h-8 bg-red-950 border-b border-red-600 flex items-center px-6 text-label text-red-400 mono">
@@ -63,6 +74,17 @@ export default function CommandShell({
         </div>
       </div>
       <StatusStrip />
+      {/* Classification Banner — Bottom (government standard) */}
+      <div className={`h-6 flex items-center justify-center text-[10px] font-mono font-bold tracking-[0.15em] uppercase ${
+        emergencyMode
+          ? 'bg-red-800 border-t border-red-600 text-red-200'
+          : 'bg-emerald-900/80 border-t border-emerald-700/50 text-emerald-300/90'
+      }`}>
+        {emergencyMode
+          ? 'SECRET — NATIONAL EMERGENCY PROTOCOL ACTIVE — RESTRICTED ACCESS'
+          : 'OFFICIAL — Sovereign Infrastructure Orchestration Platform'
+        }
+      </div>
     </div>
   );
 }
