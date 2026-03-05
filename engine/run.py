@@ -219,6 +219,18 @@ def main(
         "incidentsPath": str(out_dir / "incidents.json"),
     })
 
+    # Match live situation to nearest pre-simulated scenario (crisis-time lookup)
+    try:
+        from live_match import match_live_to_scenario
+        df_norm = pd.read_csv(out_dir / "normalized_timeseries.csv", index_col=0, parse_dates=True)
+        live_state = df_norm.iloc[-1].to_dict() if len(df_norm) > 0 else {}
+        incidents_list = incidents_data.get('incidents', [])
+        matched = match_live_to_scenario(live_state, incidents_list)
+        with open(out_dir / "live_matched_scenario.json", 'w') as f:
+            json.dump({'matched_incident': matched, 'live_state_keys': list(live_state.keys())}, f, indent=2)
+    except Exception:
+        pass  # Optional: live_match may not have carlisle_config
+
     print("\n[5/5] Generating authoritative handshake packets...")
     logger.start_phase("packet_generation")
     packetize_incidents(

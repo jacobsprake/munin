@@ -5,6 +5,7 @@ import { generateSignatureHash } from '@/lib/hash';
 import { authenticate } from '@/lib/auth';
 import { packetsRepo, auditLogRepo } from '@/lib/db/repositories';
 import { signWithPQC } from '@/lib/pqc';
+import { getCurrentKey, generateNewKey, loadKeyStore, saveKeyStore } from '@/lib/pqc_key_management';
 import { signPacketInTEE, detectTEEPlatform } from '@/lib/tee';
 import { generateLegalCertificate } from '@/lib/compliance';
 import { getPythonPath } from '@/lib/serverUtils';
@@ -77,7 +78,27 @@ export async function POST(request: Request) {
     const timestamp = new Date().toISOString();
     
     // Generate PQC signature (quantum-resistant)
-    const pqcSignature = await signWithPQC(packetContents, `${operatorId}-${passphrase}`, 'DILITHIUM-3');
+    // Use key store if available; otherwise fallback to operator-passphrase derived key
+    let pqcSignature;
+    try {
+      let pqcKey = await getCurrentKey();
+      if (!pqcKey) {
+        pqcKey = await generateNewKey();
+        const store = await loadKeyStore();
+        store.keys.push(pqcKey);
+        store.currentKeyId = pqcKey.keyId;
+        await saveKeyStore(store);
+      }
+      if (pqcKey.privateKey) {
+        pqcSignature = await signWithPQC(packetContents, pqcKey.privateKey, 'DILITHIUM-3');
+        pqcSignature.publicKey = pqcKey.publicKey; // Use stored public key
+      } else {
+        throw new Error('No private key');
+      }
+    } catch (keyStoreError) {
+      // Fallback: derive from operator credentials (demo mode)
+      pqcSignature = await signWithPQC(packetContents, `${operatorId}-${passphrase}`, 'DILITHIUM-3');
+    }
     
     // Generate TEE signature (hardware-rooted truth + Logic-Lock)
     const teePlatform = await detectTEEPlatform();

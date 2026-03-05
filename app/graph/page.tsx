@@ -235,10 +235,10 @@ export default function GraphPage() {
                       <div className="text-data-number mono">{medConf}</div>
                       <div className="text-xs text-text-muted">moderate robustness</div>
                     </Card>
-                    <Card variant="evidence" className="p-3">
-                      <div className="text-label mono text-text-muted">LOW</div>
+                    <Card variant="evidence" className="p-3 border-safety-amber/30">
+                      <div className="text-label mono text-safety-amber">LOW — REVIEW REQUIRED</div>
                       <div className="text-data-number mono">{lowConf}</div>
-                      <div className="text-xs text-text-muted">review recommended</div>
+                      <div className="text-xs text-text-muted">human review recommended before trust</div>
                     </Card>
                     <Card variant="evidence" className="p-3">
                       <div className="text-label mono text-safety-cobalt">COUNTEREXAMPLES</div>

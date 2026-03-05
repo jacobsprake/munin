@@ -1,6 +1,8 @@
 // Jest setup file
 // Add any global test setup here
 
+require('@testing-library/jest-dom');
+
 // Polyfill TextEncoder/TextDecoder for undici (Node < 18 or Jest env may not have them)
 if (typeof globalThis.TextEncoder === 'undefined') {
   const { TextEncoder, TextDecoder } = require('util');

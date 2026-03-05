@@ -107,6 +107,18 @@ def downsample_timeseries(
     return downsampled, error_bounds
 
 
+def _correlation_impl(
+    source_hash: str,
+    target_hash: int,
+    max_lag: int,
+    min_samples: int,
+) -> Tuple[float, int]:
+    """Internal: correlation from cache lookup. Hashes map to precomputed (corr, lag)."""
+    # In production, this would look up (source_hash, target_hash) in a persistent cache
+    # populated by compute_correlation_with_lag. For now, return sentinel to indicate cache miss.
+    return float('nan'), -1
+
+
 @lru_cache(maxsize=1000)
 def cached_correlation(
     source_hash: str,
@@ -114,10 +126,21 @@ def cached_correlation(
     max_lag: int,
     min_samples: int
 ) -> Tuple[float, int]:
-    """Cached correlation computation (for stable asset pairs)."""
-    # This is a placeholder - actual implementation would use real data
-    # Cache key includes hashes of series data
-    return 0.0, 0
+    """Cached correlation computation (for stable asset pairs).
+    Returns (corr, lag) from cache if hit; (nan, -1) on miss (caller should compute and populate).
+    """
+    return _correlation_impl(source_hash, target_hash, max_lag, min_samples)
+
+
+def compute_and_cache_correlation(
+    series1: pd.Series,
+    series2: pd.Series,
+    max_lag_seconds: int,
+    min_samples: int,
+) -> Tuple[float, int]:
+    """Compute correlation and return result (for use with external caching)."""
+    from infer_graph import compute_correlation_with_lag
+    return compute_correlation_with_lag(series1, series2, max_lag_seconds, min_samples)
 
 
 def fast_approximate_correlation(

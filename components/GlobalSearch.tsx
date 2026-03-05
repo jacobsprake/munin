@@ -84,11 +84,12 @@ export default function GlobalSearch() {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
         <input
-          type="text"
+          type="search"
           placeholder="Search incidents, packets, decisions..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => query.length >= 2 && setIsOpen(true)}
+          aria-label="Search incidents, packets, and decisions"
           className="w-full bg-base-800 border border-base-700 rounded px-10 py-2 text-body text-text-primary placeholder:text-text-muted focus:outline-none focus:border-safety-cobalt mono"
         />
         {query && (

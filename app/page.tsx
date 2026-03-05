@@ -139,6 +139,7 @@ export default function LoginPage() {
                   value={operatorId}
                   onChange={(e) => setOperatorId(e.target.value)}
                   placeholder="e.g. flood_officer_01"
+                  aria-label="Operator ID"
                   className="w-full px-3 py-2.5 bg-base-950 border border-base-700 rounded text-sm font-mono text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-safety-cobalt focus:ring-1 focus:ring-safety-cobalt/20"
                   autoComplete="username"
                 />
@@ -153,6 +154,7 @@ export default function LoginPage() {
                   value={passphrase}
                   onChange={(e) => setPassphrase(e.target.value)}
                   placeholder="Enter secure passphrase"
+                  aria-label="Passphrase"
                   className="w-full px-3 py-2.5 bg-base-950 border border-base-700 rounded text-sm font-mono text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-safety-cobalt focus:ring-1 focus:ring-safety-cobalt/20"
                   autoComplete="current-password"
                 />

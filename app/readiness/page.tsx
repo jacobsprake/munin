@@ -6,7 +6,8 @@ import RightPanel from '@/components/RightPanel';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { format } from 'date-fns';
-import { TrendingUp, TrendingDown, Shield, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Shield, Clock, CheckCircle2, AlertTriangle, Download } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 interface ReadinessMetrics {
   overall_score: number;
@@ -29,6 +30,10 @@ export default function ReadinessPage() {
     const interval = setInterval(fetchReadiness, 60000); // Refresh every minute
     return () => clearInterval(interval);
   }, []);
+
+  const handleExportReadiness = () => {
+    window.open('/api/readiness/export?format=json', '_blank');
+  };
 
   const fetchReadiness = async () => {
     try {
@@ -75,6 +80,10 @@ export default function ReadinessPage() {
           {lastUpdated ? format(lastUpdated, 'yyyy-MM-dd HH:mm:ss') : 'Never'}
         </div>
       </div>
+      <Button variant="secondary" className="w-full" onClick={handleExportReadiness}>
+        <Download className="w-4 h-4 inline mr-2" />
+        Export Readiness Report
+      </Button>
       <Card>
         <div className="text-label mono text-text-muted mb-2">TREND ANALYSIS</div>
         <div className="space-y-2">
