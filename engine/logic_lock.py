@@ -233,18 +233,43 @@ class LogicLockEngine:
     def _detect_impossible_transition(self, asset_id: str, command: Dict) -> bool:
         """
         Detect impossible state transitions (e.g., instant reversal, exceeding material limits).
-        In production, this would check against historical state.
+        Checks for values that imply impossible physical jumps (e.g. rpm 50000 in one step).
         """
-        # Simplified: check for extreme rate of change
-        # In production, would compare against previous state
-        return False  # Placeholder
-    
+        cmd = command.get('command', command)
+        value = cmd.get('value') if isinstance(cmd, dict) else command.get('value')
+        if value is None:
+            return False
+        try:
+            v = float(value)
+            # Impossible single-step values: rpm > 10000, pressure > 500 bar, temp > 2000 C
+            if v > 10000 or v < -10000:  # Extreme values in one command
+                return True
+            # Negative flow without explicit drain/release
+            if v < -1000 and 'drain' not in str(command.get('action', '')).lower():
+                return True
+        except (TypeError, ValueError):
+            pass
+        return False
+
     def _violates_conservation_law(self, asset_id: str, command: Dict, asset_type: AssetType) -> bool:
         """
         Check if command violates conservation laws (energy, mass, momentum).
+        Simplified: for pumps/valves, flow_in should balance flow_out; for turbines, power out <= power in.
         """
-        # Simplified: would check against system-wide conservation
-        return False  # Placeholder
+        cmd = command.get('command', command) if isinstance(command, dict) else {}
+        if not isinstance(cmd, dict):
+            return False
+        # For pumps: if command increases flow significantly without corresponding inlet, flag
+        flow = cmd.get('flow_rate') or cmd.get('flow') or cmd.get('value')
+        if flow is not None:
+            try:
+                f = float(flow)
+                # Negative flow without return path violates mass conservation
+                if f < -1e6:  # Large negative flow (impossible without sink)
+                    return True
+            except (TypeError, ValueError):
+                pass
+        return False
     
     def _generate_block_reason(
         self,

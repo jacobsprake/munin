@@ -364,10 +364,21 @@ export default function SimulationPage() {
         {/* Map Panel - Left 45% */}
         <div className="w-[45%] bg-base-900 border-r border-base-700 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-base-850 to-base-900">
-            {/* Placeholder for map visualization */}
+            {/* Map visualization with grid overlay */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-text-muted text-body mono">Map View (Topographic)</div>
+              <div className="text-text-muted text-body mono opacity-40">Topographic Map</div>
             </div>
+            <div className="absolute top-2 left-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+              N
+            </div>
+            <div className="absolute bottom-2 left-2 text-[10px] font-mono text-text-muted">
+              Lat/Lon Grid
+            </div>
+            <div className="absolute inset-0 opacity-20" style={{
+              backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+              backgroundSize: '5% 5%',
+            }} />
             {/* Node markers */}
             {graphData.nodes
               .filter((n) => n.lat && n.lon)

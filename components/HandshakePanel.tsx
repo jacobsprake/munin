@@ -9,11 +9,12 @@ import Badge from '@/components/ui/Badge';
 interface HandshakePanelProps {
   packet: HandshakePacket;
   onAuthorize: (packetId: string, operatorId: string, passphrase: string) => Promise<void>;
+  initialOperatorId?: string;
 }
 
-export default function HandshakePanel({ packet, onAuthorize }: HandshakePanelProps) {
+export default function HandshakePanel({ packet, onAuthorize, initialOperatorId = '' }: HandshakePanelProps) {
   const [showSignModal, setShowSignModal] = useState(false);
-  const [operatorId, setOperatorId] = useState('');
+  const [operatorId, setOperatorId] = useState(initialOperatorId);
   const [passphrase, setPassphrase] = useState('');
 
   const handleAuthorize = async () => {

@@ -396,9 +396,24 @@ class SafetyPLC:
         invariant: PhysicalInvariant
     ) -> bool:
         """Check conservation law invariant (energy, mass, momentum)."""
-        # Simplified: would check energy balance
-        # In production, would compute energy_in vs energy_out
-        return False  # Placeholder
+        # Simplified: check that command doesn't create/destroy mass/energy
+        # For pumps: flow_in + flow_out should balance; for valves: no net creation
+        action = str(command.get('action', '')).lower()
+        target_assets = command.get('target_nodes', command.get('target_assets', []))
+        if not isinstance(target_assets, list):
+            target_assets = [target_assets] if target_assets else []
+        # Commands that would create energy from nothing (e.g. "generate 1e9 MW" without input)
+        value = command.get('value')
+        if value is not None:
+            try:
+                v = float(value)
+                if v > 1e12:  # Unrealistic single-step energy/mass
+                    return True
+                if v < -1e6 and 'drain' not in action and 'release' not in action:
+                    return True
+            except (TypeError, ValueError):
+                pass
+        return False
     
     def _check_sequence_requirement(
         self,

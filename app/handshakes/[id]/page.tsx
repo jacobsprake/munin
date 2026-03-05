@@ -27,6 +27,22 @@ export default function HandshakeDetailPage() {
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('munin_operator');
+        if (stored) {
+          const op = JSON.parse(stored);
+          if (op?.operatorId) {
+            setOperatorId((prev) => prev || op.operatorId);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     async function fetchPacket() {
       setLoadError(null);

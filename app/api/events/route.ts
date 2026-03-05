@@ -73,13 +73,13 @@ export async function GET(request: Request) {
     });
 
     // Return as JSON (polling fallback)
-    // For true SSE, would need custom server with ReadableStream
+    // For SSE stream, use GET /api/events/sse with Accept: text/event-stream
     return NextResponse.json({
       success: true,
       events: events.slice(0, 50),
       lastEventId: events.length > 0 ? events[0].id : lastEventId,
       eventType,
-      note: 'Using polling fallback. For true SSE, implement custom server with ReadableStream.'
+      note: 'Polling mode. For real-time: GET /api/events/sse with Accept: text/event-stream',
     });
   } catch (error: any) {
     console.error('Error fetching events:', error);

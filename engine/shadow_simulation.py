@@ -244,8 +244,20 @@ class ShadowModeEngine:
             union = len(human_nodes | munin_nodes)
             node_correlation = intersection / union if union > 0 else 0.0
         
-        # Action type similarity (simplified)
-        action_similarity = 0.5  # Placeholder: would use NLP similarity in production
+        # Action type similarity: keyword/sequence overlap
+        human_actions = set(str(human_action.action or '').lower().split())
+        munin_actions = set(str(munin_prediction.action or '').lower().split())
+        if human_actions and munin_actions:
+            overlap = len(human_actions & munin_actions) / len(human_actions | munin_actions)
+            action_similarity = min(1.0, overlap + 0.2)  # Slight boost for partial match
+        else:
+            # Fallback: same action type (start, stop, open, close) -> higher similarity
+            h = (human_action.action or '').lower()
+            m = (munin_prediction.action or '').lower()
+            keywords = ['start', 'stop', 'open', 'close', 'isolate', 'shutdown']
+            h_k = next((k for k in keywords if k in h), None)
+            m_k = next((k for k in keywords if k in m), None)
+            action_similarity = 0.8 if h_k == m_k else 0.3
         
         # Outcome similarity
         outcome_similarity = 1.0 if human_action.outcome == 'success' else 0.5

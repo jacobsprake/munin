@@ -38,6 +38,7 @@ export default function GraphPage() {
   const [activeTab, setActiveTab] = useState('Edge Evidence');
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [showMultiSigModal, setShowMultiSigModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { 
     setSelectedNode: setStoreNode, 
     setSelectedEdge: setStoreEdge,
@@ -93,12 +94,16 @@ export default function GraphPage() {
   const rightPanelContent = (
     <>
       <Tabs
-        items={selectedNode ? ['Node', 'Sensor Health'] : ['Edge Evidence', 'Sensor Health']}
+        items={
+          selectedNode
+            ? ['Node', 'Sensor Health', 'Evidence Quality']
+            : ['Edge Evidence', 'Sensor Health', 'Evidence Quality']
+        }
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
       <div className="p-4 space-y-4">
-        {!selectedNode && !selectedEdge && (
+        {!selectedNode && !selectedEdge && activeTab !== 'Evidence Quality' && (
           <div className="text-text-muted text-body text-center py-8">
             Select a node or edge to view evidence
           </div>
@@ -200,6 +205,56 @@ export default function GraphPage() {
               </div>
             </div>
 
+        {activeTab === 'Evidence Quality' && (
+          <div className="space-y-4">
+            <div className="text-label mono text-text-muted mb-2">EVIDENCE QUALITY DASHBOARD</div>
+            {(() => {
+              const windows = evidenceData?.windows || [];
+              const highConf = windows.filter(
+                (w) => (w.robustness || 0) >= 0.7 && (w.qualityContext?.missingness || 0) < 0.2
+              ).length;
+              const medConf = windows.filter(
+                (w) => {
+                  const r = w.robustness || 0;
+                  const m = w.qualityContext?.missingness || 0;
+                  return (r >= 0.4 && r < 0.7) || (m >= 0.2 && m < 0.4);
+                }
+              ).length;
+              const lowConf = windows.length - highConf - medConf;
+              const counterex = windows.filter((w) => w.supportType === 'counterexample').length;
+              return (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Card variant="evidence" className="p-3">
+                      <div className="text-label mono text-safety-emerald">HIGH</div>
+                      <div className="text-data-number mono">{highConf}</div>
+                      <div className="text-xs text-text-muted">robustness ≥0.7, low missingness</div>
+                    </Card>
+                    <Card variant="evidence" className="p-3">
+                      <div className="text-label mono text-safety-amber">MEDIUM</div>
+                      <div className="text-data-number mono">{medConf}</div>
+                      <div className="text-xs text-text-muted">moderate robustness</div>
+                    </Card>
+                    <Card variant="evidence" className="p-3">
+                      <div className="text-label mono text-text-muted">LOW</div>
+                      <div className="text-data-number mono">{lowConf}</div>
+                      <div className="text-xs text-text-muted">review recommended</div>
+                    </Card>
+                    <Card variant="evidence" className="p-3">
+                      <div className="text-label mono text-safety-cobalt">COUNTEREXAMPLES</div>
+                      <div className="text-data-number mono">{counterex}</div>
+                      <div className="text-xs text-text-muted">contradicting windows</div>
+                    </Card>
+                  </div>
+                  <div className="text-body-mono text-text-secondary">
+                    Total: {windows.length} evidence windows. Run <code className="text-xs">munin evidence-quality</code> for full report.
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+
             {counterexamples.length > 0 && (
               <div>
                 <div className="text-label mono text-text-muted mb-2">COUNTEREXAMPLES</div>
@@ -262,13 +317,30 @@ export default function GraphPage() {
     );
   }
 
+  const searchLower = searchQuery.trim().toLowerCase();
+  const matchesSearch = (node: Node) =>
+    !searchLower ||
+    node.id.toLowerCase().includes(searchLower) ||
+    (node.label || '').toLowerCase().includes(searchLower) ||
+    (node.sector || '').toLowerCase().includes(searchLower);
+  const searchMatchedNodeIds = searchLower
+    ? new Set(graphData.nodes.filter(matchesSearch).map((n) => n.id))
+    : null;
   const filteredEdges = showShadowLinksOnly
     ? graphData.edges.filter((e) => e.isShadowLink)
     : graphData.edges;
-
+  const edgesFilteredBySearch =
+    searchMatchedNodeIds === null
+      ? filteredEdges
+      : filteredEdges.filter(
+          (e) => searchMatchedNodeIds.has(e.source) || searchMatchedNodeIds.has(e.target)
+        );
+  const nodesFilteredBySearch =
+    searchMatchedNodeIds === null ? graphData.nodes : graphData.nodes.filter(matchesSearch);
   const filteredGraphData = {
     ...graphData,
-    edges: filteredEdges,
+    nodes: nodesFilteredBySearch,
+    edges: edgesFilteredBySearch,
   };
 
   return (
@@ -286,6 +358,8 @@ export default function GraphPage() {
             <input
               type="text"
               placeholder="Search assets..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent border-none text-body text-text-primary placeholder:text-text-muted focus:outline-none mono"
             />
           </div>
@@ -385,14 +459,14 @@ export default function GraphPage() {
           <div className="absolute bottom-4 left-4 z-10 w-80 bg-base-900/90 overlay-glass border border-base-700 rounded p-3">
             <div className="text-label mono text-text-primary mb-2">TOP 5 CRITICAL DEPENDENCIES</div>
             <div className="space-y-1 text-body-mono mono">
-              {filteredEdges
+              {filteredGraphData.edges
                 .sort((a, b) => (b.confidenceScore || 0) - (a.confidenceScore || 0))
                 .slice(0, 5)
                 .map((edge) => (
                   <div key={edge.id} className="flex items-center justify-between text-text-secondary">
                     <span>
-                      {graphData.nodes.find((n) => n.id === edge.source)?.label} →{' '}
-                      {graphData.nodes.find((n) => n.id === edge.target)?.label}
+                      {filteredGraphData.nodes.find((n) => n.id === edge.source)?.label} →{' '}
+                      {filteredGraphData.nodes.find((n) => n.id === edge.target)?.label}
                     </span>
                     <span className="text-safety-cobalt">C={edge.confidenceScore.toFixed(2)}</span>
                   </div>
