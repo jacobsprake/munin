@@ -102,7 +102,7 @@ export default function DemosIndexPage() {
         {/* Demo comparison viz: before/after (roadmap item 16) */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Comparison: Traditional vs Munin</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <Card className="p-4 border-amber-500/30 bg-amber-500/5">
               <div className="text-sm font-semibold text-amber-200 mb-2">Traditional coordination</div>
               <ul className="text-sm text-text-secondary space-y-1">

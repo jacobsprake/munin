@@ -53,18 +53,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleGuestAccess = () => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('munin_token', 'guest');
-      sessionStorage.setItem('munin_operator', JSON.stringify({
-        id: 'guest',
-        operatorId: 'GUEST',
-        role: 'viewer',
-      }));
-    }
-    router.push('/graph');
-  };
-
   return (
     <div className="min-h-screen bg-base-950 text-text-primary flex flex-col">
       {/* Classification Banner — Top (standard for government classified systems) */}
@@ -175,15 +163,6 @@ export default function LoginPage() {
                 {loading ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
               </button>
             </form>
-
-            <div className="mt-4 pt-4 border-t border-base-800">
-              <button
-                onClick={handleGuestAccess}
-                className="w-full py-2 rounded border border-base-700 text-text-muted font-mono text-[12px] hover:bg-base-800 hover:text-text-secondary transition-colors"
-              >
-                ENTER AS OBSERVER (READ-ONLY)
-              </button>
-            </div>
           </div>
 
           {/* System Info */}

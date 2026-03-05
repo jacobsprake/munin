@@ -4,15 +4,17 @@ Munin maintains exhaustive pre-simulation of the scenario space (single-origin, 
 correlated failure modes) and a continuously updated library of pre-approved playbooks.
 """
 import json
+import random
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import List, Dict, Set, Optional, Tuple
+from multiprocessing import Pool, cpu_count
 from cmi_prioritization import CMIPrioritizationEngine, EmergencyLevel, AssetPriority
 
-# Caps to bound runtime while retaining exhaustive coverage of the scenario space
-MAX_SINGLE_ORIGIN_PER_TYPE = 100
-MAX_CHAOS_MULTI_FAULT = 150
-MAX_CHAOS_CORRELATED = 80
+# Caps for scenario enumeration (raised for 10,000s coverage)
+MAX_SINGLE_ORIGIN_PER_TYPE = 500
+MAX_CHAOS_MULTI_FAULT = 5000
+MAX_CHAOS_CORRELATED = 500
 
 def simulate_cascade(
     graph: Dict,
@@ -105,6 +107,26 @@ def simulate_cascade(
         })
     
     return timeline
+
+
+def _simulate_one_scenario(args: Tuple[Dict, Tuple[str, List[str], datetime, str, int], bool]) -> Dict:
+    """Worker for parallel cascade simulation. Must be at module level for pickling."""
+    graph, scenario_tuple, use_cmi = args
+    incident_type, initial_nodes, start_time, title, delay_min = scenario_tuple
+    cmi_engine = _classify_cmi(graph, use_cmi, EmergencyLevel.PEACETIME) if use_cmi else None
+    timeline = simulate_cascade(
+        graph, initial_nodes, start_time,
+        cascade_delay_minutes=delay_min,
+        cmi_engine=cmi_engine,
+        emergency_level=EmergencyLevel.PEACETIME,
+    )
+    return {
+        'type': incident_type,
+        'title': title,
+        'startTs': start_time.isoformat(),
+        'timeline': timeline,
+        'initial_nodes': initial_nodes,
+    }
 
 
 def _classify_cmi(graph: Dict, use_cmi: bool, emergency_level: EmergencyLevel) -> Optional[CMIPrioritizationEngine]:
@@ -242,12 +264,17 @@ def build_incidents(
     emergency_level: EmergencyLevel = EmergencyLevel.PEACETIME,
     use_cmi: bool = True,
     all_scenarios: bool = True,
+    max_scenarios: Optional[int] = None,
+    n_jobs: int = 1,
+    seed: int = 42,
 ):
     """
     Build incident definitions with simulated cascades.
     When all_scenarios=True (default), exhaustively enumerates the scenario space (single-origin,
     multi-fault, correlated) and builds pre-approved playbooks for each.
     When all_scenarios=False (--quick), runs only a small fixed set for fast demos.
+    max_scenarios: If set, sample at most N scenarios when enumeration exceeds N.
+    n_jobs: Number of parallel workers (1=sequential). Uses cpu_count()-1 when >1.
     """
     with open(graph_path, 'r') as f:
         graph = json.load(f)
@@ -259,21 +286,43 @@ def build_incidents(
 
     if all_scenarios:
         scenarios = enumerate_all_conceivable_scenarios(graph)
-        for idx, (incident_type, initial_nodes, start_time, title, delay_min) in enumerate(scenarios):
-            timeline = simulate_cascade(
-                graph, initial_nodes, start_time,
-                cascade_delay_minutes=delay_min,
-                cmi_engine=cmi_engine,
-                emergency_level=emergency_level,
-            )
-            incidents.append({
-                'id': f'incident_{incident_type}_{idx:05d}',
-                'title': title,
-                'type': incident_type,
-                'startTs': start_time.isoformat(),
-                'timeline': timeline,
-            })
-        print(f"Simulated {len(incidents)} conceivable + chaos scenarios")
+        original_count = len(scenarios)
+        # Sampling: if over target, sample uniformly
+        if max_scenarios is not None and original_count > max_scenarios:
+            rng = random.Random(seed)
+            scenarios = rng.sample(scenarios, max_scenarios)
+            print(f"Sampled {max_scenarios} from {original_count} conceivable scenarios")
+        use_parallel = n_jobs > 1
+        if use_parallel:
+            n_workers = min(n_jobs, cpu_count() if cpu_count() else 4) if n_jobs > 1 else 1
+            worker_args = [(graph, s, use_cmi) for s in scenarios]
+            with Pool(processes=n_workers) as pool:
+                results = pool.map(_simulate_one_scenario, worker_args)
+            for idx, res in enumerate(results):
+                incidents.append({
+                    'id': f"incident_{res['type']}_{idx:05d}",
+                    'title': res['title'],
+                    'type': res['type'],
+                    'startTs': res['startTs'],
+                    'timeline': res['timeline'],
+                })
+            print(f"Simulated {len(incidents)} scenarios (parallel, {n_workers} workers)")
+        else:
+            for idx, (incident_type, initial_nodes, start_time, title, delay_min) in enumerate(scenarios):
+                timeline = simulate_cascade(
+                    graph, initial_nodes, start_time,
+                    cascade_delay_minutes=delay_min,
+                    cmi_engine=cmi_engine,
+                    emergency_level=emergency_level,
+                )
+                incidents.append({
+                    'id': f'incident_{incident_type}_{idx:05d}',
+                    'title': title,
+                    'type': incident_type,
+                    'startTs': start_time.isoformat(),
+                    'timeline': timeline,
+                })
+            print(f"Simulated {len(incidents)} conceivable + chaos scenarios")
     else:
         # Quick mode: original 3 incidents only
         flood_nodes = [n['id'] for n in nodes if 'pump' in n['id'].lower() or 'reservoir' in n['id'].lower()][:2]

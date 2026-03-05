@@ -6,6 +6,7 @@ import sys
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
+from multiprocessing import cpu_count
 
 import numpy as np
 
@@ -56,6 +57,8 @@ def main(
     config_path: Path = None,
     seed: int = 42,
     all_scenarios: bool = True,
+    max_scenarios: int = None,
+    n_jobs: int = 1,
 ):
     """Run the complete pipeline with deterministic execution.
     
@@ -69,6 +72,8 @@ def main(
         config_path: Path to engine config JSON (default: use defaults)
         seed: Random seed for deterministic execution (default: 42)
         all_scenarios: If True, enumerate and simulate all conceivable + chaos scenarios; if False, run quick 3-incident set.
+        max_scenarios: If set, cap at N scenarios (sample when over). Enables targeting e.g. 10,000.
+        n_jobs: Parallel workers for cascade simulation (1=sequential). Use 0 for auto (cpu_count-1).
     """
     # Load configuration and initialize RNG streams
     config = get_config(config_path)
@@ -206,8 +211,20 @@ def main(
 
     print("\n[4/5] Building incident simulations (exhaustive scenario space)...")
     logger.start_phase("incident_simulation")
-    _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {"all_scenarios": all_scenarios})
-    build_incidents(out_dir / "graph.json", out_dir / "incidents.json", all_scenarios=all_scenarios)
+    _n_jobs = max(1, (cpu_count() or 4) - 1) if n_jobs == 0 else n_jobs
+    _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {
+        "all_scenarios": all_scenarios,
+        "max_scenarios": max_scenarios,
+        "n_jobs": _n_jobs,
+    })
+    build_incidents(
+        out_dir / "graph.json",
+        out_dir / "incidents.json",
+        all_scenarios=all_scenarios,
+        max_scenarios=max_scenarios,
+        n_jobs=_n_jobs,
+        seed=config.rng.base_seed,
+    )
     
     with open(out_dir / "incidents.json", 'r') as f:
         incidents_data = json.load(f)

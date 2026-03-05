@@ -50,6 +50,8 @@ export function createSession(
   return { id, operatorId, token, expiresAt, createdAt: now };
 }
 
+const FORBIDDEN_TOKENS = new Set(['guest', 'GUEST', 'anonymous', 'demo', 'test', '']);
+
 export function validateSession(token: string): {
   valid: boolean;
   operatorId?: string;
@@ -58,6 +60,9 @@ export function validateSession(token: string): {
   ministryId?: string;
   reason?: string;
 } {
+  if (!token || FORBIDDEN_TOKENS.has(token)) {
+    return { valid: false, reason: 'Invalid or forbidden token' };
+  }
   const db = getDb();
   const tokenHash = hashToken(token);
 

@@ -290,7 +290,7 @@ export default function CarlisleDashboard() {
         {/* Station Readings */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Station Readings</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             {readings.map((reading) => (
               <Card key={reading.nodeId} className="p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -383,7 +383,7 @@ export default function CarlisleDashboard() {
         {/* Metrics Summary – Munin vs traditional (roadmap item 15) */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Performance Metrics (Munin vs traditional)</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <Card className="p-4">
               <div className="text-sm text-text-secondary mb-1">Time-to-Authorize</div>
               <div className="text-2xl font-bold">

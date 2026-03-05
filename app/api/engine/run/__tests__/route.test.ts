@@ -20,12 +20,16 @@ describe('POST /api/engine/run', () => {
 });
 
 describe('GET /api/engine/run', () => {
-  it('returns 200 with message when no jobId', async () => {
+  it('returns 200 with jobs list when no jobId', async () => {
     const req = new Request('http://localhost/api/engine/run');
     const res = await GET(req);
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data).toHaveProperty('message');
+    expect(data).toHaveProperty('jobs');
+    expect(Array.isArray(data.jobs)).toBe(true);
+    expect(data).toHaveProperty('limit');
+    expect(data).toHaveProperty('offset');
+    expect(data).toHaveProperty('total');
   });
 
   it('returns 404 for unknown jobId', async () => {

@@ -1,8 +1,24 @@
 # Munin Security Architecture
 
+Munin is hardened for **government classified infrastructure** — handling some of the most sensitive data on earth. Security posture is comparable to or exceeds Palantir-grade systems for sovereign critical infrastructure.
+
 ## Deployment Model
 
 Munin is designed for **air-gapped, on-premises deployment** within government secure facilities. It has **zero external network dependencies** — no CDNs, cloud services, telemetry, or external fonts.
+
+### Government-Grade Hardening (Fixed Workstation Only)
+
+| Control | Implementation |
+|---------|----------------|
+| **No guest/anonymous access** | Guest login removed; all access requires authenticated operator |
+| **Forbidden tokens** | Session validation rejects `guest`, `anonymous`, `demo`, `test` |
+| **Fixed workstation UI** | No mobile responsiveness; minimum width 1280px; zoom disabled |
+| **No indexing** | `robots: noindex, nofollow` — classified systems must not appear in search |
+| **Zero referrer leakage** | `Referrer-Policy: no-referrer` — no referrer headers sent |
+| **Cross-origin isolation** | `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin` |
+| **No cross-domain policies** | `X-Permitted-Cross-Domain-Policies: none` |
+| **USB/serial disabled** | `Permissions-Policy` blocks camera, microphone, geolocation, USB, serial |
+| **Upgrade insecure** | CSP `upgrade-insecure-requests` forces HTTPS for all resources |
 
 ### Air-Gap Enforcement
 

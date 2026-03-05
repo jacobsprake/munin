@@ -37,7 +37,15 @@ describe('Air-Gap Session Management', () => {
   it('rejects invalid token', () => {
     const result = validateSession('invalid_token_that_does_not_exist');
     expect(result.valid).toBe(false);
-    expect(result.reason).toContain('not found');
+    expect(result.reason).toMatch(/not found|Invalid or forbidden/);
+  });
+
+  it('rejects forbidden tokens (government-grade: no guest/anonymous)', () => {
+    expect(validateSession('guest').valid).toBe(false);
+    expect(validateSession('guest').reason).toContain('forbidden');
+    expect(validateSession('GUEST').valid).toBe(false);
+    expect(validateSession('anonymous').valid).toBe(false);
+    expect(validateSession('').valid).toBe(false);
   });
 
   it('revokes a session', () => {

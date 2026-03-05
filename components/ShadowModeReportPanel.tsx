@@ -114,7 +114,7 @@ export function ShadowModeReportPanel() {
           <CardTitle>Shadow Mode Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <div>
               <div className="text-sm text-muted-foreground">Incidents Observed</div>
               <div className="text-2xl font-bold">{report.summary.total_incidents_observed}</div>

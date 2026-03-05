@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Network, Play, Handshake, Radio, Shield, Map, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Zap, Home, ClipboardList } from 'lucide-react';
+import { Network, Play, Handshake, Radio, Shield, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Home, ClipboardList } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/demo-path', label: '5-min demo path', icon: Zap },
   { href: '/demos', label: 'Disaster demos', icon: Route },
   { href: '/carlisle-dashboard', label: 'Carlisle flood demo', icon: Droplets },
   { href: '/graph', label: 'Dependency Graph', icon: Network },
@@ -26,7 +25,6 @@ const navItems = [
   { href: '/users', label: 'Users', icon: Users },
   { href: '/protocol', label: 'Protocol Deep-Dive', icon: Radio },
   { href: '/sovereign', label: 'Sovereign Runtime', icon: Shield },
-  { href: '/expansion', label: 'Expansion Map', icon: Map },
 ];
 
 export default function LeftRail() {

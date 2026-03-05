@@ -36,7 +36,7 @@ export default function SovereignFeaturesPage() {
           </div>
 
           {/* Feature Overview Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-4 mb-8">
             <Card variant="packet" className="border-safety-emerald/30">
               <div className="flex items-center gap-3 mb-3">
                 <Shield className="w-5 h-5 text-safety-emerald" />
