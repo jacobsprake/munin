@@ -32,6 +32,7 @@ import ByzantineMultiSigModal from '@/components/ByzantineMultiSigModal';
 export default function GraphPage() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [evidenceData, setEvidenceData] = useState<EvidenceData | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [activeTab, setActiveTab] = useState('Edge Evidence');
@@ -49,6 +50,7 @@ export default function GraphPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoadError(null);
         const [graph, evidence] = await Promise.all([
           loadGraphData(),
           loadEvidenceData(),
@@ -56,6 +58,8 @@ export default function GraphPage() {
         setGraphData(graph);
         setEvidenceData(evidence);
       } catch (error) {
+        const msg = error instanceof Error ? error.message : 'Failed to load graph and evidence data';
+        setLoadError(msg);
         console.error('Failed to load data:', error);
       }
     }
@@ -228,6 +232,25 @@ export default function GraphPage() {
       </div>
     </>
   );
+
+  if (loadError) {
+    return (
+      <CommandShell>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
+          <div className="text-safety-amber font-mono text-center max-w-md">
+            <div className="text-label mb-2">DATA LOAD FAILED</div>
+            <div className="text-body text-text-secondary">{loadError}</div>
+            <div className="text-label text-text-muted mt-4">
+              Ensure the engine pipeline has run (npm run engine) and the API is reachable.
+            </div>
+          </div>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </CommandShell>
+    );
+  }
 
   if (!graphData) {
     return (

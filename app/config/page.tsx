@@ -6,7 +6,8 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Save, Settings } from 'lucide-react';
+import { Save, Play, RefreshCw } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface Config {
   system: Record<string, any>;
@@ -17,15 +18,54 @@ interface Config {
   shadow_mode: Record<string, any>;
 }
 
+interface EngineJob {
+  id: string;
+  status: string;
+  startedAt?: string;
+  completedAt?: string;
+  error?: string;
+  createdAt: string;
+}
+
 export default function ConfigPage() {
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [edits, setEdits] = useState<Record<string, any>>({});
+  const [engineJobs, setEngineJobs] = useState<EngineJob[]>([]);
+  const [engineRunning, setEngineRunning] = useState(false);
 
   useEffect(() => {
     fetchConfig();
+    fetchEngineJobs();
   }, []);
+
+  const fetchEngineJobs = async () => {
+    try {
+      const res = await fetch('/api/engine/run?limit=10');
+      const data = await res.json();
+      if (data.jobs) {
+        setEngineJobs(data.jobs);
+      }
+    } catch {
+      setEngineJobs([]);
+    }
+  };
+
+  const handleRunEngine = async () => {
+    try {
+      setEngineRunning(true);
+      const res = await fetch('/api/engine/run', { method: 'POST' });
+      const data = await res.json();
+      if (data.success && data.jobId) {
+        await fetchEngineJobs();
+      }
+    } catch (err) {
+      console.error('Engine run failed:', err);
+    } finally {
+      setEngineRunning(false);
+    }
+  };
 
   const fetchConfig = async () => {
     try {
@@ -150,6 +190,56 @@ export default function ConfigPage() {
           </div>
         ) : (
           <div className="space-y-4 overflow-y-auto">
+            {/* Engine Jobs */}
+            <Card className="p-4">
+              <div className="text-label mono text-text-primary mb-4 flex items-center justify-between">
+                <span>Engine Pipeline</span>
+                <div className="flex gap-2">
+                  <Button variant="ghost" className="px-2 py-1" onClick={fetchEngineJobs}>
+                    <RefreshCw className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="px-3 py-1.5"
+                    onClick={handleRunEngine}
+                    disabled={engineRunning}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    {engineRunning ? 'Running...' : 'Run Pipeline'}
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {engineJobs.length === 0 ? (
+                  <div className="text-body-mono text-text-muted py-4 text-center">
+                    No engine jobs yet. Run the pipeline to generate graph data.
+                  </div>
+                ) : (
+                  engineJobs.map((job) => (
+                    <div
+                      key={job.id}
+                      className="flex items-center justify-between py-2 border-b border-base-700 last:border-0 text-body-mono"
+                    >
+                      <span className="text-text-secondary truncate max-w-[200px]" title={job.id}>
+                        {job.id.substring(0, 8)}...
+                      </span>
+                      <Badge
+                        status={
+                          job.status === 'completed' ? 'ok' :
+                          job.status === 'failed' ? 'error' :
+                          'active'
+                        }
+                      >
+                        {job.status.toUpperCase()}
+                      </Badge>
+                      <span className="text-text-muted text-xs">
+                        {format(new Date(job.createdAt), 'MMM dd HH:mm')}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
             {renderConfigSection('System', 'system', config.system)}
             {renderConfigSection('Engine', 'engine', config.engine)}
             {renderConfigSection('Security', 'security', config.security)}

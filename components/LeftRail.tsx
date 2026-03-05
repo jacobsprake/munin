@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Network, Play, Handshake, Radio, Shield, Map, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Zap, Home } from 'lucide-react';
+import { Network, Play, Handshake, Radio, Shield, Map, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Zap, Home, ClipboardList } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
@@ -18,6 +18,7 @@ const navItems = [
   { href: '/resources', label: 'Resources', icon: Lock },
   { href: '/shadow', label: 'Shadow Report', icon: Eye },
   { href: '/replay', label: 'Historical Replay', icon: History },
+  { href: '/audit', label: 'Audit Log', icon: ClipboardList },
   { href: '/metrics', label: 'Metrics', icon: Activity },
   { href: '/config', label: 'Configuration', icon: Settings },
   { href: '/tenants', label: 'Tenants', icon: Building2 },

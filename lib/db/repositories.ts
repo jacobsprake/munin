@@ -501,6 +501,24 @@ export const engineJobsRepo = {
     };
   },
 
+  list(limit = 20, offset = 0): EngineJob[] {
+    const db = getDb();
+    const rows: any[] = db.prepare(`
+      SELECT * FROM engine_jobs
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
+    `).all(limit, offset);
+    return rows.map((row) => ({
+      id: row.id,
+      status: row.status,
+      startedAt: row.started_at ? new Date(row.started_at) : undefined,
+      completedAt: row.completed_at ? new Date(row.completed_at) : undefined,
+      error: row.error,
+      outputPath: row.output_path,
+      createdAt: new Date(row.created_at)
+    }));
+  },
+
   updateStatus(id: string, status: EngineJob['status'], error?: string, outputPath?: string): void {
     const db = getDb();
     if (status === 'running') {

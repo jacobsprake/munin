@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 
-type BadgeStatus = 'ok' | 'warning' | 'active' | 'degraded' | 'disconnected' | 'authorized';
+type BadgeStatus = 'ok' | 'warning' | 'active' | 'degraded' | 'disconnected' | 'authorized' | 'error';
 
 export interface BadgeProps {
   status?: BadgeStatus;
@@ -18,6 +18,7 @@ export default function Badge({ status, children, className }: BadgeProps) {
     degraded: 'bg-safety-amber/20 border-safety-amber text-safety-amber',
     disconnected: 'bg-safety-amber/20 border-safety-amber text-safety-amber',
     authorized: 'bg-safety-emerald/20 border-safety-emerald text-safety-emerald',
+    error: 'bg-red-900/30 border-red-600 text-red-400',
   };
 
   return (

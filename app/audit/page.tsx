@@ -8,7 +8,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { useAppStore } from '@/lib/store';
 import { format } from 'date-fns';
-import { CheckCircle2, Download } from 'lucide-react';
+import { CheckCircle2, XCircle, Download } from 'lucide-react';
 
 interface AuditLogEntry {
   timestamp: string;
@@ -25,7 +25,28 @@ export default function AuditPage() {
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
   const [chainIntact, setChainIntact] = useState(true);
   const [lastVerified, setLastVerified] = useState<Date>(new Date());
+  const [exporting, setExporting] = useState(false);
   const { warRoomMode } = useAppStore();
+
+  const handleExportSegment = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch('/api/audit/log?limit=500');
+      if (!res.ok) throw new Error('Failed to fetch audit log');
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `munin-audit-segment-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     // Fetch real audit log data
@@ -53,8 +74,6 @@ export default function AuditPage() {
       }
     };
 
-    fetchAuditLog();
-    
     // Verify chain integrity
     const verifyChain = async () => {
       try {
@@ -72,9 +91,11 @@ export default function AuditPage() {
         }
       } catch (error) {
         console.error('Error verifying chain:', error);
+        setChainIntact(false);
       }
     };
 
+    fetchAuditLog();
     verifyChain();
     
     // Refresh every 30 seconds
@@ -93,15 +114,29 @@ export default function AuditPage() {
           <Card>
             <div className="text-label mono text-text-muted mb-2">INTEGRITY STATUS</div>
             <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className="w-5 h-5 text-safety-emerald" />
-              <Badge status="ok">CHAIN INTACT: YES</Badge>
+              {chainIntact ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-safety-emerald" />
+                  <Badge status="ok">CHAIN INTACT: YES</Badge>
+                </>
+              ) : (
+                <>
+                  <XCircle className="w-5 h-5 text-red-500" />
+                  <Badge status="error">CHAIN INTACT: NO</Badge>
+                </>
+              )}
             </div>
             <div className="text-body-mono mono text-text-secondary mb-2">
               Last verified: {format(lastVerified, 'yyyy-MM-dd HH:mm:ss')}Z
             </div>
-            <Button variant="secondary" className="w-full">
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={handleExportSegment}
+              disabled={exporting}
+            >
               <Download className="w-4 h-4 inline mr-2" />
-              Export Audit Segment
+              {exporting ? 'Exporting...' : 'Export Audit Segment'}
             </Button>
           </Card>
           {warRoomMode && (

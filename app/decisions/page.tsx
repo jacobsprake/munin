@@ -45,12 +45,14 @@ export default function DecisionsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     async function fetchDecisions() {
       try {
         setLoading(true);
+        setLoadError(null);
         const params = new URLSearchParams();
         if (statusFilter !== 'all') {
           params.set('status', statusFilter);
@@ -59,8 +61,12 @@ export default function DecisionsPage() {
         const data = await res.json();
         if (data.success) {
           setDecisions(data.decisions || []);
+        } else {
+          setLoadError(data.error || 'Failed to load decisions');
         }
       } catch (error) {
+        const msg = error instanceof Error ? error.message : 'Failed to load decisions';
+        setLoadError(msg);
         console.error('Failed to load decisions:', error);
       } finally {
         setLoading(false);
@@ -245,6 +251,22 @@ export default function DecisionsPage() {
       Select a decision to view details
     </div>
   );
+
+  if (loadError && !loading) {
+    return (
+      <CommandShell>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
+          <div className="text-safety-amber font-mono text-center max-w-md">
+            <div className="text-label mb-2">DATA LOAD FAILED</div>
+            <div className="text-body text-text-secondary">{loadError}</div>
+          </div>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </CommandShell>
+    );
+  }
 
   return (
     <CommandShell

@@ -72,9 +72,13 @@ export async function GET(request: Request) {
       return NextResponse.json(job);
     }
 
-    // Return latest job
-    // Note: In a real implementation, you'd want pagination
-    return NextResponse.json({ message: 'Use ?jobId=<id> to get specific job status' });
+    // List jobs with pagination
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
+    const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const jobs = engineJobsRepo.list(limit, offset);
+    return NextResponse.json(
+      { jobs, limit, offset, total: jobs.length }
+    );
   } catch (error: any) {
     console.error('Error querying engine jobs:', error);
     return NextResponse.json(

@@ -27,6 +27,7 @@ import CounterfactualPanel from '@/components/CounterfactualPanel';
 export default function SimulationPage() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [incidentsData, setIncidentsData] = useState<IncidentsData | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const { 
     setSelectedIncident: setStoreIncident, 
@@ -43,6 +44,7 @@ export default function SimulationPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoadError(null);
         const [graph, incidents] = await Promise.all([
           loadGraphData(),
           loadIncidentsData(),
@@ -56,6 +58,8 @@ export default function SimulationPage() {
           setSimulationTime(parseISO(first.startTs).getTime());
         }
       } catch (error) {
+        const msg = error instanceof Error ? error.message : 'Failed to load simulation data';
+        setLoadError(msg);
         console.error('Failed to load data:', error);
       }
     }
@@ -123,6 +127,25 @@ export default function SimulationPage() {
       setDecisionCreating(false);
     }
   };
+
+  if (loadError) {
+    return (
+      <CommandShell>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
+          <div className="text-safety-amber font-mono text-center max-w-md">
+            <div className="text-label mb-2">DATA LOAD FAILED</div>
+            <div className="text-body text-text-secondary">{loadError}</div>
+            <div className="text-label text-text-muted mt-4">
+              Ensure the engine pipeline has run (npm run engine) and the API is reachable.
+            </div>
+          </div>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </CommandShell>
+    );
+  }
 
   if (!graphData || !incidentsData) {
     return (

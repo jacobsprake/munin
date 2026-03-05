@@ -24,18 +24,20 @@ export default function StatusStrip() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const [graphRes, incRes] = await Promise.all([
+        const [graphRes, incRes, packetsRes] = await Promise.all([
           fetch('/api/graph').then(r => r.json()).catch(() => ({ nodes: [], edges: [] })),
           fetch('/api/incidents').then(r => r.json()).catch(() => ({ incidents: [] })),
+          fetch('/api/packets').then(r => r.json()).catch(() => []),
         ]);
         const nodes = graphRes.nodes?.length || 0;
         const edges = graphRes.edges?.length || 0;
         const shadowLinks = graphRes.edges?.filter((e: any) => e.isShadowLink).length || 0;
         const incidents = graphRes.incidents?.length || incRes.incidents?.length || incRes.data?.length || 0;
+        const packets = Array.isArray(packetsRes) ? packetsRes.length : 0;
         const degraded = graphRes.nodes?.filter((n: any) => n.health?.status === 'degraded').length || 0;
         setStats({
           nodes, edges, shadowLinks, incidents,
-          packets: 0, warnings: degraded > 0 ? degraded : 0,
+          packets, warnings: degraded > 0 ? degraded : 0,
           degradedSensors: degraded, auditVerified: true,
         });
       } catch { /* silent */ }
@@ -78,6 +80,8 @@ export default function StatusStrip() {
           </>
         )}
         <span>{stats.incidents} SCENARIOS SIMULATED</span>
+        <span className="text-base-700">│</span>
+        <span>{stats.packets} PACKETS</span>
       </div>
 
       {/* Right: Audit and security status */}

@@ -17,6 +17,7 @@ import { Search, Filter, Download } from 'lucide-react';
 
 function HandshakesContent() {
   const [packets, setPackets] = useState<HandshakePacket[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedPacket, setSelectedPacket] = useState<HandshakePacket | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -28,6 +29,7 @@ function HandshakesContent() {
   useEffect(() => {
     async function fetchPackets() {
       try {
+        setLoadError(null);
         const data = await loadPackets();
         setPackets(data);
         const generateId = searchParams.get('generate');
@@ -40,6 +42,8 @@ function HandshakesContent() {
           }
         }
       } catch (error) {
+        const msg = error instanceof Error ? error.message : 'Failed to load handshake packets';
+        setLoadError(msg);
         console.error('Failed to load packets:', error);
       }
     }
@@ -83,6 +87,25 @@ function HandshakesContent() {
       {format(new Date(packet.createdTs), 'yyyy-MM-dd HH:mm')}
     </span>,
   ]);
+
+  if (loadError) {
+    return (
+      <CommandShell>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
+          <div className="text-safety-amber font-mono text-center max-w-md">
+            <div className="text-label mb-2">DATA LOAD FAILED</div>
+            <div className="text-body text-text-secondary">{loadError}</div>
+            <div className="text-label text-text-muted mt-4">
+              Ensure the engine pipeline has run (npm run engine) and the API is reachable.
+            </div>
+          </div>
+          <Button variant="secondary" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </CommandShell>
+    );
+  }
 
   const rightPanelContent = selectedPacket ? (
     <div className="p-4 space-y-4">
