@@ -30,12 +30,9 @@ This document audits the Munin repository against the thesis (README, MANIFESTO,
 **Implementation:** ✅ **Implemented for scenario coverage.**
 
 - **Cascade simulation:** ✅ Implemented. `engine/build_incidents.py` runs `simulate_cascade()` across the full scenario space: single-origin (flood, power, drought), multi-fault, and correlated (shadow-link) stress scenarios; pre-approved packets are generated for each.
-- **“10,000s of scenarios”:** ❌ Not implemented. Only three fixed scenario types per run; no large-scale scenario enumeration or batch simulation.
-- **“Match live situation to nearest pre-simulated scenario”:** ❌ Not implemented. Incidents are generated from fixed scenarios and node-name heuristics (e.g. pump/reservoir, substation). There is no:
-  - ingestion of live thresholds or live situation,
-  - evaluation of playbook triggers (e.g. `water_level > 2.5`) in the engine pipeline,
-  - or matching logic from live data to a pre-simulated scenario.
-- **Playbook selection:** Incident **type** is mapped to a playbook file (e.g. flood → `carlisle_flood_gate_coordination.yaml`) in `engine/packetize.py` (`playbook_map`). Playbook YAML **triggers** are not evaluated when creating incidents or packets.
+- **“10,000s of scenarios”:** ✅ Implemented. `engine/build_incidents.py` has raised caps, sampling (`max_scenarios`), and parallel cascade simulation (`n_jobs`). CLI: `--scenarios N --parallel N`.
+- **“Match live situation to nearest pre-simulated scenario”:** ✅ Implemented. `engine/live_match.py` provides `match_live_to_scenario()` and `evaluate_playbook_triggers()`. Wired in `engine/run.py`; outputs `live_matched_scenario.json` and `triggered_playbooks.json`. App surfaces live match via `/api/live-match` and simulation page.
+- **Playbook selection:** Incident **type** maps to playbook; when `triggered_playbooks.json` exists, `packetize.py` prefers trigger-validated playbooks. Playbook YAML triggers are evaluated in the pipeline (`evaluate_playbook_triggers`).
 - **Outcome confidence:** ✅ Implemented in packets, but **evidence/scope-based**, not from many simulation runs. `packetize.py` computes `base_success_prob` (e.g. 0.95), reduced by uncertainty and scope; `outcome_confidence` and `outcome_summary` are derived from this. So confidence reflects evidence quality and blast radius, not a distribution over thousands of runs.
 
 ---
@@ -87,7 +84,7 @@ This document audits the Munin repository against the thesis (README, MANIFESTO,
 | Shadow Links (correlation + lag)       | ✅ Done  | infer_graph, detect_shadow_link, schema, UI                          |
 | Cascade simulation                     | ✅ Done  | One sim per incident type per run in build_incidents                   |
 | Exhaustive scenario space              | ✅ Done  | Single-origin, multi-fault, correlated enumerated and simulated      |
-| Match live to nearest scenario         | ❌ No    | No trigger evaluation or scenario matching in pipeline               |
+| Match live to nearest scenario         | ✅ Done  | live_match.py, run.py, app /api/live-match, simulation UI            |
 | Outcome confidence in packets          | ✅ Done  | Evidence/scope-based, not from many sims                              |
 | Authoritative handshake (M-of-N, etc.) | ✅ Done  | packetize + Byzantine + liability shield                            |
 | Coordination latency claim             | ✅ Design| Doc/design only; no latency metric in code                           |

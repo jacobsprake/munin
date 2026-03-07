@@ -358,8 +358,21 @@ def packetize_incidents(
     with open(evidence_path, 'r') as f:
         evidence = json.load(f)
     
+    # Load triggered playbooks from live_match (when available) — thesis: prefer trigger-validated playbooks
+    triggered_playbook_ids = set()
+    triggered_path = output_dir.parent / "triggered_playbooks.json"
+    if triggered_path.exists():
+        try:
+            with open(triggered_path, 'r') as f:
+                triggered_data = json.load(f)
+            for t in triggered_data.get('triggered', []):
+                if t.get('met'):
+                    triggered_playbook_ids.add(t.get('playbook_id', ''))
+        except (json.JSONDecodeError, KeyError):
+            pass
+    
     # Map incident types to playbooks
-    # Try Carlisle playbook first, fallback to original if not found
+    # When triggered_playbooks exists, prefer trigger-validated playbook for that type
     playbook_map = {
         'flood': 'carlisle_flood_gate_coordination.yaml',
         'drought': 'drought_reservoir_diversion.yaml',
@@ -395,7 +408,15 @@ def packetize_incidents(
     audit_log = get_audit_log(output_dir.parent)
     
     for incident in incidents_data['incidents']:
-        playbook_id = playbook_map.get(incident['type'], 'default.yaml')
+        default_id = playbook_map.get(incident['type'], 'default.yaml')
+        fallback_id = playbook_fallback.get(incident['type'], default_id)
+        # Prefer trigger-validated playbook when available (thesis: live data -> which playbook)
+        if default_id in triggered_playbook_ids and (playbooks_dir / default_id).exists():
+            playbook_id = default_id
+        elif fallback_id != default_id and fallback_id in triggered_playbook_ids and (playbooks_dir / fallback_id).exists():
+            playbook_id = fallback_id
+        else:
+            playbook_id = default_id
         playbook_path = playbooks_dir / playbook_id
         
         # Load playbook to determine multi-sig requirements
@@ -422,6 +443,8 @@ def packetize_incidents(
                 playbook_id = 'default.yaml'
         
         packet = generate_packet(incident, playbook_id, graph, evidence)
+        if playbook_id in triggered_playbook_ids:
+            packet['triggerValidated'] = True  # Playbook selected via live trigger evaluation
         
         # Determine multi-sig requirements
         multi_sig = determine_multi_sig_requirements(playbook, incident)

@@ -518,11 +518,7 @@ Total: 20-30 minutes
 
 ---
 
-<<<<<<< HEAD
-## 5. Cross-Sector Cascade Detection
-=======
-## 5. Shadow Links Verified: Cross-Sector Cascade Detection
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
+## 5. Shadow Links: Cross-Sector Cascade Detection
 
 ### The Discovery
 During prototype development, the dependency graph inference revealed a critical insight:

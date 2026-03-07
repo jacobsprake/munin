@@ -6,11 +6,7 @@ Munin is **decision support** for infrastructure operators. Humans always author
 
 ## The Thesis
 
-<<<<<<< HEAD
-**Munin is a sovereign orchestration layer for fast crisis response.** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the required regulatory and legal basis.
-=======
-**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response. It solves the Liability Paralysis of the state by bridging the gap between operational systems (SCADA) and authority (Law).**
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
+**Munin is the first Sovereign Orchestration Layer designed for zero-latency crisis response.** The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks and generating execution packets that carry the required regulatory and legal basis, bridging the gap between operational systems (SCADA) and authority (Law).
 
 Modern infrastructure failure is not primarily a data problem—we have enough sensors. The bottleneck is the time required for legal authorisation and cross-agency coordination.
 
@@ -45,13 +41,7 @@ As the official report on Hurricane Katrina put it: *“Had the simulation taken
 
 ---
 
-<<<<<<< HEAD
 ## Shadow Links: Cross-Sector Dependency Discovery
-=======
-## Shadow Links: Cross-sector dependencies
-
-**The discovery:**
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
 
 ### Cross-Sector Dependencies Are Invisible
 
@@ -280,17 +270,9 @@ The state requires:
 
 ## Conclusion
 
-<<<<<<< HEAD
-The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks through simulation and generating cryptographic execution packets that carry the required regulatory basis. The state must both act at machine speed to prevent cascading failures and maintain legal accountability for every action; Munin supports both by doing the pre-validation and regulatory mapping in advance.
-=======
 **Munin solves the Liability Paralysis of the state by bridging the gap between operational systems (SCADA) and authority (Law).**
 
-The state has two conflicting mandates:
-1. Act at machine speed to prevent cascading failures
-2. Maintain legal accountability for every action taken
-
-**Munin eliminates this false dichotomy by pre-validating playbooks through simulation and generating cryptographic execution packets that carry legal authority.**
+The main bottleneck in crisis response is the time required for legal authorisation and cross-agency sign-off. Munin addresses this by pre-validating playbooks through simulation and generating cryptographic execution packets that carry the required regulatory basis. The state has two conflicting mandates: (1) act at machine speed to prevent cascading failures, and (2) maintain legal accountability for every action taken. **Munin eliminates this false dichotomy by doing the pre-validation and regulatory mapping in advance.**
 
 **This is the architecture of the future state.**
->>>>>>> 0b54ca9daae3a00042c9b384efed940736403e03
 

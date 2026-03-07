@@ -24,3 +24,13 @@ export async function loadPackets(signal?: AbortSignal): Promise<HandshakePacket
   return getJson<HandshakePacket[]>('/api/packets', signal);
 }
 
+export interface LiveMatchData {
+  matched_incident: { id?: string; title?: string; type?: string } | null;
+  live_state_keys: string[];
+  note?: string;
+}
+
+export async function loadLiveMatchData(signal?: AbortSignal): Promise<LiveMatchData> {
+  return getJson<LiveMatchData>('/api/live-match', signal);
+}
+

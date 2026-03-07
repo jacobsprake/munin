@@ -15,7 +15,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
-import { loadGraphData, loadIncidentsData } from '@/lib/loadData';
+import { loadGraphData, loadIncidentsData, loadLiveMatchData } from '@/lib/loadData';
 import { GraphData, IncidentsData, Incident, Node } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
 import { parseISO, format } from 'date-fns';
@@ -27,6 +27,7 @@ import CounterfactualPanel from '@/components/CounterfactualPanel';
 export default function SimulationPage() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [incidentsData, setIncidentsData] = useState<IncidentsData | null>(null);
+  const [liveMatch, setLiveMatch] = useState<{ matched_incident: { id?: string; title?: string; type?: string } | null; live_state_keys: string[] } | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const { 
@@ -45,12 +46,14 @@ export default function SimulationPage() {
     async function fetchData() {
       try {
         setLoadError(null);
-        const [graph, incidents] = await Promise.all([
+        const [graph, incidents, liveMatchData] = await Promise.all([
           loadGraphData(),
           loadIncidentsData(),
+          loadLiveMatchData().catch(() => ({ matched_incident: null, live_state_keys: [] })),
         ]);
         setGraphData(graph);
         setIncidentsData(incidents);
+        setLiveMatch(liveMatchData);
         if (incidents.incidents.length > 0 && !selectedIncident) {
           const first = incidents.incidents[0];
           setSelectedIncident(first);
@@ -189,6 +192,15 @@ export default function SimulationPage() {
 
   const rightPanelContent = selectedIncident ? (
     <div className="p-4 space-y-4">
+      {liveMatch?.matched_incident && (
+        <Card className="border-safety-cobalt/40 bg-safety-cobalt/5">
+          <div className="text-label mono text-safety-cobalt mb-1">LIVE MATCHED SCENARIO</div>
+          <div className="text-body mono text-text-primary">{liveMatch.matched_incident.title || liveMatch.matched_incident.id}</div>
+          <div className="text-body-mono mono text-text-muted text-xs mt-1">
+            Crisis-time lookup: current telemetry matched to nearest pre-simulated scenario
+          </div>
+        </Card>
+      )}
       <Card variant="playbook">
         <div className="flex items-center justify-between mb-2">
           <div className="text-label mono text-text-muted">INCIDENT</div>

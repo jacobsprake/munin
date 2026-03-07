@@ -282,7 +282,7 @@ def main(
     # Copy key outputs to engine/out for app compatibility (app and sync read engine/out/graph.json, incidents.json, etc.)
     parent_out = out_dir.parent
     if parent_out != out_dir:
-        for name in ["normalized_timeseries.csv", "graph.json", "evidence.json", "incidents.json"]:
+        for name in ["normalized_timeseries.csv", "graph.json", "evidence.json", "incidents.json", "live_matched_scenario.json", "triggered_playbooks.json"]:
             src = out_dir / name
             if src.exists():
                 shutil.copy2(src, parent_out / name)
@@ -312,6 +312,8 @@ if __name__ == "__main__":
     parser.add_argument('--resume-from', type=str, help='Resume from checkpoint stage (ingest, graph, incidents, packets)')
     parser.add_argument('--check', action='store_true', help='Run sanity checks on outputs')
     parser.add_argument('--quick', action='store_true', help='Run only 3 fixed incidents (fast demo); default is all conceivable + chaos scenarios')
+    parser.add_argument('--scenarios', type=int, default=None, metavar='N', help='Cap at N scenarios (sample when over). Enables targeting e.g. 10000.')
+    parser.add_argument('--parallel', type=int, default=1, metavar='N', help='Parallel workers for cascade simulation (1=sequential, 0=auto).')
     parser.add_argument('--continuous', action='store_true', help='Re-run pipeline at all times (every --interval seconds)')
     parser.add_argument('--interval', type=int, default=3600, help='Seconds between runs when --continuous (default: 3600)')
     args = parser.parse_args()
@@ -328,6 +330,8 @@ if __name__ == "__main__":
                 config_path=args.config,
                 seed=args.seed,
                 all_scenarios=not args.quick,
+                max_scenarios=args.scenarios,
+                n_jobs=args.parallel if args.parallel > 0 else 0,
             )
             print(f"\nContinuous mode: sleeping {args.interval}s until next run...")
             time.sleep(args.interval)
@@ -339,5 +343,7 @@ if __name__ == "__main__":
             config_path=args.config,
             seed=args.seed,
             all_scenarios=not args.quick,
+            max_scenarios=args.scenarios,
+            n_jobs=args.parallel if args.parallel > 0 else 0,
         )
 
