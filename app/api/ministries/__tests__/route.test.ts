@@ -11,7 +11,7 @@ describe('/api/ministries', () => {
 
   it('GET returns empty list initially', async () => {
     const req = new Request('http://localhost/api/ministries');
-    const res = await GET();
+    const res = await GET(req);
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
