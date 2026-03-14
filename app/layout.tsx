@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import AuthGuard from '@/components/AuthGuard'
 
 export const metadata: Metadata = {
   title: 'Munin — Sovereign Infrastructure Orchestration',
@@ -21,7 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-w-[1280px]">{children}</body>
+      <body className="min-w-[1280px]">
+        <AuthGuard>{children}</AuthGuard>
+      </body>
     </html>
   )
 }

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Network, Play, Handshake, Radio, Shield, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Home, ClipboardList } from 'lucide-react';
 
 const navItems = [
-  { href: '/', label: 'Home', icon: Home },
+  { href: '/graph', label: 'Dashboard', icon: Home },
   { href: '/demos', label: 'Disaster demos', icon: Route },
   { href: '/carlisle-dashboard', label: 'Carlisle flood demo', icon: Droplets },
   { href: '/graph', label: 'Dependency Graph', icon: Network },

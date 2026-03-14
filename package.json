@@ -17,7 +17,8 @@
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "setup:demo": "./scripts/setup_demo.sh",
-    "verify:demo": "./scripts/verify_demo.sh"
+    "verify:demo": "./scripts/verify_demo.sh",
+    "seed:demo": "node scripts/seed_demo_user.js"
   },
   "engines": {
     "node": ">=18 <=22"

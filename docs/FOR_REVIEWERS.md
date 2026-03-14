@@ -31,7 +31,7 @@ npm run dev
 ```
 
 You'll see the government-grade login screen with classification banners.
-Click **"ENTER AS OBSERVER"** to access the command interface.
+Create an operator via `POST /api/auth/users` (or use the Users page when logged in as admin), then authenticate with Operator ID and passphrase to access the command interface.
 
 ---
 

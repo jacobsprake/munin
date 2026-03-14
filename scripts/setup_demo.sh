@@ -58,11 +58,18 @@ npm run engine || {
 }
 
 echo ""
+echo "👤 Seeding demo operator..."
+npm run seed:demo 2>/dev/null || {
+    echo -e "${YELLOW}⚠ Seed skipped (DB may not be initialized yet; run 'npm run seed:demo' after first 'npm run dev')${NC}"
+}
+
+echo ""
 echo "✅ Demo setup complete!"
 echo ""
 echo "To start the demo:"
 echo "  1. npm run dev"
 echo "  2. Open http://localhost:3000"
+echo "  3. Login: flood_officer_01 / demo (or run 'npm run seed:demo' if not yet created)"
 echo ""
 echo "To verify everything:"
 echo "  ./scripts/verify_demo.sh"

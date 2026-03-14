@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { format } from 'date-fns';
-import { Monitor, Clock, Activity, Server } from 'lucide-react';
+import { Monitor, Clock, Activity, Server, LogOut, User } from 'lucide-react';
 import SecurityStatusPanel from '@/components/SecurityStatusPanel';
 import NotificationBell from '@/components/NotificationBell';
 import GlobalSearch from '@/components/GlobalSearch';
@@ -11,6 +12,34 @@ import GlobalSearch from '@/components/GlobalSearch';
 export default function TopBar() {
   const { region, mode, deploymentMode, connectivityState, setWarRoomMode, warRoomMode, emergencyMode, setEmergencyMode, setEmergencyLevel } = useAppStore();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [operator, setOperator] = useState<{ operatorId: string; role?: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('munin_operator');
+        if (stored) setOperator(JSON.parse(stored));
+      } catch {
+        setOperator(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    const token = typeof window !== 'undefined' ? sessionStorage.getItem('munin_token') : null;
+    if (token) {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      } catch {
+        // Proceed with client-side clear
+      }
+    }
+    sessionStorage.removeItem('munin_token');
+    sessionStorage.removeItem('munin_operator');
+    sessionStorage.removeItem('munin_ministry');
+    router.replace('/');
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -128,6 +157,23 @@ export default function TopBar() {
         >
           WAR ROOM
         </button>
+        {operator && (
+          <div className="flex items-center gap-2 pl-4 border-l border-base-700">
+            <User className="w-4 h-4 text-text-muted" />
+            <span className="text-xs font-mono text-text-secondary">{operator.operatorId}</span>
+            {operator.role && (
+              <span className="text-[10px] font-mono text-text-muted uppercase">({operator.role})</span>
+            )}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-2 py-1 rounded border border-base-600 text-xs font-mono text-text-muted hover:border-red-600 hover:text-red-400 transition-colors"
+              title="End session"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              LOGOUT
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
