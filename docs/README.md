@@ -58,6 +58,9 @@ Product and technical documentation. For the main README and quick start, see th
 
 | Document | Description |
 |----------|-------------|
+| [FLOOD_WATER_WEDGE_IMPLEMENTATION_GUIDE.md](FLOOD_WATER_WEDGE_IMPLEMENTATION_GUIDE.md) | **Flood/water wedge:** Hardware, SCADA, EA API, data diode, step-by-step implementation. |
+| [WEDGE_SETUP_TOMORROW.md](WEDGE_SETUP_TOMORROW.md) | **Ready for setup:** What's built, quick start, connectors, incident check, diode watcher. |
+| [AIR_GAP_DEPLOYMENT_GUIDE.md](AIR_GAP_DEPLOYMENT_GUIDE.md) | Air-gapped deployment, ministry onboarding. |
 | [PLUG_AND_PLAY_DEPLOYMENT_GUIDE.md](PLUG_AND_PLAY_DEPLOYMENT_GUIDE.md) | Deployment: demo, pilot, production. |
 | [pilot-archetypes.md](pilot-archetypes.md), [pilot-in-a-box.md](pilot-in-a-box.md) | Pilot archetypes and pilot-in-a-box. |
 | [SHADOW_MODE_DOMAINS.md](SHADOW_MODE_DOMAINS.md), [SHADOW_MODE_PILOT_PLAYBOOK.md](SHADOW_MODE_PILOT_PLAYBOOK.md) | Shadow mode and pilot playbook. |

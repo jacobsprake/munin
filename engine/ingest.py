@@ -3,24 +3,56 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from datetime import datetime
+import sqlite3
+import os
 
-def ingest_historian_data(data_dir: Path) -> pd.DataFrame:
-    """Load and normalize all CSV files from sample_data directory."""
+def ingest_historian_data(data_dir: Path, db_path: Path | None = None, recursive: bool = True) -> pd.DataFrame:
+    """Load and normalize all CSV files from data_dir, optionally merging DB sensor_readings."""
     all_data = []
-    
-    csv_files = list(data_dir.glob("*.csv"))
-    if not csv_files:
-        raise ValueError(f"No CSV files found in {data_dir}")
-    
+
+    # Recursive or flat CSV glob
+    if recursive:
+        csv_files = list(data_dir.rglob("*.csv"))
+    else:
+        csv_files = list(data_dir.glob("*.csv"))
+
     for csv_file in csv_files:
-        df = pd.read_csv(csv_file)
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
-        df['source_file'] = csv_file.stem
-        all_data.append(df)
-    
+        try:
+            df = pd.read_csv(csv_file)
+            if 'node_id' not in df.columns and 'nodeId' in df.columns:
+                df = df.rename(columns={'nodeId': 'node_id'})
+            if 'timestamp' not in df.columns:
+                continue
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            df['source_file'] = csv_file.stem
+            all_data.append(df)
+        except Exception as e:
+            print(f"Warning: skip {csv_file}: {e}")
+
+    # Load from SQLite sensor_readings if DB path provided
+    if db_path and db_path.exists():
+        try:
+            conn = sqlite3.connect(str(db_path))
+            df_db = pd.read_sql_query(
+                "SELECT timestamp, node_id, value FROM sensor_readings WHERE timestamp > datetime('now', '-168 hours') ORDER BY timestamp",
+                conn,
+            )
+            conn.close()
+            if len(df_db) > 0:
+                df_db['timestamp'] = pd.to_datetime(df_db['timestamp'])
+                df_db['source_file'] = 'sensor_readings'
+                all_data.append(df_db)
+        except Exception as e:
+            print(f"Warning: DB ingest failed: {e}")
+
+    if not all_data:
+        raise ValueError(
+            f"No data to ingest. Checked: {data_dir} (recursive={recursive}), "
+            f"db={db_path} (exists={db_path.exists() if db_path else False})"
+        )
+
     combined = pd.concat(all_data, ignore_index=True)
     combined = combined.sort_values('timestamp')
-    
     return combined
 
 def normalize_timeseries(df: pd.DataFrame, output_path: Path):

@@ -138,7 +138,7 @@ class TestIngestHistorianData:
         with tempfile.TemporaryDirectory() as tmpdir:
             data_dir = Path(tmpdir)
             
-            with pytest.raises(ValueError, match="No CSV files found"):
+            with pytest.raises(ValueError, match="No data to ingest"):
                 ingest_historian_data(data_dir)
     
     def test_timestamp_sorting(self):

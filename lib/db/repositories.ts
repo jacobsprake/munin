@@ -78,7 +78,23 @@ export const sensorReadingsRepo = {
       sourceFile: row.source_file,
       createdAt: new Date(row.created_at)
     };
-  }
+  },
+
+  /** Get all readings for export (e.g. last N hours). Used by engine ingestion. */
+  getRecentForExport(hoursBack: number = 168): Array<{ nodeId: string; timestamp: Date; value: number }> {
+    const db = getDb();
+    const stmt = db.prepare(`
+      SELECT node_id, timestamp, value FROM sensor_readings
+      WHERE timestamp > datetime('now', ?)
+      ORDER BY timestamp ASC
+    `);
+    const rows = stmt.all(`-${hoursBack} hours`) as Array<{ node_id: string; timestamp: string; value: number }>;
+    return rows.map((r) => ({
+      nodeId: r.node_id,
+      timestamp: new Date(r.timestamp),
+      value: r.value,
+    }));
+  },
 };
 
 // Nodes Repository

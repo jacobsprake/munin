@@ -136,7 +136,9 @@ def main(
     print("\n[1/5] Ingesting historian data...")
     logger.start_phase("ingest", {'data_dir': str(data_dir)})
     _agent_log(run_id, "H2", "engine/run.py:ingest:start", "Starting ingest_historian_data", {})
-    df = ingest_historian_data(data_dir)
+    # DB path for sensor_readings (when app has pushed data via POST /api/sensors/data)
+    db_path = script_dir.parent / 'data' / 'munin.db'
+    df = ingest_historian_data(data_dir, db_path=db_path if db_path.exists() else None, recursive=True)
     logger.end_phase("ingest", {
         'rows': len(df),
         'columns': len(df.columns),
@@ -315,7 +317,7 @@ if __name__ == "__main__":
     parser.add_argument('--scenarios', type=int, default=None, metavar='N', help='Cap at N scenarios (sample when over). Enables targeting e.g. 10000.')
     parser.add_argument('--parallel', type=int, default=1, metavar='N', help='Parallel workers for cascade simulation (1=sequential, 0=auto).')
     parser.add_argument('--continuous', action='store_true', help='Re-run pipeline at all times (every --interval seconds)')
-    parser.add_argument('--interval', type=int, default=3600, help='Seconds between runs when --continuous (default: 3600)')
+    parser.add_argument('--interval', type=int, default=300, help='Seconds between runs when --continuous (default: 300 for wedge)')
     args = parser.parse_args()
     
     if args.check:
