@@ -179,7 +179,12 @@ export async function signDecision(
   const userRow = db.prepare(`
     SELECT key_status, public_key FROM users WHERE user_id = ? OR key_id = ?
   `).get(signerId, keyId) as { key_status: string; public_key: string } | undefined;
-  
+
+  // Resolve ministry_id from operators for government-grade attribution
+  let ministryId: string | null = null;
+  const opRow = db.prepare('SELECT ministry_id FROM operators WHERE operator_id = ?').get(signerId) as { ministry_id: string } | undefined;
+  if (opRow?.ministry_id) ministryId = opRow.ministry_id;
+
   if (!userRow || userRow.key_status !== 'ACTIVE') {
     throw new Error(`Key ${keyId} is not active for signer ${signerId}`);
   }
@@ -193,22 +198,32 @@ export async function signDecision(
     throw new Error('Invalid signature');
   }
   
-  // Insert signature
+  // Insert signature (ministry_id for government-grade ministry attribution)
   const sigId = randomBytes(16).toString('hex');
   const signedAt = new Date();
-  
-  db.prepare(`
-    INSERT INTO decision_signatures (
-      id, decision_id, signer_id, signature, signed_at, key_id
-    ) VALUES (?, ?, ?, ?, ?, ?)
-  `).run(
-    sigId,
-    decisionId,
-    signerId,
-    signature,
-    signedAt.toISOString(),
-    keyId
-  );
+
+  const hasMinistryId = (() => {
+    try {
+      const info = db.prepare('PRAGMA table_info(decision_signatures)').all() as { name: string }[];
+      return info.some((c) => c.name === 'ministry_id');
+    } catch {
+      return false;
+    }
+  })();
+
+  if (hasMinistryId) {
+    db.prepare(`
+      INSERT INTO decision_signatures (
+        id, decision_id, signer_id, signature, signed_at, key_id, ministry_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(sigId, decisionId, signerId, signature, signedAt.toISOString(), keyId, ministryId);
+  } else {
+    db.prepare(`
+      INSERT INTO decision_signatures (
+        id, decision_id, signer_id, signature, signed_at, key_id
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).run(sigId, decisionId, signerId, signature, signedAt.toISOString(), keyId);
+  }
   
   const decisionSig: DecisionSignature = {
     id: sigId,
@@ -280,7 +295,26 @@ export function getDecision(decisionId: string): Decision & { signatures: Decisi
     WHERE decision_id = ? 
     ORDER BY signed_at ASC
   `).all(decisionId) as any[];
-  
+
+  // Resolve ministry names for signatures
+  const signaturesWithMinistry = signatures.map((sig) => {
+    let ministryCode: string | null = null;
+    if (sig.ministry_id) {
+      const m = db.prepare('SELECT code FROM ministries WHERE id = ?').get(sig.ministry_id) as { code: string } | undefined;
+      ministryCode = m?.code ?? null;
+    }
+    return {
+      id: sig.id,
+      decision_id: sig.decision_id,
+      signer_id: sig.signer_id,
+      ministry_id: sig.ministry_id ?? undefined,
+      ministry_code: ministryCode ?? undefined,
+      signature: sig.signature,
+      signed_at: new Date(sig.signed_at),
+      key_id: sig.key_id,
+    };
+  });
+
   return {
     decision_id: decisionRow.decision_id,
     incident_id: decisionRow.incident_id,
@@ -293,14 +327,7 @@ export function getDecision(decisionId: string): Decision & { signatures: Decisi
     created_at: new Date(decisionRow.created_at),
     authorized_at: decisionRow.authorized_at ? new Date(decisionRow.authorized_at) : undefined,
     previous_decision_hash: decisionRow.previous_decision_hash,
-    signatures: signatures.map(sig => ({
-      id: sig.id,
-      decision_id: sig.decision_id,
-      signer_id: sig.signer_id,
-      signature: sig.signature,
-      signed_at: new Date(sig.signed_at),
-      key_id: sig.key_id
-    }))
+    signatures: signaturesWithMinistry,
   };
 }
 

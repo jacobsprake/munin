@@ -211,6 +211,18 @@ function initializeSchema(database: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_decision_sigs_signer ON decision_signatures(signer_id);
     CREATE INDEX IF NOT EXISTS idx_decision_sigs_key ON decision_signatures(key_id);
   `);
+
+  // Migration: add ministry_id to decision_signatures (government-grade ministry linkage)
+  try {
+    const tableInfo = database.prepare('PRAGMA table_info(decision_signatures)').all() as { name: string }[];
+    const hasMinistryId = tableInfo.some((c) => c.name === 'ministry_id');
+    if (!hasMinistryId) {
+      database.exec('ALTER TABLE decision_signatures ADD COLUMN ministry_id TEXT');
+      database.exec('CREATE INDEX IF NOT EXISTS idx_decision_sigs_ministry ON decision_signatures(ministry_id)');
+    }
+  } catch (_) {
+    // Column may already exist from prior migration
+  }
   
   // Users table (enhanced with keys)
   database.exec(`

@@ -107,6 +107,13 @@ export default function SimulationPage() {
     setDecisionCreating(true);
     setDecisionId(null);
     try {
+      // Derive M-of-N policy from playbook (ministry wedge: EA, NGESO, MOD)
+      const policyRes = await fetch('/api/decisions/policy-from-playbook?playbook_id=flood_event_pump_isolation.yaml');
+      const policyData = await policyRes.json();
+      const policy = policyData.success
+        ? policyData.policy
+        : { threshold: 2, required: 3, signers: ['EA', 'NGESO', 'MOD'] };
+
       const res = await fetch('/api/decisions/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +121,7 @@ export default function SimulationPage() {
           incident_id: selectedIncident.id,
           playbook_id: 'flood_event_pump_isolation.yaml',
           step_id: null,
-          policy: { threshold: 1, required: 1, signers: ['ea_duty_officer', 'regulatory_compliance', 'emergency_services'] },
+          policy: { threshold: policy.threshold, required: policy.required, signers: policy.signers },
           previous_decision_hash: null,
         }),
       });

@@ -11,23 +11,45 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { randomBytes, createHash } from 'crypto';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const db = getDb();
-    const ministries = db.prepare(`
-      SELECT id, name, code, type, status, jurisdiction,
-             contact_name, contact_role, public_key, key_id,
-             quorum_policy_json, created_at, updated_at
-      FROM ministries ORDER BY name ASC
-    `).all() as any[];
+    const { searchParams } = new URL(request.url);
+    const code = searchParams.get('code');
+
+    let ministries: any[];
+    if (code) {
+      ministries = db.prepare(`
+        SELECT id, name, code, type, status, jurisdiction,
+               contact_name, contact_role, public_key, key_id,
+               quorum_policy_json, created_at, updated_at
+        FROM ministries WHERE code = ? ORDER BY name ASC
+      `).all(code) as any[];
+    } else {
+      ministries = db.prepare(`
+        SELECT id, name, code, type, status, jurisdiction,
+               contact_name, contact_role, public_key, key_id,
+               quorum_policy_json, created_at, updated_at
+        FROM ministries ORDER BY name ASC
+      `).all() as any[];
+    }
+
+    // Add operator count per ministry
+    const ministriesWithCount = ministries.map((m) => {
+      const opCount = db.prepare(
+        'SELECT COUNT(*) as c FROM operators WHERE ministry_id = ?'
+      ).get(m.id) as { c: number };
+      return {
+        ...m,
+        quorumPolicy: m.quorum_policy_json ? JSON.parse(m.quorum_policy_json) : null,
+        operatorCount: opCount?.c ?? 0,
+      };
+    });
 
     return NextResponse.json({
       success: true,
-      ministries: ministries.map(m => ({
-        ...m,
-        quorumPolicy: m.quorum_policy_json ? JSON.parse(m.quorum_policy_json) : null,
-      })),
-      count: ministries.length,
+      ministries: ministriesWithCount,
+      count: ministriesWithCount.length,
     });
   } catch (error: any) {
     console.error('Error fetching ministries:', error);

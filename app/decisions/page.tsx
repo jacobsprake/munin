@@ -34,6 +34,7 @@ interface DecisionWithSignatures extends Decision {
   signatures?: Array<{
     id: string;
     signer_id: string;
+    ministry_code?: string;
     signed_at: string;
     key_id: string;
   }>;
@@ -193,11 +194,13 @@ export default function DecisionsPage() {
       </Card>
       {selectedDecision.signatures && selectedDecision.signatures.length > 0 && (
         <Card>
-          <div className="text-label mono text-text-muted mb-2">SIGNATURES</div>
+          <div className="text-label mono text-text-muted mb-2">SIGNATURES (M-of-N)</div>
           <div className="space-y-2">
             {selectedDecision.signatures.map((sig) => (
               <div key={sig.id} className="flex justify-between text-body mono">
-                <span className="text-text-secondary">{sig.signer_id}</span>
+                <span className="text-text-secondary">
+                  {sig.ministry_code ? `${sig.ministry_code} (${sig.signer_id})` : sig.signer_id}
+                </span>
                 <span className="text-text-muted">
                   {format(new Date(sig.signed_at), 'HH:mm:ss')}
                 </span>

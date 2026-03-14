@@ -25,6 +25,7 @@ export interface Permission {
 const PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
     { resource: '*', action: '*' }, // Full access
+    { resource: 'ministries', action: '*' },
   ],
   operator: [
     { resource: 'decisions', action: 'create' },
@@ -71,6 +72,7 @@ const PERMISSIONS: Record<Role, Permission[]> = {
     { resource: 'incidents', action: 'view' },
     { resource: 'graph', action: 'view' },
     { resource: 'water', action: '*' },
+    { resource: 'ministries', action: 'view' },
   ],
   power_grid_operator: [
     { resource: 'decisions', action: 'create' },
@@ -89,6 +91,7 @@ const PERMISSIONS: Record<Role, Permission[]> = {
     { resource: 'audit', action: 'view' },
     { resource: 'incidents', action: 'view' },
     { resource: 'graph', action: 'view' },
+    { resource: 'ministries', action: 'view' },
   ],
   emergency_services: [
     { resource: 'decisions', action: 'create' },

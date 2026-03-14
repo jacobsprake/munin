@@ -11,6 +11,7 @@ const navItems = [
   { href: '/graph', label: 'Dependency Graph', icon: Network },
   { href: '/simulation', label: 'Simulation', icon: Play },
   { href: '/handshakes', label: 'Handshakes', icon: Handshake },
+  { href: '/ministries', label: 'Ministries', icon: Building2 },
   { href: '/decisions', label: 'Decisions', icon: CheckCircle2 },
   { href: '/readiness', label: 'Readiness Index', icon: BarChart3 },
   { href: '/playbooks', label: 'Playbooks', icon: FileText },
