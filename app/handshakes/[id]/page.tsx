@@ -12,12 +12,15 @@ import { loadPackets } from '@/lib/loadData';
 import { HandshakePacket, HandshakeApproval } from '@/lib/types';
 import { useParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { CheckCircle2, Download, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Download, ArrowLeft, GitCompare } from 'lucide-react';
 import TEEStatusPanel from '@/components/TEEStatusPanel';
 import ComplianceCertificatePanel from '@/components/ComplianceCertificatePanel';
+import PacketDiffPanel from '@/components/PacketDiffPanel';
 
 export default function HandshakeDetailPage() {
   const [packet, setPacket] = useState<HandshakePacket | null>(null);
+  const [allPackets, setAllPackets] = useState<HandshakePacket[]>([]);
+  const [comparePacketId, setComparePacketId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showSignModal, setShowSignModal] = useState(false);
   const [operatorId, setOperatorId] = useState('');
@@ -49,6 +52,7 @@ export default function HandshakeDetailPage() {
       try {
         const packets = await loadPackets();
         if (cancelled) return;
+        setAllPackets(packets);
         const found = packets.find((p) => p.id === params.id);
         if (found) {
           setPacket(found);
@@ -202,6 +206,41 @@ export default function HandshakeDetailPage() {
           <div className="text-display-title mono font-semibold text-text-primary mb-2">
             {packet.id}
           </div>
+
+          {/* Packet diff: compare with another packet */}
+          {allPackets.length > 1 && (
+            <div className="flex items-center gap-3 mb-4">
+              <GitCompare className="w-4 h-4 text-text-muted" />
+              <select
+                value={comparePacketId ?? ''}
+                onChange={(e) => setComparePacketId(e.target.value || null)}
+                className="bg-base-900 border border-base-700 rounded px-3 py-1.5 text-sm font-mono text-text-primary"
+              >
+                <option value="">Compare with another packet...</option>
+                {allPackets
+                  .filter((p) => p.id !== packet.id)
+                  .slice(0, 20)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.id} (v{p.version ?? 1})
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+          {comparePacketId && packet && (() => {
+            const other = allPackets.find((p) => p.id === comparePacketId);
+            if (!other) return null;
+            return (
+              <div className="mb-6">
+                <PacketDiffPanel
+                  current={packet as any}
+                  previous={other as any}
+                  onClose={() => setComparePacketId(null)}
+                />
+              </div>
+            );
+          })()}
 
           {/* Sections */}
           <Card variant="packet">

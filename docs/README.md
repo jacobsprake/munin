@@ -8,7 +8,8 @@ Product and technical documentation. For the main README and quick start, see th
 
 | Document | Description |
 |----------|-------------|
-| [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | **Start here:** 5-minute path (app + CLI), one-sentence pitch, key links. |
+| [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | **Start here:** 10-minute path (app + CLI), one-sentence pitch, key links. |
+| [SPEC_AUDIT_AND_GOVERNMENT_GRADE.md](SPEC_AUDIT_AND_GOVERNMENT_GRADE.md) | Spec compliance audit, government-grade UI alignment. |
 | [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: Shadow Links, scenario space, tech stack. |
 | [HOW_MUNIN_IS_FAST.md](HOW_MUNIN_IS_FAST.md) | How Munin achieves speed: traditional vs Munin flow, playbook retrieval, handshake. |
 

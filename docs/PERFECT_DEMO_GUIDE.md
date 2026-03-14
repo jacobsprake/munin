@@ -10,9 +10,9 @@
 
 ## 🚀 For reviewers (shortest path)
 
-1. Open `http://localhost:3000` (landing). Read thesis and "Traditional vs Munin."
-2. Click **Start 5-minute demo** → `/demo-path`. Scroll through thesis → problem → solution → Shadow Links → evidence; then use buttons to open Graph, Demos, Carlisle, Simulation.
-3. Or go directly to `/demos` (disaster timelines), `/carlisle-dashboard` (flood metrics), `/handshakes` (outcome confidence + authorisation).
+1. Run `npm run engine` then `npm run dev`. Run `npm run seed:demo` (with server up) to create demo operator.
+2. Open `http://localhost:3000`. Log in (e.g. `flood_officer_01` / `demo`).
+3. Go to `/demo-path` for thesis flow, or directly to `/graph` (Shadow Links), `/demos` (disaster timelines), `/carlisle-dashboard` (flood metrics), `/handshakes` (packets + packet diff viewer).
 
 See [FOR_REVIEWERS.md](FOR_REVIEWERS.md) for one-page summary and CLI path.
 
