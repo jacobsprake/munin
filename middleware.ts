@@ -18,7 +18,7 @@ import type { NextRequest } from 'next/server';
 // Simple in-memory rate limiter (no external dependencies)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 60;   // 60 requests per minute per IP
+const RATE_LIMIT_MAX_REQUESTS = process.env.NODE_ENV === 'development' ? 300 : 60;   // Higher in dev for rapid testing
 const AUTH_RATE_LIMIT_MAX = 5;        // 5 auth attempts per minute per IP
 
 function getRateLimitKey(request: NextRequest): string {

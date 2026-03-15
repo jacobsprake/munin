@@ -41,8 +41,10 @@ export default function MetricsPage() {
       setLoading(true);
       const res = await fetch('/api/metrics');
       const data = await res.json();
-      if (data.success && data.metrics) {
+      if (res.ok && data.success && data.metrics) {
         setMetrics(data.metrics);
+      } else if (res.status === 429) {
+        setMetrics(null); // Rate limited - will retry on next interval
       }
     } catch (error) {
       console.error('Failed to fetch metrics:', error);
@@ -74,15 +76,15 @@ export default function MetricsPage() {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <div className="text-body-mono mono text-text-secondary mb-1">Nodes</div>
-                    <div className="text-2xl font-mono font-bold text-text-primary">{metrics.system_health.nodes}</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary">{metrics.system_health?.nodes ?? 0}</div>
                   </div>
                   <div>
                     <div className="text-body-mono mono text-text-secondary mb-1">Edges</div>
-                    <div className="text-2xl font-mono font-bold text-text-primary">{metrics.system_health.edges}</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary">{metrics.system_health?.edges ?? 0}</div>
                   </div>
                   <div>
                     <div className="text-body-mono mono text-text-secondary mb-1">Database Size</div>
-                    <div className="text-2xl font-mono font-bold text-text-primary">{metrics.system_health.database_size_mb.toFixed(1)} MB</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary">{(metrics.system_health?.database_size_mb ?? 0).toFixed(1)} MB</div>
                   </div>
                 </div>
               </Card>
@@ -98,17 +100,17 @@ export default function MetricsPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-body-mono mono text-text-secondary">Avg Job Duration</span>
-                    <span className="text-body-mono mono text-text-primary">{metrics.engine_performance.average_job_duration_ms}ms</span>
+                    <span className="text-body-mono mono text-text-primary">{metrics.engine_performance?.average_job_duration_ms ?? 0}ms</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-body-mono mono text-text-secondary">Success Rate</span>
-                    <Badge status={metrics.engine_performance.success_rate > 0.95 ? 'ok' : 'warning'}>
-                      {(metrics.engine_performance.success_rate * 100).toFixed(1)}%
+                    <Badge status={(metrics.engine_performance?.success_rate ?? 0) > 0.95 ? 'ok' : 'warning'}>
+                      {((metrics.engine_performance?.success_rate ?? 0) * 100).toFixed(1)}%
                     </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-body-mono mono text-text-secondary">Recent Jobs</span>
-                    <span className="text-body-mono mono text-text-primary">{metrics.engine_performance.recent_jobs}</span>
+                    <span className="text-body-mono mono text-text-primary">{metrics.engine_performance?.recent_jobs ?? 0}</span>
                   </div>
                 </div>
               </Card>
@@ -121,9 +123,9 @@ export default function MetricsPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-body-mono mono text-text-secondary">Avg Latency</span>
-                    <span className="text-body-mono mono text-text-primary">{Math.round(metrics.api_performance.average_latency_ms)}ms</span>
+                    <span className="text-body-mono mono text-text-primary">{Math.round(metrics.api_performance?.average_latency_ms ?? 0)}ms</span>
                   </div>
-                  {Object.entries(metrics.api_performance.endpoints).map(([endpoint, latency]) => (
+                  {Object.entries(metrics.api_performance?.endpoints ?? {}).map(([endpoint, latency]) => (
                     <div key={endpoint} className="flex justify-between">
                       <span className="text-body-mono mono text-text-secondary">{endpoint}</span>
                       <span className="text-body-mono mono text-text-primary">{latency}ms</span>
@@ -142,19 +144,19 @@ export default function MetricsPage() {
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <div className="text-body-mono mono text-text-secondary mb-1">Incidents</div>
-                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health.incidents}</div>
+                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health?.incidents ?? 0}</div>
                 </div>
                 <div>
                   <div className="text-body-mono mono text-text-secondary mb-1">Packets</div>
-                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health.packets}</div>
+                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health?.packets ?? 0}</div>
                 </div>
                 <div>
                   <div className="text-body-mono mono text-text-secondary mb-1">Decisions</div>
-                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health.decisions}</div>
+                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health?.decisions ?? 0}</div>
                 </div>
                 <div>
                   <div className="text-body-mono mono text-text-secondary mb-1">Edges</div>
-                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health.edges}</div>
+                  <div className="text-xl font-mono font-bold text-text-primary">{metrics.system_health?.edges ?? 0}</div>
                 </div>
               </div>
             </Card>
