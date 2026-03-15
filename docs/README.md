@@ -10,6 +10,8 @@ Product and technical documentation. For the main README and quick start, see th
 |----------|-------------|
 | [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | **Start here:** 10-minute path (app + CLI), one-sentence pitch, key links. |
 | [SPEC_AUDIT_AND_GOVERNMENT_GRADE.md](SPEC_AUDIT_AND_GOVERNMENT_GRADE.md) | Spec compliance audit, government-grade UI alignment. |
+| [GOVERNMENT_UI_RESEARCH.md](GOVERNMENT_UI_RESEARCH.md) | Palantir Gotham, defense platforms; design patterns applied. |
+| [LOGO_INTEGRATION.md](LOGO_INTEGRATION.md) | Munin logo placement and replacement guide. |
 | [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: Shadow Links, scenario space, tech stack. |
 | [HOW_MUNIN_IS_FAST.md](HOW_MUNIN_IS_FAST.md) | How Munin achieves speed: traditional vs Munin flow, playbook retrieval, handshake. |
 
@@ -45,6 +47,8 @@ Product and technical documentation. For the main README and quick start, see th
 
 | Document | Description |
 |----------|-------------|
+| [demos/VIDEO_DEMO_DOCUMENTATION.md](demos/VIDEO_DEMO_DOCUMENTATION.md) | Video demos, bugs found, fixes applied. |
+| [demos/README.md](demos/README.md) | Demo videos index. |
 | [CARLISLE_QUICK_START.md](CARLISLE_QUICK_START.md) | Quick start for Carlisle / Storm Desmond demo. |
 | [CARLISLE_DEMO_SETUP.md](CARLISLE_DEMO_SETUP.md) | Setup: EA flood data, replay. |
 | [PERFECT_DEMO_GUIDE.md](PERFECT_DEMO_GUIDE.md) | Step-by-step demo scripts and talking points. |

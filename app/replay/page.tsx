@@ -48,7 +48,7 @@ export default function ReplayPage() {
       setLoading(true);
       const res = await fetch('/api/replay');
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setIncidents(data.incidents || []);
       }
     } catch (error) {

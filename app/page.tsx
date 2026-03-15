@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Shield, Lock, AlertTriangle } from 'lucide-react';
+import { Lock, AlertTriangle } from 'lucide-react';
 
 /**
  * Munin Operational Login Screen
@@ -65,8 +66,8 @@ export default function LoginPage() {
       {/* System Header */}
       <header className="border-b border-base-800 px-8 py-4 flex items-center justify-between bg-base-900/50">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded bg-base-800 border border-base-700 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-safety-cobalt" />
+          <div className="w-12 h-12 rounded bg-base-800 border border-base-700 flex items-center justify-center overflow-hidden">
+            <Image src="/munin-logo.svg" alt="Munin" width={40} height={40} />
           </div>
           <div>
             <div className="text-lg font-bold font-mono tracking-tight">MUNIN</div>

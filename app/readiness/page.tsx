@@ -40,7 +40,7 @@ export default function ReadinessPage() {
       setLoading(true);
       const res = await fetch('/api/readiness');
       const data = await res.json();
-      if (data.success && data.metrics) {
+      if (res.ok && data.success && data.metrics) {
         setMetrics(data.metrics);
         setLastUpdated(new Date());
       }
@@ -64,7 +64,7 @@ export default function ReadinessPage() {
   };
 
   const getTrend = () => {
-    if (!metrics || metrics.trend_data.length < 2) return null;
+    if (!metrics || !metrics.trend_data || metrics.trend_data.length < 2) return null;
     const recent = metrics.trend_data.slice(-2);
     const diff = recent[1].score - recent[0].score;
     return diff;
@@ -87,7 +87,7 @@ export default function ReadinessPage() {
       <Card>
         <div className="text-label mono text-text-muted mb-2">TREND ANALYSIS</div>
         <div className="space-y-2">
-          {metrics.trend_data.slice(-7).map((point, i) => (
+          {(metrics.trend_data ?? []).slice(-7).map((point, i) => (
             <div key={i} className="flex items-center justify-between text-body-mono mono">
               <span className="text-text-secondary">{format(new Date(point.date), 'MMM dd')}</span>
               <span className={getScoreColor(point.score)}>{point.score.toFixed(1)}</span>
@@ -98,7 +98,7 @@ export default function ReadinessPage() {
       <Card>
         <div className="text-label mono text-text-muted mb-2">SECTOR BREAKDOWN</div>
         <div className="space-y-2">
-          {Object.entries(metrics.sector_breakdown).map(([sector, score]) => (
+          {Object.entries(metrics.sector_breakdown ?? {}).map(([sector, score]) => (
             <div key={sector} className="flex items-center justify-between">
               <span className="text-body mono text-text-secondary capitalize">{sector}</span>
               <div className="flex items-center gap-2">

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <!-- Munin logo: geometric M with shield motif - replace with official logo when available -->
+  <rect width="48" height="48" rx="4" fill="#3B82F6" opacity="0.08"/>
+  <path d="M12 36V16l12 14 12-14v20h-6V22l-6 7-6-7v14h-6z" fill="#3B82F6"/>
+  <path d="M24 8L10 14v2l14-6 14 6v-2L24 8z" fill="#3B82F6" opacity="0.7"/>
+</svg>

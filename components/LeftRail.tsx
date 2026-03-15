@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Network, Play, Handshake, Radio, Shield, CheckCircle2, Users, BarChart3, FileText, Lock, Eye, Activity, Book, History, Settings, Building2, Route, Droplets, Home, ClipboardList } from 'lucide-react';
 
@@ -33,9 +34,14 @@ export default function LeftRail() {
 
   return (
     <div className="w-64 bg-base-900 border-r border-base-700 flex flex-col">
-      <div className="p-4 border-b border-base-700">
-        <h1 className="text-display-title font-mono text-text-primary">MUNIN</h1>
-        <p className="text-label text-text-muted mt-1">Sovereign Orchestration</p>
+      <div className="p-4 border-b border-base-700 flex items-center gap-3">
+        <div className="w-10 h-10 flex-shrink-0 rounded bg-base-800 border border-base-700 flex items-center justify-center overflow-hidden">
+          <Image src="/munin-logo.svg" alt="Munin" width={32} height={32} />
+        </div>
+        <div>
+          <h1 className="text-display-title font-mono text-text-primary">MUNIN</h1>
+          <p className="text-label text-text-muted mt-0.5">Sovereign Orchestration</p>
+        </div>
       </div>
       <nav className="flex-1 p-2 space-y-1">
         {navItems.map((item) => {
