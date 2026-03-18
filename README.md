@@ -29,9 +29,9 @@ This runs the full pipeline — ingest, graph inference, cascade simulation, pla
 |---------------|-----------|
 | **5 minutes** | Run the demo above, read the generated `engine/out/demo_carlisle/report.md` |
 | **10 minutes** | Read [The Munin Doctrine](docs/MUNIN_DOCTRINE.md) — the thesis, the vision, and why this is inevitable |
-| **15 minutes** | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) — step-by-step CLI usage with `munin graph show`, `munin edge explain`, `munin packet verify` |
-| **30 minutes** | [Safety Case](docs/SAFETY_CASE.md) + [Threat Model](docs/threat_model.md) — how we guarantee "do no harm" in v1 |
-| **Deep dive** | [Governance & Misuse](docs/GOVERNANCE.md), [Evaluation Results](research/munin_v1_results.md), [PQC Migration](research/pqc-migration.md), [Packet Spec](specs/munin-packet-v1.md) |
+| **15 minutes** | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) — step-by-step CLI with `munin graph show`, `munin edge explain`, `munin packet verify` |
+| **20 minutes** | [Safety Case](docs/SAFETY_CASE.md) + [Limitations](docs/LIMITATIONS.md) — what works, what doesn't, and why v1 can't hurt anyone |
+| **30 minutes** | [What's Next](docs/WHATS_NEXT.md), [Evaluation Results](research/munin_v1_results.md), [Progress Log](docs/PROGRESS_LOG.md) |
 
 ## Why this matters now
 
