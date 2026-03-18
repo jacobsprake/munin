@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 """
-Munin CLI – single entry point for demo, scenarios, evidence-quality, applicability, and viz.
+Munin CLI – single entry point for all Munin operations.
 
 Usage:
-  munin demo carlisle-2011   # Full Carlisle flood demo (Storm Desmond style)
-  munin demo carlisle        # Same, short form
-  munin scenarios analyze --output scenarios_analysis.md
-  munin evidence-quality     # Evidence quality dashboard (graph + evidence from last run)
-  munin applicability       # When Munin doesn't apply – test on known disasters
-  munin viz cascade         # Generate cascade animation HTML from last run
-  munin perf               # Performance benchmarks (cascade sim, shadow link, playbook gen)
-  munin regulatory [UK|US|EU]  # Regulatory compliance mapper
+  munin demo carlisle          Full Carlisle flood demo (Storm Desmond style)
+  munin ingest <dir>           Ingest historian data from CSV directory
+  munin infer-graph <csv>      Build dependency graph from normalized time series
+  munin simulate <graph.json>  Run cascade simulation on a dependency graph
+  munin packet verify <pkt>    Verify packet signatures, Merkle chain, quorum
+  munin graph show <graph>     Print summary of nodes, edges, shadow links
+  munin edge explain <graph> <A> <B>  Explain why edge A->B exists
+  munin explain <packet.json>  Human-readable packet explanation
+  munin redteam <dir>          Run adversarial inputs and re-run pipeline
+  munin scenarios analyze      Generate scenarios analysis report
+  munin evidence-quality       Evidence quality dashboard
+  munin applicability          When Munin doesn't apply
+  munin viz cascade            Generate cascade animation HTML
+  munin perf                   Performance benchmarks
+  munin regulatory [UK|US|EU]  Regulatory compliance mapper
+  munin twin <hours>           Run digital twin simulation
+  munin synthetic <dir>        Generate synthetic SCADA data
 """
 from __future__ import annotations
 
@@ -166,6 +175,15 @@ def _run_demo_carlisle(event_id: str) -> int:
         ms = p.get("multiSig", {})
         if ms:
             print(f"  Signatures: {ms.get('currentSignatures', 0)}/{ms.get('required', 0)} required")
+    # Generate self-contained report
+    try:
+        from report_generator import generate_report
+        report_path = out_dir / "report.md"
+        generate_report(out_dir, report_path)
+        print(f"✓ Report: {report_path}")
+    except Exception as e:
+        print(f"  (Report generation skipped: {e})")
+
     print("")
     print("#" * 60)
     print("#  DEMO COMPLETE – Review output in engine/out/demo_carlisle/")
@@ -299,6 +317,311 @@ def _run_regulatory(jurisdiction: str) -> int:
     return 0
 
 
+def _run_ingest(args: list) -> int:
+    """Standalone ingestion from a data directory."""
+    if not args:
+        print("Usage: munin ingest <data_dir> [--output <csv>]")
+        return 1
+    from ingest import ingest_historian_data, normalize_timeseries
+    data_dir = Path(args[0])
+    output = Path(args[2]) if len(args) > 2 and args[1] == "--output" else SCRIPT_DIR / "out" / "normalized_timeseries.csv"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    df = ingest_historian_data(data_dir)
+    normalize_timeseries(df, output)
+    print(f"Ingested {len(df)} rows -> {output}")
+    return 0
+
+
+def _run_infer_graph(args: list) -> int:
+    """Build dependency graph from normalized time series CSV."""
+    if not args:
+        print("Usage: munin infer-graph <normalized.csv> [--output graph.json]")
+        return 1
+    from infer_graph import build_graph
+    input_path = Path(args[0])
+    output = Path(args[2]) if len(args) > 2 and args[1] == "--output" else input_path.parent / "graph.json"
+    build_graph(input_path, output)
+    return 0
+
+
+def _run_simulate(args: list) -> int:
+    """Run cascade simulation on a dependency graph."""
+    if not args:
+        print("Usage: munin simulate <graph.json> [--output incidents.json]")
+        return 1
+    from build_incidents import build_incidents
+    graph_path = Path(args[0])
+    output = Path(args[2]) if len(args) > 2 and args[1] == "--output" else graph_path.parent / "incidents.json"
+    build_incidents(graph_path, output, all_scenarios=True)
+    with open(output) as f:
+        data = json.load(f)
+    print(f"Simulated {len(data.get('incidents', []))} scenarios -> {output}")
+    return 0
+
+
+def _run_packet_verify(args: list) -> int:
+    """Verify a packet's signatures, Merkle chain, and quorum threshold."""
+    if not args:
+        print("Usage: munin packet verify <packet.json>")
+        return 1
+    pkt_path = Path(args[0])
+    if not pkt_path.exists():
+        print(f"File not found: {pkt_path}")
+        return 1
+    with open(pkt_path) as f:
+        pkt = json.load(f)
+
+    print(f"\n--- Packet Verification: {pkt_path.name} ---\n")
+    checks = []
+
+    # Check packet structure
+    required_fields = ["id", "status", "playbookId"]
+    for field in required_fields:
+        present = field in pkt
+        checks.append((f"Field '{field}' present", present))
+
+    # Check multi-sig quorum
+    ms = pkt.get("multiSig", {})
+    if ms:
+        current = ms.get("currentSignatures", 0)
+        required = ms.get("required", ms.get("threshold", 0))
+        quorum_met = current >= required if required > 0 else True
+        checks.append((f"Multi-sig quorum ({current}/{required})", quorum_met))
+
+    # Check Merkle receipt
+    merkle = pkt.get("merkleReceipt", pkt.get("merkle", {}))
+    if merkle:
+        has_hash = bool(merkle.get("receiptHash") or merkle.get("packetHash"))
+        checks.append(("Merkle receipt present", has_hash))
+
+    # Check evidence references
+    ev_refs = pkt.get("evidenceRefs", [])
+    checks.append((f"Evidence references ({len(ev_refs)})", len(ev_refs) > 0))
+
+    # Check regulatory basis
+    reg = pkt.get("regulatoryBasis", [])
+    checks.append(("Regulatory basis provided", len(reg) > 0))
+
+    # Check uncertainty block
+    uncertainty = pkt.get("uncertainty", {})
+    if uncertainty:
+        conf = uncertainty.get("confidence", 0)
+        checks.append((f"Confidence score ({conf:.2f})", conf > 0))
+
+    # Print results
+    all_pass = True
+    for check_name, passed in checks:
+        status = "PASS" if passed else "FAIL"
+        if not passed:
+            all_pass = False
+        print(f"  [{status}] {check_name}")
+
+    print(f"\nOverall: {'PASS' if all_pass else 'FAIL'}")
+    return 0 if all_pass else 1
+
+
+def _run_graph_show(args: list) -> int:
+    """Print summary of a dependency graph."""
+    if not args:
+        print("Usage: munin graph show <graph.json>")
+        return 1
+    graph_path = Path(args[0])
+    if not graph_path.exists():
+        print(f"File not found: {graph_path}")
+        return 1
+    with open(graph_path) as f:
+        graph = json.load(f)
+
+    nodes = graph.get("nodes", [])
+    edges = graph.get("edges", [])
+    shadow = [e for e in edges if e.get("isShadowLink")]
+
+    print(f"\n--- Dependency Graph: {graph_path.name} ---\n")
+    print(f"  Nodes: {len(nodes)}")
+    print(f"  Edges: {len(edges)} ({len(shadow)} shadow links)")
+
+    # Nodes by sector
+    sectors = {}
+    for n in nodes:
+        s = n.get("sector", "unknown")
+        sectors[s] = sectors.get(s, 0) + 1
+    print(f"  Sectors: {', '.join(f'{s}={c}' for s, c in sorted(sectors.items()))}")
+
+    # Top edges by confidence
+    if edges:
+        print("\n  Top edges by confidence:")
+        sorted_edges = sorted(edges, key=lambda e: e.get("confidenceScore", 0), reverse=True)
+        for e in sorted_edges[:8]:
+            shadow_tag = " [SHADOW]" if e.get("isShadowLink") else ""
+            print(f"    {e['source']:20s} -> {e['target']:20s}  "
+                  f"conf={e.get('confidenceScore', 0):.2f}  "
+                  f"lag={e.get('inferredLagSeconds', 0):>4d}s  "
+                  f"stability={e.get('stabilityScore', 0):.2f}{shadow_tag}")
+    print("")
+    return 0
+
+
+def _run_edge_explain(args: list) -> int:
+    """Explain why an edge exists between two nodes."""
+    if len(args) < 3:
+        print("Usage: munin edge explain <graph.json> <nodeA> <nodeB>")
+        return 1
+    graph_path = Path(args[0])
+    node_a, node_b = args[1], args[2]
+
+    with open(graph_path) as f:
+        graph = json.load(f)
+
+    # Find the edge
+    edge = None
+    for e in graph.get("edges", []):
+        if (e.get("source") == node_a and e.get("target") == node_b) or \
+           (e.get("source") == node_b and e.get("target") == node_a):
+            edge = e
+            break
+
+    if not edge:
+        print(f"No edge found between {node_a} and {node_b}")
+        return 1
+
+    print(f"\n--- Edge Explanation: {edge['source']} -> {edge['target']} ---\n")
+    print(f"  Confidence:      {edge.get('confidenceScore', 0):.4f}")
+    print(f"  Lag:             {edge.get('inferredLagSeconds', 0)} seconds")
+    print(f"  Stability:       {edge.get('stabilityScore', 0):.4f}")
+    print(f"  Shadow Link:     {'Yes (cross-sector, not in registry)' if edge.get('isShadowLink') else 'No (within-sector or registered)'}")
+    print(f"  Evidence Windows: {edge.get('evidenceWindowCount', 'N/A')}")
+
+    confounders = edge.get("confounderNotes")
+    if confounders:
+        print(f"  Confounders:     {'; '.join(confounders)}")
+
+    ev_refs = edge.get("evidenceRefs", [])
+    if ev_refs:
+        print(f"  Evidence Refs:   {', '.join(ev_refs[:5])}")
+
+    print("\n  Interpretation:")
+    conf = edge.get("confidenceScore", 0)
+    if conf > 0.9:
+        print("    Strong temporal correlation detected. High confidence this represents")
+        print("    a real physical dependency (e.g., power feed, hydraulic coupling).")
+    elif conf > 0.7:
+        print("    Moderate correlation. Likely a real dependency but could be influenced")
+        print("    by confounding variables (e.g., weather, demand cycles).")
+    else:
+        print("    Weak correlation. Possible dependency but requires additional evidence.")
+        print("    Consider longer observation windows or independent validation.")
+    print("")
+    return 0
+
+
+def _run_explain_packet(args: list) -> int:
+    """Human-readable explanation of a packet's recommendation."""
+    if not args:
+        print("Usage: munin explain <packet.json>")
+        return 1
+    pkt_path = Path(args[0])
+    with open(pkt_path) as f:
+        pkt = json.load(f)
+
+    print(f"\n--- Packet Explanation: {pkt.get('id', 'unknown')[:24]} ---\n")
+    print(f"  Playbook:  {pkt.get('playbookId', 'N/A')}")
+    print(f"  Status:    {pkt.get('status', 'N/A')}")
+
+    # Scope
+    scope = pkt.get("scope", {})
+    if scope:
+        regions = scope.get("regions", [])
+        services = scope.get("services", [])
+        print(f"  Regions:   {', '.join(regions) if regions else 'all'}")
+        print(f"  Services:  {', '.join(services) if services else 'all'}")
+
+    # Uncertainty
+    u = pkt.get("uncertainty", {})
+    if u:
+        print(f"\n  Confidence: {u.get('confidence', 'N/A')}")
+        counterexamples = u.get("counterexampleWindows", [])
+        if counterexamples:
+            print(f"  Counterexamples: {len(counterexamples)} windows where prediction didn't hold")
+
+    # Regulatory basis
+    reg = pkt.get("regulatoryBasis", [])
+    if reg:
+        print(f"\n  Regulatory Basis:")
+        for r in reg[:5]:
+            print(f"    - {r}")
+
+    # Multi-sig
+    ms = pkt.get("multiSig", {})
+    if ms:
+        print(f"\n  Authorization Required:")
+        print(f"    Signatures: {ms.get('currentSignatures', 0)}/{ms.get('required', ms.get('threshold', 'N/A'))}")
+        if ms.get("minimumSignOff"):
+            print(f"    Minimum sign-off role: {ms.get('minimumSignOffRole', 'N/A')}")
+
+    # Evidence
+    ev = pkt.get("evidenceRefs", [])
+    if ev:
+        print(f"\n  Evidence References: {len(ev)}")
+
+    print("\n  This packet is ADVISORY ONLY. No actions are executed without human approval.")
+    print("")
+    return 0
+
+
+def _run_redteam(args: list) -> int:
+    """Run adversarial inputs against the pipeline."""
+    if not args:
+        print("Usage: munin redteam <data_dir> [--attack spoofed_sensor|stuck_at|replay|drift|all]")
+        return 1
+    data_dir = Path(args[0])
+    attack_type = "all"
+    for i, a in enumerate(args):
+        if a == "--attack" and i + 1 < len(args):
+            attack_type = args[i + 1]
+
+    try:
+        from adversarial_inputs import (
+            SpoofedSensor, StuckAt, TimestampManipulation, ReplayAttack,
+            run_adversarial_test,
+        )
+    except ImportError:
+        print("Adversarial inputs module not available. Install with Batch 3.")
+        return 1
+
+    return run_adversarial_test(data_dir, attack_type)
+
+
+def _run_twin(args: list) -> int:
+    """Run digital twin simulation."""
+    duration = int(args[0]) if args else 48
+    from digital_twin.model import DigitalTwinModel, NationConfig, FaultEvent, save_twin_outputs
+
+    config = NationConfig()
+    model = DigitalTwinModel(config)
+
+    # Default scenario: substation trip at hour 12
+    faults = [
+        FaultEvent(12.0, "substation_north", "trip", "Substation North trips"),
+    ]
+
+    print(f"\n--- Digital Twin Simulation ({duration}h) ---\n")
+    df, ground_truth = model.run(duration_hours=duration, fault_schedule=faults)
+    out_dir = SCRIPT_DIR / "out" / "digital_twin"
+    save_twin_outputs(df, ground_truth, out_dir)
+    return 0
+
+
+def _run_synthetic(args: list) -> int:
+    """Generate synthetic SCADA data."""
+    output_dir = Path(args[0]) if args else SCRIPT_DIR / "out" / "synthetic"
+    from sim.synthetic_scada import SCADAConfig, generate_synthetic_plant, save_synthetic_plant
+
+    config = SCADAConfig(duration_hours=72)
+    df, metadata = generate_synthetic_plant(config)
+    save_synthetic_plant(df, metadata, output_dir)
+    return 0
+
+
 def main() -> int:
     args = sys.argv[1:]
     if not args:
@@ -314,6 +637,48 @@ def main() -> int:
             return _run_demo_carlisle(event)
         print(f"Unknown demo event: {event}. Use: carlisle | carlisle-2011")
         return 1
+
+    if cmd == "ingest":
+        return _run_ingest(rest)
+
+    if cmd == "infer-graph":
+        return _run_infer_graph(rest)
+
+    if cmd == "simulate":
+        return _run_simulate(rest)
+
+    if cmd == "packet":
+        sub = (rest[0] if rest else "").lower()
+        if sub == "verify":
+            return _run_packet_verify(rest[1:])
+        print("Usage: munin packet verify <packet.json>")
+        return 1
+
+    if cmd == "graph":
+        sub = (rest[0] if rest else "").lower()
+        if sub == "show":
+            return _run_graph_show(rest[1:])
+        print("Usage: munin graph show <graph.json>")
+        return 1
+
+    if cmd == "edge":
+        sub = (rest[0] if rest else "").lower()
+        if sub == "explain":
+            return _run_edge_explain(rest[1:])
+        print("Usage: munin edge explain <graph.json> <nodeA> <nodeB>")
+        return 1
+
+    if cmd == "explain":
+        return _run_explain_packet(rest)
+
+    if cmd == "redteam":
+        return _run_redteam(rest)
+
+    if cmd == "twin":
+        return _run_twin(rest)
+
+    if cmd == "synthetic":
+        return _run_synthetic(rest)
 
     if cmd == "scenarios":
         sub = (rest[0] if rest else "").lower()
