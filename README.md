@@ -1,10 +1,40 @@
 # Munin: Sovereign Infrastructure Orchestration Platform
 
+[![Build](https://github.com/jacobsprake/munin/actions/workflows/build.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/build.yml)
+[![Test](https://github.com/jacobsprake/munin/actions/workflows/test.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/test.yml)
+[![CodeQL](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml)
+
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
 **Repository structure:** Product entry point is this README and [docs/README.md](docs/README.md) (documentation index). Core app: `app/`, `components/`, `lib/`. Inference engine: `engine/`. Playbooks: `playbooks/`. Research and compliance: `research/`. Scripts: `scripts/` (demo setup, deploy, migrations). Internal and archived docs: `docs/internal/`.
+
+---
+
+## Run in 5 minutes
+
+```bash
+git clone https://github.com/jacobsprake/munin.git && cd munin
+npm ci
+pip install pandas numpy pyyaml
+./scripts/munin demo carlisle
+```
+
+This runs the full pipeline — ingest, graph inference, cascade simulation, playbook matching, packet generation — and produces a self-contained report at `engine/out/demo_carlisle/report.md`. See [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
+
+## What to look at next
+
+| If you have... | Look at... |
+|---------------|-----------|
+| 5 minutes | Run the demo, read `engine/out/demo_carlisle/report.md` |
+| 15 minutes | [Safety Case](docs/SAFETY_CASE.md), [Threat Model](docs/threat_model.md), [STPA Analysis](docs/SAFETY_ANALYSIS_STPA.md) |
+| 30 minutes | [IEC 62443 Mapping](docs/IEC62443_MAPPING.md), [PQC Migration](research/pqc-migration.md), [Packet Spec](specs/munin-packet-v1.md) |
+| 1 hour | [Governance](docs/GOVERNANCE.md), [Human Factors](docs/HUMAN_FACTORS.md), [Misuse Analysis](docs/MISUSE_AND_ABUSE.md), [RFP Pack](docs/RFP_PACK/) |
+
+## Why this matters now
+
+Post-quantum cryptography standards (FIPS 204, ML-DSA) were finalized in 2024. NIST warns that quantum computers will break RSA/ECC within a decade. Critical infrastructure authorization packets signed today must remain defensible for the 30-50 year operational lifetime of the assets they protect. Munin is designed from the ground up with PQC dual-stack signatures, air-gapped deployment, and a structured safety case aligned to NIST SP 800-82 and IEC 62443. The authorization-latency problem — where cascading infrastructure failures outpace the human coordination required to respond — is the bottleneck that Munin addresses.
 
 ---
 

@@ -23,6 +23,8 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install engine dependencies
-        run: pip install pandas numpy pyyaml pytest hypothesis
+        run: pip install -r requirements.txt
       - name: Engine unit tests
-        run: python3 -m pytest engine/tests -v --ignore=engine/tests/test_brownfield_integration.py
+        run: PYTHONPATH=engine python3 -m pytest engine/tests -v --ignore=engine/tests/test_brownfield_integration.py
+      - name: Engine demo smoke test
+        run: PYTHONPATH=engine python3 engine/cli.py demo carlisle
