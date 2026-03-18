@@ -1,0 +1,289 @@
+{
+  "nodes": [
+    {
+      "id": "substation_north_load",
+      "sector": "power",
+      "label": "Substation North Load",
+      "kind": "substation",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8497374120875208,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "substation_north_freq",
+      "sector": "power",
+      "label": "Substation North Freq",
+      "kind": "substation",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8127033481659576,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "substation_north_voltage",
+      "sector": "power",
+      "label": "Substation North Voltage",
+      "kind": "substation",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8553580065926072,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "substation_south_load",
+      "sector": "power",
+      "label": "Substation South Load",
+      "kind": "substation",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7656831082969281,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "substation_south_freq",
+      "sector": "power",
+      "label": "Substation South Freq",
+      "kind": "substation",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9357488797615119,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "substation_south_voltage",
+      "sector": "power",
+      "label": "Substation South Voltage",
+      "kind": "substation",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9669234112458669,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "pump_station_7_flow",
+      "sector": "water",
+      "label": "Pump Station 7 Flow",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.840732786609027,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "pump_station_7_pressure",
+      "sector": "water",
+      "label": "Pump Station 7 Pressure",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7681534014274901,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "pump_station_12_flow",
+      "sector": "water",
+      "label": "Pump Station 12 Flow",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7209042895830083,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "pump_station_12_pressure",
+      "sector": "water",
+      "label": "Pump Station 12 Pressure",
+      "kind": "pump",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9503434109921695,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "reservoir_west_level",
+      "sector": "water",
+      "label": "Reservoir West Level",
+      "kind": "reservoir",
+      "region": "west",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7572797906532951,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "treatment_plant_ph",
+      "sector": "other",
+      "label": "Treatment Plant Ph",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9010384899703475,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "tower_alpha_uptime",
+      "sector": "telecom",
+      "label": "Tower Alpha Uptime",
+      "kind": "tower",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8196018920868773,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "tower_alpha_latency",
+      "sector": "telecom",
+      "label": "Tower Alpha Latency",
+      "kind": "tower",
+      "region": "north",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8092833075780151,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "tower_beta_uptime",
+      "sector": "telecom",
+      "label": "Tower Beta Uptime",
+      "kind": "tower",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8859276722978711,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "tower_beta_latency",
+      "sector": "telecom",
+      "label": "Tower Beta Latency",
+      "kind": "tower",
+      "region": "south",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.7426606926394852,
+        "status": "degraded"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_0000",
+      "source": "substation_north_load",
+      "target": "pump_station_7_pressure",
+      "confidenceScore": 0.9723422087686273,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "isShadowLink": true,
+      "stabilityScore": 0.941355649695098,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0001",
+      "source": "substation_north_load",
+      "target": "pump_station_7_flow",
+      "confidenceScore": 0.9723422087686243,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_2"
+      ],
+      "isShadowLink": true,
+      "stabilityScore": 0.9413556496950978,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0017",
+      "source": "pump_station_7_flow",
+      "target": "pump_station_7_pressure",
+      "confidenceScore": 1.0,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_18"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.9999999999999999,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0023",
+      "source": "pump_station_12_flow",
+      "target": "pump_station_12_pressure",
+      "confidenceScore": 0.9999999999999998,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_24"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.9999999999999999,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0028",
+      "source": "reservoir_west_level",
+      "target": "treatment_plant_ph",
+      "confidenceScore": 0.7079560226263051,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_29"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.6966981967361334,
+      "evidenceWindowCount": 2,
+      "confounderNotes": null
+    }
+  ]
+}

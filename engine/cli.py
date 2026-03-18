@@ -55,6 +55,9 @@ def _print_ascii_cascade(incident: dict, graph: dict) -> None:
 
 def _run_demo_carlisle(event_id: str) -> int:
     """Run full Carlisle-style demo and print spec output. Returns 0 on success."""
+    from safety_guard import assert_read_only
+    assert_read_only()
+
     from ingest import ingest_historian_data, normalize_timeseries
     from infer_graph import build_graph
     from sensor_health import assess_sensor_health, build_evidence_windows

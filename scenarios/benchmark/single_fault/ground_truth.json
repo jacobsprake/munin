@@ -1,0 +1,128 @@
+{
+  "ground_truth_graph": {
+    "nodes": [
+      {
+        "id": "substation_north",
+        "sector": "power"
+      },
+      {
+        "id": "substation_south",
+        "sector": "power"
+      },
+      {
+        "id": "pump_station_7",
+        "sector": "water"
+      },
+      {
+        "id": "pump_station_12",
+        "sector": "water"
+      },
+      {
+        "id": "reservoir_west",
+        "sector": "water"
+      },
+      {
+        "id": "treatment_plant",
+        "sector": "water"
+      },
+      {
+        "id": "tower_alpha",
+        "sector": "telecom"
+      },
+      {
+        "id": "tower_beta",
+        "sector": "telecom"
+      }
+    ],
+    "edges": [
+      {
+        "source": "substation_north",
+        "target": "pump_station_7",
+        "type": "power_dependency",
+        "is_cross_sector": true,
+        "lag_seconds": 45
+      },
+      {
+        "source": "substation_north",
+        "target": "tower_alpha",
+        "type": "power_dependency",
+        "is_cross_sector": true,
+        "lag_seconds": 30
+      },
+      {
+        "source": "substation_north",
+        "target": "treatment_plant",
+        "type": "power_dependency",
+        "is_cross_sector": true,
+        "lag_seconds": 45
+      },
+      {
+        "source": "substation_south",
+        "target": "pump_station_12",
+        "type": "power_dependency",
+        "is_cross_sector": true,
+        "lag_seconds": 45
+      },
+      {
+        "source": "substation_south",
+        "target": "tower_beta",
+        "type": "power_dependency",
+        "is_cross_sector": true,
+        "lag_seconds": 30
+      },
+      {
+        "source": "pump_station_7",
+        "target": "reservoir_west",
+        "type": "water_flow",
+        "is_cross_sector": false,
+        "lag_seconds": 120
+      }
+    ]
+  },
+  "cascade_events": [
+    {
+      "time_s": 43200.0,
+      "source": "substation_north",
+      "target": "pump_station_7",
+      "effect": "power_loss_causes_pump_failure",
+      "source_status": "failed",
+      "target_status": "failed"
+    },
+    {
+      "time_s": 43200.0,
+      "source": "substation_north",
+      "target": "treatment_plant",
+      "effect": "power_loss_causes_pump_failure",
+      "source_status": "failed",
+      "target_status": "degraded"
+    },
+    {
+      "time_s": 43200.0,
+      "source": "substation_north",
+      "target": "tower_alpha",
+      "effect": "power_loss_degrades_telecom",
+      "source_status": "failed",
+      "target_status": "degraded"
+    },
+    {
+      "time_s": 43200.0,
+      "source": "pump_station_7",
+      "target": "reservoir_west",
+      "effect": "pump_failure_reduces_outflow",
+      "source_status": "failed",
+      "target_status": "degraded"
+    }
+  ],
+  "fault_schedule": [
+    {
+      "time_hours": 12.0,
+      "node_id": "substation_north",
+      "fault_type": "trip",
+      "description": "Substation North trips"
+    }
+  ],
+  "config": {
+    "seed": 42,
+    "dt_seconds": 60.0
+  }
+}

@@ -21,6 +21,7 @@ from build_incidents import build_incidents
 from packetize import packetize_incidents
 from config import get_config, EngineConfig, ENGINE_CONFIG_VERSION
 from structured_logging import get_logger
+from safety_guard import assert_read_only
 
 # region agent log
 def _agent_log(run_id: str, hypothesis_id: str, location: str, message: str, data: dict):
@@ -75,6 +76,9 @@ def main(
         max_scenarios: If set, cap at N scenarios (sample when over). Enables targeting e.g. 10,000.
         n_jobs: Parallel workers for cascade simulation (1=sequential). Use 0 for auto (cpu_count-1).
     """
+    # Safety guard: Munin v1 is read-only
+    assert_read_only()
+
     # Load configuration and initialize RNG streams
     config = get_config(config_path)
     

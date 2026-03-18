@@ -1,0 +1,26 @@
+{
+  "scenario": "single_fault",
+  "graph_reconstruction": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "true_positives": 0,
+    "false_positives": 5,
+    "false_negatives": 6,
+    "mean_lag_error_s": 0.0,
+    "shadow_link_precision": 0.0,
+    "shadow_link_recall": 0.0
+  },
+  "cascade_prediction": {
+    "jaccard_similarity": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "predicted_count": 16,
+    "actual_count": 5
+  },
+  "playbook_impact": {
+    "reduction_pct": 0.0,
+    "response_time_traditional_hours": 4.0,
+    "response_time_munin_minutes": 0.5
+  }
+}
