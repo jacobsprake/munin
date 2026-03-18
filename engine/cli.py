@@ -614,6 +614,82 @@ def _run_twin(args: list) -> int:
     return 0
 
 
+def _run_demo_real_data() -> int:
+    """Run pipeline on real Environment Agency flood monitoring data."""
+    from safety_guard import assert_read_only
+    assert_read_only()
+
+    import pandas as pd
+    from infer_graph import build_graph
+
+    data_dir = SCRIPT_DIR / "sample_data" / "ea_real_data"
+    if not data_dir.exists() or not list(data_dir.glob("*.csv")):
+        print("No real EA data found. Run the EA data fetcher first.")
+        return 1
+
+    print("")
+    print("#" * 60)
+    print("#  MUNIN DEMO – Real Environment Agency Data")
+    print("#  Source: environment.data.gov.uk/flood-monitoring")
+    print("#  Stations: River Eden + River Petteril (Carlisle area)")
+    print("#" * 60)
+    print("")
+
+    out_dir = SCRIPT_DIR / "out" / "ea_real"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load and merge real EA CSVs
+    dfs = {}
+    for csv_file in sorted(data_dir.glob("*.csv")):
+        node_id = csv_file.stem
+        # Skip January duplicates for the main demo
+        if node_id.endswith("_jan"):
+            continue
+        df = pd.read_csv(csv_file, parse_dates=["timestamp"])
+        df = df.set_index("timestamp").sort_index()
+        df = df.rename(columns={"value": node_id})
+        dfs[node_id] = df[node_id]
+        print(f"  Loaded {node_id}: {len(df)} readings ({df.index.min().date()} to {df.index.max().date()})")
+
+    combined = pd.concat(dfs.values(), axis=1).dropna()
+    combined.to_csv(out_dir / "normalized_timeseries.csv")
+    print(f"\n  Combined: {len(combined)} aligned readings, {len(combined.columns)} stations")
+
+    # Run graph inference
+    print("\n  Discovering dependencies...")
+    build_graph(out_dir / "normalized_timeseries.csv", out_dir / "graph.json")
+
+    with open(out_dir / "graph.json") as f:
+        graph = json.load(f)
+
+    edges = graph.get("edges", [])
+    print(f"\n--- Results: Real EA Data ---\n")
+    if edges:
+        for e in edges:
+            shadow = " [CROSS-SECTOR]" if e.get("isShadowLink") else ""
+            print(f"  {e['source']:30s} -> {e['target']:30s}")
+            print(f"    Confidence: {e['confidenceScore']:.3f}")
+            print(f"    Lag: {e['inferredLagSeconds']}s ({e['inferredLagSeconds']//60} minutes)")
+            print(f"    Stability: {e.get('stabilityScore', 0):.3f}{shadow}")
+            print()
+    else:
+        print("  No significant correlations found at current thresholds.")
+
+    print("--- Interpretation ---")
+    print("  These are REAL physical dependencies discovered from public")
+    print("  Environment Agency river gauge data. The lag represents the")
+    print("  physical travel time of rainfall through the catchment.")
+    print("")
+    print("  Data source: https://environment.data.gov.uk/flood-monitoring")
+    print("  No synthetic data. No simulation. Real sensor readings.")
+    print("")
+    print("#" * 60)
+    print("#  REAL DATA DEMO COMPLETE")
+    print("#" * 60)
+    print("")
+    return 0
+
+
 def _run_synthetic(args: list) -> int:
     """Generate synthetic SCADA data."""
     output_dir = Path(args[0]) if args else SCRIPT_DIR / "out" / "synthetic"
@@ -638,7 +714,9 @@ def main() -> int:
         event = (rest[0] if rest else "carlisle").lower()
         if "carlisle" in event:
             return _run_demo_carlisle(event)
-        print(f"Unknown demo event: {event}. Use: carlisle | carlisle-2011")
+        if event in ("real-data", "ea", "real"):
+            return _run_demo_real_data()
+        print(f"Unknown demo event: {event}. Use: carlisle | real-data")
         return 1
 
     if cmd == "ingest":

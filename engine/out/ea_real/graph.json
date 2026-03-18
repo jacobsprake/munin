@@ -1,0 +1,47 @@
+{
+  "nodes": [
+    {
+      "id": "eden_sands_centre",
+      "sector": "other",
+      "label": "Eden Sands Centre",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8407649887271241,
+        "status": "warning"
+      }
+    },
+    {
+      "id": "petteril_botcherby",
+      "sector": "other",
+      "label": "Petteril Botcherby",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.847211699298204,
+        "status": "warning"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_0000",
+      "source": "eden_sands_centre",
+      "target": "petteril_botcherby",
+      "confidenceScore": 0.9705167487447626,
+      "inferredLagSeconds": 300,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.6397795309016627,
+      "evidenceWindowCount": 1,
+      "confounderNotes": null
+    }
+  ]
+}
