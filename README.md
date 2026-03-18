@@ -4,6 +4,8 @@
 [![Test](https://github.com/jacobsprake/munin/actions/workflows/test.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/test.yml)
 [![CodeQL](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml)
 
+**[munin-site.vercel.app](https://munin-site.vercel.app)** | [Doctrine](docs/MUNIN_DOCTRINE.md) | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) | [Safety Case](docs/SAFETY_CASE.md)
+
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.

@@ -112,7 +112,7 @@
 |------|--------|----------|
 | `docs/FOR_REVIEWERS.md` | ✅ | Step-by-step tour |
 | `./demo.sh` → `npm run dev` | ✅ | Auth required; seed demo user |
-| No "Thiel" references | ✅ | None in codebase |
+| No external programme references | ✅ | None in codebase |
 
 ---
 
@@ -163,6 +163,6 @@
 | SOPs, regulatory, risk | ✅ Complete |
 | Sovereign deployment | ✅ Complete |
 | Government-grade UI | ✅ Mostly complete; diff viewer + map optional |
-| Thiel references | ✅ None |
+| External programme references | ✅ None |
 
 **Overall:** Munin is spec-compliant for the core build. Remaining gaps are demo-enhancement (packet diff UI, map) and optional CLI commands (`packet lint`, `packet diff`, `packet chain verify`).
