@@ -18,6 +18,10 @@ Usage:
   munin viz cascade            Generate cascade animation HTML
   munin perf                   Performance benchmarks
   munin regulatory [UK|US|EU]  Regulatory compliance mapper
+  munin demo carlisle --ministry-view  Generate ministry executive briefing
+  munin demo real-data         Real Environment Agency flood data demo
+  munin baseline               Compare Munin vs traditional response
+  munin ministry-report [dir]  Generate ministry briefing from existing outputs
   munin twin <hours>           Run digital twin simulation
   munin synthetic <dir>        Generate synthetic SCADA data
 """
@@ -690,6 +694,43 @@ def _run_demo_real_data() -> int:
     return 0
 
 
+def _generate_ministry_view(out_dir: Path) -> None:
+    """Generate ministry-view executive briefing from demo outputs."""
+    from ministry_report import generate_ministry_briefing
+    briefing_path = out_dir / "ministry_briefing.md"
+    generate_ministry_briefing(out_dir, briefing_path)
+    print(f"  Ministry briefing: {briefing_path}")
+
+
+def _run_ministry_report(args: list) -> int:
+    """Generate ministry-view report from existing pipeline outputs."""
+    from ministry_report import generate_ministry_briefing
+    out_dir = Path(args[0]) if args else SCRIPT_DIR / "out" / "demo_carlisle"
+    if not (out_dir / "graph.json").exists():
+        print("No pipeline outputs found. Run: munin demo carlisle")
+        return 1
+    briefing_path = out_dir / "ministry_briefing.md"
+    briefing = generate_ministry_briefing(out_dir, briefing_path)
+    print(briefing)
+    return 0
+
+
+def _run_baseline_comparison() -> int:
+    """Run baseline vs Munin comparison."""
+    from baselines import compare_and_report
+    out_dir = SCRIPT_DIR / "out" / "demo_carlisle"
+    if not (out_dir / "graph.json").exists():
+        print("Run 'munin demo carlisle' first.")
+        return 1
+    report = compare_and_report(
+        out_dir / "graph.json",
+        out_dir / "incidents.json",
+        out_dir / "packets",
+    )
+    print(report)
+    return 0
+
+
 def _run_synthetic(args: list) -> int:
     """Generate synthetic SCADA data."""
     output_dir = Path(args[0]) if args else SCRIPT_DIR / "out" / "synthetic"
@@ -712,12 +753,22 @@ def main() -> int:
 
     if cmd == "demo":
         event = (rest[0] if rest else "carlisle").lower()
+        ministry_view = "--ministry-view" in rest or "--ministry" in rest
         if "carlisle" in event:
-            return _run_demo_carlisle(event)
+            rc = _run_demo_carlisle(event)
+            if rc == 0 and ministry_view:
+                _generate_ministry_view(SCRIPT_DIR / "out" / "demo_carlisle")
+            return rc
         if event in ("real-data", "ea", "real"):
             return _run_demo_real_data()
         print(f"Unknown demo event: {event}. Use: carlisle | real-data")
         return 1
+
+    if cmd == "baseline":
+        return _run_baseline_comparison()
+
+    if cmd == "ministry-report":
+        return _run_ministry_report(rest)
 
     if cmd == "ingest":
         return _run_ingest(rest)
