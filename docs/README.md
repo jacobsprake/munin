@@ -13,6 +13,7 @@ For the main README and quick start, see the [repository root](../README.md).
 | [FOUNDER_NOTES.md](FOUNDER_NOTES.md) | How I got here, what I built, what I learned, what's next. |
 | [LIMITATIONS.md](LIMITATIONS.md) | What Munin can't do yet. Honest assessment of gaps and how I plan to close them. |
 | [WHATS_NEXT.md](WHATS_NEXT.md) | 3-6 month plan: what's happening regardless, what would accelerate with resources. |
+| [OUTREACH_AND_PARTNERSHIPS.md](OUTREACH_AND_PARTNERSHIPS.md) | Who I'm talking to, what's realistic, what's not. |
 | [PROGRESS_LOG.md](PROGRESS_LOG.md) | What was built and when. Chronological development velocity. |
 
 ## Safety and "do no harm" (15 minutes)
