@@ -19,6 +19,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test:ci
-      - name: Engine unit tests (optional)
-        run: |
-          python3 -m pytest engine/tests -v --ignore=engine/tests/test_brownfield_integration.py 2>/dev/null || true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install engine dependencies
+        run: pip install pandas numpy pyyaml pytest hypothesis
+      - name: Engine unit tests
+        run: python3 -m pytest engine/tests -v --ignore=engine/tests/test_brownfield_integration.py

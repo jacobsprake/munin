@@ -82,7 +82,8 @@ export function middleware(request: NextRequest) {
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
+  // X-XSS-Protection intentionally omitted: deprecated header that can introduce
+  // vulnerabilities in older browsers. Modern CSP provides superior protection.
   response.headers.set('Referrer-Policy', 'no-referrer'); // Zero referrer leakage for classified data
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()');
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
