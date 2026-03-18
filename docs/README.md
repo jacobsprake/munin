@@ -26,6 +26,14 @@ For the main README and quick start, see the [repository root](../README.md).
 | [GOVERNANCE.md](GOVERNANCE.md) | M-of-N multi-ministry signing, quorum policies, escalation rules. |
 | [MISUSE_AND_ABUSE.md](MISUSE_AND_ABUSE.md) | How an authoritarian regime could abuse Munin — and what prevents it. |
 
+## Deployment and operations (20 minutes)
+
+| Document | What it tells you |
+|----------|-------------------|
+| [MINISTRY_INTEGRATION.md](MINISTRY_INTEGRATION.md) | How Munin plugs into government ministries. Collector architecture, workflows, authorization chain. |
+| [OPERATOR_HANDBOOK.md](OPERATOR_HANDBOOK.md) | Written for frontline operators. Daily workflow, incident response steps, when to override Munin. |
+| [INGESTION_AT_SCALE.md](INGESTION_AT_SCALE.md) | How Munin handles 10,000+ SCADA sensors. Protocol unification, scaling model, data volume math. |
+
 ## Architecture and evaluation (30 minutes)
 
 | Document | What it tells you |
