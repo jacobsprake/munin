@@ -1,17 +1,54 @@
-# Munin documentation
+# Munin Documentation
 
-Product and technical documentation. For the main README and quick start, see the [repository root](../README.md).
+For the main README and quick start, see the [repository root](../README.md).
 
 ---
 
-## For evaluators and investors
+## Start here (10 minutes)
+
+| Document | What it tells you |
+|----------|-------------------|
+| [MUNIN_DOCTRINE.md](MUNIN_DOCTRINE.md) | **The thesis, the vision, the contrarian bet.** Why authorization latency is the real bottleneck and what Munin does about it. |
+| [DEMO_WALKTHROUGH.md](DEMO_WALKTHROUGH.md) | **Hands-on.** One-command demo, step-by-step CLI walkthrough, expected output. |
+| [FOUNDER_NOTES.md](FOUNDER_NOTES.md) | How I got here, what I built, what I learned, what's next. |
+
+## Safety and "do no harm" (15 minutes)
+
+| Document | What it tells you |
+|----------|-------------------|
+| [SAFETY_CASE.md](SAFETY_CASE.md) | GSN-style safety case: claims linked to test evidence. Why v1 can't hurt anyone. |
+| [threat_model.md](threat_model.md) | NIST 800-82-aligned threat model: attacker profiles, attack trees, countermeasures. |
+| [SAFETY_ANALYSIS_STPA.md](SAFETY_ANALYSIS_STPA.md) | Hazard analysis: 17 unsafe control actions, 16 causal scenarios, safety constraints. |
+| [GOVERNANCE.md](GOVERNANCE.md) | M-of-N multi-ministry signing, quorum policies, escalation rules. |
+| [MISUSE_AND_ABUSE.md](MISUSE_AND_ABUSE.md) | How an authoritarian regime could abuse Munin — and what prevents it. |
+
+## Architecture and evaluation (30 minutes)
+
+| Document | What it tells you |
+|----------|-------------------|
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Full technical architecture. |
+| [DIGITAL_TWIN.md](DIGITAL_TWIN.md) | Physics-based simulation: power, water, telecom subsystems. |
+| [TEE_DESIGN.md](TEE_DESIGN.md) | Multi-vendor TEE attestation architecture. |
+| [HUMAN_FACTORS.md](HUMAN_FACTORS.md) | Operator personas, cognitive load, automation bias. |
+| [UX_FOR_OPERATORS.md](UX_FOR_OPERATORS.md) | War room workflows, information hierarchy. |
+
+## Standards and compliance (deep dive)
+
+| Document | What it tells you |
+|----------|-------------------|
+| [IEC62443_MAPPING.md](IEC62443_MAPPING.md) | Zones/conduits, foundational requirements mapped to code. |
+| [HAZARD_LOG.md](HAZARD_LOG.md) | 12 ALARP-rated hazards with mitigations. |
+| [TRAINING_MODE.md](TRAINING_MODE.md) | Flight simulator concept for operator training. |
+| [SOVEREIGN_HARDWARE.md](SOVEREIGN_HARDWARE.md) | Multi-TEE quorum design. |
+| [RFP_PACK/](RFP_PACK/) | Procurement-ready documents for institutional buyers. |
+
+## Legacy docs (still valid)
 
 | Document | Description |
 |----------|-------------|
-| [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | **Start here:** 10-minute path (app + CLI), one-sentence pitch, key links. |
-| [SPEC_AUDIT_AND_GOVERNMENT_GRADE.md](SPEC_AUDIT_AND_GOVERNMENT_GRADE.md) | Spec compliance audit, government-grade UI alignment. |
-| [MANIFESTO.md](MANIFESTO.md) | Thesis whitepaper: Shadow Links, scenario space, tech stack. |
-| [HOW_MUNIN_IS_FAST.md](HOW_MUNIN_IS_FAST.md) | How Munin achieves speed: traditional vs Munin flow, playbook retrieval, handshake. |
+| [FOR_REVIEWERS.md](FOR_REVIEWERS.md) | Original reviewer guide. |
+| [MANIFESTO.md](MANIFESTO.md) | Original thesis whitepaper. |
+| [HOW_MUNIN_IS_FAST.md](HOW_MUNIN_IS_FAST.md) | Speed analysis: traditional vs Munin. |
 
 ---
 

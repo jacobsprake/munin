@@ -1,107 +1,38 @@
-# Founder Notes: Vision and Design Philosophy
+# How I got here
 
-**Classification:** OFFICIAL
-**Last Updated:** 2026-03-18
+I didn't start with infrastructure. I started with the question: what systems are so important that getting them wrong kills people, and so complex that nobody has a complete picture?
 
----
+The answer is critical infrastructure — power, water, telecom. Not because the individual systems are poorly built (they're not), but because the *connections between them* are invisible. A water utility's monitoring system doesn't know that its pumps depend on a specific substation. The power grid doesn't know that a telecom tower's backup battery is about to die. When one sector fails, the cascade into adjacent sectors is discovered reactively, by humans making phone calls, not by any automated system.
 
-## Why Sovereign Infrastructure Orchestration Matters Now
+I became obsessed with this gap. Not the sensors-and-dashboards gap (that's well-served), but the gap between "we know what's happening" and "we have authorization to respond." In every major infrastructure disaster I studied — Carlisle 2015, the UK floods of 2007, Katrina — the technical detection was fast enough. The authorization wasn't. People died in the gap.
 
-Critical national infrastructure -- power grids, water systems, telecommunications networks -- was designed for a world of isolated, mechanically resilient systems. That world no longer exists. Modern infrastructure is digitally interconnected, operationally interdependent, and managed through software systems that were never designed for the adversarial environment they now inhabit.
+## What I built
 
-The convergence of several trends makes this problem urgent:
+Munin is my attempt to close that gap. The core idea: if you can pre-simulate every plausible cascade scenario, pre-match each one to a validated playbook, and pre-package the evidence, uncertainty, and legal basis into a cryptographic authorization packet, then when a crisis hits, operators don't improvise — they review and sign.
 
-**Increasing interdependency.** The cascading failures we see in infrastructure incidents are not bugs; they are the inevitable consequence of tightly coupled systems. When the power grid fails, water treatment stops. When telecommunications fail, grid operators lose visibility. These dependencies are well-documented but poorly modelled in operational tools.
+I built this from scratch. The inference engine discovers cross-sector dependencies from time-series correlation. The digital twin simulates power-water-telecom cascades with physics-based models. The adversarial testing module tries to break the inference with spoofed sensors, timestamp manipulation, and replay attacks. The evaluation harness measures graph reconstruction accuracy against ground truth.
 
-**Expanding attack surface.** The integration of operational technology with information technology has created attack vectors that did not exist a decade ago. State-sponsored cyber operations now routinely target infrastructure systems. The tools available to defenders have not kept pace.
+The safety engineering is not decoration. I wrote a structured safety case (GSN-style), a full STPA hazard analysis, and a threat model aligned to NIST 800-82. I implemented a hard read-only guarantee — there is no code path in v1 that can send a command to SCADA, and static analysis tests verify this on every commit. The system uses PQC dual-stack signatures (Ed25519 + ML-DSA) because authorization packets need to remain unforgeable for the 30-50 year life of the infrastructure they protect.
 
-**Institutional latency.** The decision-making processes for infrastructure response were designed for an era when failures were local and slow-moving. Modern cascade failures can cross sector boundaries in minutes. The gap between the speed at which crises develop and the speed at which authorisation can be obtained is widening. This is what I call the authorisation-latency problem.
+I also built the governance layer: multi-ministry M-of-N cryptographic signing with Byzantine fault tolerance, constitutional constraints that no single operator can override, and an explicit misuse analysis covering how an authoritarian regime could abuse the system and what architectural features prevent it.
 
-**Sovereignty concerns.** Nations are increasingly aware that dependence on foreign-operated monitoring and analysis tools for critical infrastructure creates strategic vulnerability. Sovereign capability in infrastructure protection is not a luxury; it is a national security requirement.
+## What I learned
 
----
+Building Munin taught me that the hardest problems in infrastructure are not computational — they are institutional. The math for cascade prediction is well-understood. The cryptography is standardized. What's hard is designing a system that a government can actually trust: one that is advisory-only, cryptographically auditable, quantum-resistant, and constitutionally incapable of being weaponized.
 
-## The Authorisation-Latency Thesis
+I learned that safety engineering is not a checkbox exercise. The STPA analysis changed the architecture — it revealed hazards I hadn't considered (operator fatigue, training mode confusion, sensor health classification lag) and forced me to add mitigations. The safety case is a living document, not a filing requirement.
 
-The core insight behind Munin is that the most dangerous gap in infrastructure protection is not technical -- it is procedural.
+I learned that the gap between "technically possible" and "someone will actually deploy this" is bridged by trust, not features. Every design decision in Munin optimizes for trust: evidence over assertion, uncertainty over confidence, human authority over automation.
 
-Consider a cascade failure scenario: a cyber attack on the power grid triggers failures in water pumping, which degrades telecommunications, which impairs the grid operator's ability to respond. The technical detection of this cascade is a solved or solvable problem. What is not solved is the authorisation problem.
+## What's next
 
-Who has the authority to recommend cross-sector response actions? How quickly can that authority be exercised? What evidence is required? Who audits the decision?
+The next 3 months, regardless of anything else:
 
-In current practice, these questions are answered through meetings, phone calls, and bureaucratic processes that operate on timescales of hours to days. The infrastructure cascade operates on timescales of minutes to hours.
+1. Get real SCADA historian data from a UK water authority and validate shadow-link discovery on it.
+2. Run the digital twin against at least one more historical flood event beyond Carlisle.
+3. Engage an independent safety assessor to review the safety case.
+4. Move TEE attestation from software fallback to hardware SGX.
 
-Munin exists to compress the authorisation latency -- not by removing humans from the loop, but by pre-computing the evidence, pre-formatting the decision, and presenting it in a form that allows rapid, informed, auditable human decision-making.
+The 10-year vision: every nation has a sovereign orchestration layer — air-gapped, on their own hardware, under their own authority — that sees across infrastructure sectors, pre-computes response options, and compresses authorization latency from hours to minutes. Munin is that layer.
 
-The human decides. Munin ensures they can decide quickly and well.
-
----
-
-## Design Principles
-
-### Advisory-Only, Always
-
-Munin will never directly control infrastructure. This is not a temporary limitation or a feature awaiting implementation. It is a constitutional constraint enforced by hardware (the data diode) and by governance (the constitutional constraints in GOV-001).
-
-The temptation to add "just a small actuation capability" must be resisted absolutely. The moment Munin can act on infrastructure, it becomes a weapon as much as a shield. Advisory-only architecture is Munin's most important safety property.
-
-### Evidence-First Decision Support
-
-Munin does not tell operators what to do. It shows them what is happening, what might happen next, and what responses are available. The operator's independent judgement is not a bottleneck to be optimised away; it is the system's primary safety mechanism.
-
-Every recommendation includes its evidence chain, its confidence interval, and its key assumptions. An operator who disagrees with Munin's recommendation and can articulate why is providing a more valuable signal than one who agrees without understanding.
-
-### Safety as a First-Class Artefact
-
-Safety is not a layer applied on top of Munin's functionality. It is embedded in the architecture, the governance model, the audit system, and the development process. The hazard log (HL-001) is a living document reviewed monthly. The governance model (GOV-001) is cryptographically enforced. The training mode (TR-001) exists because we recognise that operator skill is a safety-critical capability that must be maintained.
-
-Every design decision is assessed against the question: "How could this be misused, and what prevents that?" The misuse and abuse analysis (MA-001) is not an afterthought; it shapes the architecture.
-
----
-
-## What Makes This Different from Existing SCADA Monitoring
-
-Existing SCADA monitoring tools are excellent at what they do: monitoring individual infrastructure systems. Munin is not a better SCADA monitor. It operates in the space between SCADA systems, modelling the interdependencies that individual monitoring tools cannot see.
-
-**Cross-sector cascade modelling.** No existing operational tool models cascade propagation across power, water, and telecommunications simultaneously. Munin's digital twin (DT-001) does this with physics-based subsystem models.
-
-**Governance-enforced decision support.** Existing tools present data. Munin presents decision packets -- structured, evidence-backed recommendations that include governance metadata (who needs to approve, what quorum is required, what the audit trail records).
-
-**Post-quantum cryptographic integrity.** Munin's audit trail, governance signatures, and communication channels are protected with hybrid classical/post-quantum cryptography. This is not a future roadmap item; it is implemented now.
-
-**Authoritarian abuse resistance.** Munin is designed not merely to protect infrastructure but to resist being co-opted by those who would exploit infrastructure control. The multi-signature governance, immutable audit trail, and mandatory independent oversight (MA-001) are architectural features, not policy aspirations.
-
-**Training integration.** The digital twin provides a flight simulator for infrastructure crisis response (TR-001). Operators can train on realistic scenarios without requiring real failures. This is how aviation safety works; it should be how infrastructure safety works.
-
----
-
-## Personal Background and Motivation
-
-I came to this problem through an unconventional path. I am largely self-taught across the domains that Munin spans: infrastructure systems, applied cryptography, safety engineering, and human factors.
-
-This background is both a limitation and an advantage. The limitation is obvious: formal training provides rigour and established methodology that self-teaching can miss. I mitigate this through aggressive peer review, formal safety analysis processes, and deliberate engagement with domain experts.
-
-The advantage is less obvious but real: the interdisciplinary nature of the infrastructure protection problem means that specialists in any single domain tend to optimise for their domain at the expense of the system. A power systems engineer designs for grid resilience. A cryptographer designs for mathematical security. A safety engineer designs for hazard mitigation. The infrastructure protection problem requires all three, simultaneously, with the interfaces between them as carefully designed as the components.
-
-My motivation is straightforward. Critical infrastructure is the foundation of civilised society. Its protection is a public good that market incentives alone will not adequately provide. The tools available to infrastructure defenders are inadequate for the threat environment they now face. Munin is my attempt to close that gap -- not by replacing human judgement, but by making human judgement faster, better-informed, and more accountable.
-
----
-
-## What Comes Next
-
-The current phase of Munin's development is focused on demonstrating the core thesis: that AI-assisted, governance-enforced, advisory-only infrastructure orchestration can meaningfully compress authorisation latency without sacrificing safety or accountability.
-
-The path forward involves:
-
-1. **Pilot deployments** with infrastructure operators willing to evaluate Munin alongside existing tools
-2. **Formal safety assessment** against IEC 62443 and sector-specific standards
-3. **Digital twin calibration** against historical incident data
-4. **TEE migration** from software fallback to hardware-backed security
-5. **Operator training programmes** using the flight simulator mode
-6. **Independent governance establishment** with credible, independent safety board members
-
-This is a long road. Infrastructure protection is not a problem solved by a software release; it is a problem solved by sustained commitment to safety, transparency, and the principle that humans must remain in command of the systems that sustain their societies.
-
----
-
-**END OF DOCUMENT**
+I'll keep building this whether anyone funds it or not. The problem is too important and the architecture is too right to stop.

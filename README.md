@@ -25,16 +25,21 @@ This runs the full pipeline — ingest, graph inference, cascade simulation, pla
 
 ## What to look at next
 
-| If you have... | Look at... |
+| If you have... | Start here |
 |---------------|-----------|
-| 5 minutes | Run the demo, read `engine/out/demo_carlisle/report.md` |
-| 15 minutes | [Safety Case](docs/SAFETY_CASE.md), [Threat Model](docs/threat_model.md), [STPA Analysis](docs/SAFETY_ANALYSIS_STPA.md) |
-| 30 minutes | [IEC 62443 Mapping](docs/IEC62443_MAPPING.md), [PQC Migration](research/pqc-migration.md), [Packet Spec](specs/munin-packet-v1.md) |
-| 1 hour | [Governance](docs/GOVERNANCE.md), [Human Factors](docs/HUMAN_FACTORS.md), [Misuse Analysis](docs/MISUSE_AND_ABUSE.md), [RFP Pack](docs/RFP_PACK/) |
+| **5 minutes** | Run the demo above, read the generated `engine/out/demo_carlisle/report.md` |
+| **10 minutes** | Read [The Munin Doctrine](docs/MUNIN_DOCTRINE.md) — the thesis, the vision, and why this is inevitable |
+| **15 minutes** | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) — step-by-step CLI usage with `munin graph show`, `munin edge explain`, `munin packet verify` |
+| **30 minutes** | [Safety Case](docs/SAFETY_CASE.md) + [Threat Model](docs/threat_model.md) — how we guarantee "do no harm" in v1 |
+| **Deep dive** | [Governance & Misuse](docs/GOVERNANCE.md), [Evaluation Results](research/munin_v1_results.md), [PQC Migration](research/pqc-migration.md), [Packet Spec](specs/munin-packet-v1.md) |
 
 ## Why this matters now
 
-Post-quantum cryptography standards (FIPS 204, ML-DSA) were finalized in 2024. NIST warns that quantum computers will break RSA/ECC within a decade. Critical infrastructure authorization packets signed today must remain defensible for the 30-50 year operational lifetime of the assets they protect. Munin is designed from the ground up with PQC dual-stack signatures, air-gapped deployment, and a structured safety case aligned to NIST SP 800-82 and IEC 62443. The authorization-latency problem — where cascading infrastructure failures outpace the human coordination required to respond — is the bottleneck that Munin addresses.
+Infrastructure cascades move in minutes. Human coordination takes hours. This gap kills people.
+
+In the 2015 Carlisle floods, cross-agency coordination delays meant the cascade had already consumed entire sectors before response could be authorized. Every major infrastructure disaster follows the same pattern: the physics outpaces the bureaucracy.
+
+Munin compresses that gap — not by removing humans, but by pre-computing the evidence, pre-formatting the decision, and presenting it in a form that allows rapid, informed, auditable human approval. With PQC signatures (FIPS 204, ML-DSA) ensuring those authorization records remain defensible for the 30-50 year operational lifetime of the infrastructure they protect.
 
 ---
 
