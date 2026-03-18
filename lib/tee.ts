@@ -413,18 +413,130 @@ export function getTEESecurityStatus(platform: TEEPlatform): {
       guarantee: 'Cryptographic signatures only'
     };
   }
-  
+
   const platformNames: Record<TEEPlatform, string> = {
     'INTEL_SGX': 'Intel Software Guard Extensions',
     'ARM_TRUSTZONE': 'ARM TrustZone',
     'AMD_SEV': 'AMD Secure Encrypted Virtualization',
     'SOFTWARE_FALLBACK': 'Software Fallback'
   };
-  
+
   return {
     level: 'HARDWARE_ROOTED',
     description: `${platformNames[platform]} Hardware Enclave`,
     guarantee: 'Mathematical Certainty: Even root access cannot forge signatures or alter audit logs'
   };
+}
+
+// ---------------------------------------------------------------------------
+// Multi-TEE Attestation & Quorum Verification
+// ---------------------------------------------------------------------------
+//
+// For critical infrastructure we require attestation from enclaves running
+// on at least 2 of 3 independent vendor platforms (Intel SGX, ARM
+// TrustZone, AMD SEV).  This prevents a single-vendor hardware compromise
+// from undermining packet integrity.
+// ---------------------------------------------------------------------------
+
+/** Collection of attestations from multiple TEE vendors with quorum rules. */
+export interface MultiTEEAttestation {
+  attestations: TEEAttestation[];
+  quorumPolicy: {
+    /** Minimum number of valid attestations required. */
+    required: number;
+    /** Vendor platforms that are eligible to contribute to quorum. */
+    vendors: string[];
+  };
+}
+
+/**
+ * Verify that a multi-TEE attestation meets the quorum policy.
+ *
+ * Quorum default: at least 2 of 3 vendor platforms must produce a valid
+ * attestation.  Each vendor is counted at most once (duplicate attestations
+ * from the same platform do not inflate the count).
+ *
+ * @returns An object indicating overall validity, how many unique vendors
+ *          verified successfully, and which vendors (if any) failed.
+ */
+export async function verifyMultiTEEQuorum(
+  multi: MultiTEEAttestation
+): Promise<{
+  valid: boolean;
+  verifiedCount: number;
+  failedVendors: string[];
+}> {
+  const { attestations, quorumPolicy } = multi;
+  const required = quorumPolicy.required;
+  const eligibleVendors = new Set(quorumPolicy.vendors);
+
+  const verifiedVendors = new Set<string>();
+  const failedVendors = new Set<string>();
+
+  for (const att of attestations) {
+    // Only consider attestations from vendors listed in the policy.
+    if (!eligibleVendors.has(att.platform)) {
+      continue;
+    }
+
+    // Skip if this vendor already contributed a valid attestation.
+    if (verifiedVendors.has(att.platform)) {
+      continue;
+    }
+
+    const ok = await verifySingleAttestation(att);
+    if (ok) {
+      verifiedVendors.add(att.platform);
+    } else {
+      failedVendors.add(att.platform);
+    }
+  }
+
+  // Determine which eligible vendors did NOT verify.
+  const allFailed: string[] = [];
+  for (const v of eligibleVendors) {
+    if (!verifiedVendors.has(v)) {
+      allFailed.push(v);
+    }
+  }
+
+  return {
+    valid: verifiedVendors.size >= required,
+    verifiedCount: verifiedVendors.size,
+    failedVendors: allFailed,
+  };
+}
+
+/**
+ * Verify a single TEE attestation (format, freshness, measurement).
+ * In production this would call vendor-specific remote attestation
+ * services (e.g. Intel IAS, Azure MAA).
+ */
+async function verifySingleAttestation(att: TEEAttestation): Promise<boolean> {
+  // 1. Check quote format
+  try {
+    const decoded = atob(att.quote);
+    if (!decoded.startsWith('TEE-QUOTE-')) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  // 2. Check freshness (attestation must be less than 1 hour old)
+  const ageMs = Date.now() - new Date(att.timestamp).getTime();
+  if (ageMs > 60 * 60 * 1000) {
+    return false;
+  }
+
+  // 3. Verify measurement is a valid hex SHA-256 hash (64 hex chars)
+  if (!/^[0-9a-f]{64}$/.test(att.measurement)) {
+    return false;
+  }
+
+  // In production: verify the quote against the vendor's remote
+  // attestation service and confirm the measurement matches the
+  // expected enclave binary hash.
+  return true;
 }
 

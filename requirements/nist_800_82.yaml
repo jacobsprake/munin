@@ -1,0 +1,115 @@
+# NIST SP 800-82 Rev 3 Requirements Traceability
+# Maps NIST controls to Munin implementation artifacts
+
+standard: NIST SP 800-82 Rev 3
+title: Guide to Operational Technology (OT) Security
+version: "3"
+
+controls:
+  - id: AC-1
+    family: Access Control
+    title: Policy and Procedures
+    munin_implementation: RBAC policy defined in lib/auth/rbac.ts
+    evidence:
+      - lib/auth/rbac.ts
+      - lib/auth/__tests__/rbac.test.ts
+    status: implemented
+
+  - id: AC-2
+    family: Access Control
+    title: Account Management
+    munin_implementation: User management via API and admin UI
+    evidence:
+      - app/api/auth/users/route.ts
+      - lib/db/schema.ts
+    status: implemented
+
+  - id: AC-3
+    family: Access Control
+    title: Access Enforcement
+    munin_implementation: Role-based permission checks on all API endpoints
+    evidence:
+      - lib/auth/rbac.ts
+      - middleware.ts
+    status: implemented
+
+  - id: AU-2
+    family: Audit and Accountability
+    title: Event Logging
+    munin_implementation: Merkle-chained audit log captures all operations
+    evidence:
+      - lib/audit/auditLog.ts
+      - engine/audit_log.py
+    status: implemented
+
+  - id: AU-3
+    family: Audit and Accountability
+    title: Content of Audit Records
+    munin_implementation: Audit entries include timestamp, actor, action, hash chain
+    evidence:
+      - lib/audit/auditLog.ts
+    status: implemented
+
+  - id: AU-10
+    family: Audit and Accountability
+    title: Non-Repudiation
+    munin_implementation: Ed25519 signatures on audit entries and authorization packets
+    evidence:
+      - lib/audit/ed25519.ts
+      - engine/packetize.py
+    status: implemented
+
+  - id: IA-2
+    family: Identification and Authentication
+    title: Identification and Authentication
+    munin_implementation: Argon2id password hashing, HMAC-SHA256 session tokens
+    evidence:
+      - app/api/auth/login/route.ts
+      - lib/auth/sessions.ts
+    status: implemented
+
+  - id: IR-4
+    family: Incident Response
+    title: Incident Handling
+    munin_implementation: Pre-validated playbooks with cascade simulation
+    evidence:
+      - playbooks/
+      - engine/build_incidents.py
+      - engine/packetize.py
+    status: implemented
+
+  - id: RA-3
+    family: Risk Assessment
+    title: Risk Assessment
+    munin_implementation: Continuous dependency graph analysis and cascade prediction
+    evidence:
+      - engine/infer_graph.py
+      - engine/shadow_simulation.py
+    status: implemented
+
+  - id: SC-7
+    family: System and Communications Protection
+    title: Boundary Protection
+    munin_implementation: Data diode enforces unidirectional data flow
+    evidence:
+      - engine/data_diode.py
+      - middleware.ts
+    status: implemented
+
+  - id: SC-8
+    family: System and Communications Protection
+    title: Transmission Confidentiality and Integrity
+    munin_implementation: Air-gapped deployment, HSTS, CSP headers
+    evidence:
+      - middleware.ts
+      - infra/docker-compose.sovereign.yml
+    status: implemented
+
+  - id: SI-4
+    family: System and Information Integrity
+    title: System Monitoring
+    munin_implementation: Sensor health monitoring and anomaly detection
+    evidence:
+      - engine/sensor_health.py
+      - engine/threshold_monitor.py
+    status: implemented

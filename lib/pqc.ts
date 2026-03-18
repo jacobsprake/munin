@@ -138,4 +138,191 @@ export function getPQCSecurityStatus(): {
   };
 }
 
+// ---------------------------------------------------------------------------
+// PQC Dual-Stack: Classical + Post-Quantum Hybrid Signatures
+// ---------------------------------------------------------------------------
+//
+// ML-DSA (FIPS 204, formerly Dilithium) implementation here is a **demo**
+// that uses SHA-256 simulation.  Production deployment requires liboqs or
+// pqcrypto bindings.  See research/pqc-migration.md for the migration plan.
+//
+// The dual-stack approach follows NIST SP 800-227 (draft) recommendations:
+// sign with both a classical algorithm (Ed25519) and a post-quantum
+// algorithm (ML-DSA-65) so that security holds even if one primitive is
+// broken.  Both signatures must verify for the combined result to be valid.
+// ---------------------------------------------------------------------------
+
+export interface DualSignature {
+  classical: {
+    algorithm: 'Ed25519';
+    signature: string;
+    publicKey: string;
+  };
+  postQuantum: {
+    algorithm: 'ML-DSA-65';
+    signature: string;
+    publicKey: string;
+  };
+}
+
+export interface ClassicalKeyPair {
+  publicKey: string;   // Base64-encoded Ed25519 public key
+  privateKey: string;  // Base64-encoded Ed25519 private key
+}
+
+export interface PQCSigningKeyPair {
+  publicKey: string;   // Base64-encoded ML-DSA-65 public key
+  privateKey: string;  // Base64-encoded ML-DSA-65 private key
+}
+
+/**
+ * Generate a classical Ed25519 key pair (demo: SHA-256 simulation).
+ * Production: use crypto.subtle.generateKey with Ed25519 or libsodium.
+ */
+export async function generateClassicalKeyPair(): Promise<ClassicalKeyPair> {
+  const seed = crypto.getRandomValues(new Uint8Array(32));
+  const pubHash = await crypto.subtle.digest('SHA-256', seed);
+  const privHash = await crypto.subtle.digest(
+    'SHA-256',
+    new Uint8Array([...seed, ...new Uint8Array(pubHash)])
+  );
+
+  return {
+    publicKey: btoa(
+      `ED25519-PUB-${Array.from(new Uint8Array(pubHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`
+    ),
+    privateKey: btoa(
+      `ED25519-PRIV-${Array.from(new Uint8Array(privHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`
+    ),
+  };
+}
+
+/**
+ * Generate an ML-DSA-65 key pair (demo: SHA-256 simulation).
+ *
+ * ML-DSA implementation is demo (SHA-256 simulation).  Production
+ * deployment requires liboqs or pqcrypto bindings.
+ * See research/pqc-migration.md
+ */
+export async function generateMLDSAKeyPair(): Promise<PQCSigningKeyPair> {
+  const seed = crypto.getRandomValues(new Uint8Array(48));
+  const pubHash = await crypto.subtle.digest('SHA-256', seed);
+  const privHash = await crypto.subtle.digest(
+    'SHA-256',
+    new Uint8Array([...seed, ...new Uint8Array(pubHash)])
+  );
+
+  return {
+    publicKey: btoa(
+      `MLDSA65-PUB-${Array.from(new Uint8Array(pubHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`
+    ),
+    privateKey: btoa(
+      `MLDSA65-PRIV-${Array.from(new Uint8Array(privHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')}`
+    ),
+  };
+}
+
+/**
+ * Produce a dual (hybrid) signature over `data` using both Ed25519 and
+ * ML-DSA-65.  Both halves must later verify independently.
+ *
+ * ML-DSA implementation is demo (SHA-256 simulation).  Production
+ * deployment requires liboqs or pqcrypto bindings.
+ * See research/pqc-migration.md
+ */
+export async function signDual(
+  data: string,
+  classicalKeyPair: ClassicalKeyPair,
+  pqcKeyPair: PQCSigningKeyPair
+): Promise<DualSignature> {
+  const dataBytes = new TextEncoder().encode(data);
+
+  // --- Classical Ed25519 signature (simulated) ---
+  const classicalInput = new TextEncoder().encode(
+    `Ed25519-SIGN:${classicalKeyPair.privateKey}:${data}`
+  );
+  const classicalHash = await crypto.subtle.digest('SHA-256', classicalInput);
+  const classicalSig = btoa(
+    `ED25519-SIG-${Array.from(new Uint8Array(classicalHash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')}`
+  );
+
+  // --- Post-quantum ML-DSA-65 signature (simulated via SHA-256) ---
+  const pqcInput = new TextEncoder().encode(
+    `MLDSA65-SIGN:${pqcKeyPair.privateKey}:${data}`
+  );
+  const pqcHash = await crypto.subtle.digest('SHA-256', pqcInput);
+  const pqcSig = btoa(
+    `MLDSA65-SIG-${Array.from(new Uint8Array(pqcHash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')}`
+  );
+
+  return {
+    classical: {
+      algorithm: 'Ed25519',
+      signature: classicalSig,
+      publicKey: classicalKeyPair.publicKey,
+    },
+    postQuantum: {
+      algorithm: 'ML-DSA-65',
+      signature: pqcSig,
+      publicKey: pqcKeyPair.publicKey,
+    },
+  };
+}
+
+/**
+ * Verify a dual signature.  **Both** the classical and post-quantum halves
+ * must verify for the combined result to be considered valid.
+ *
+ * ML-DSA implementation is demo (SHA-256 simulation).  Production
+ * deployment requires liboqs or pqcrypto bindings.
+ * See research/pqc-migration.md
+ */
+export async function verifyDual(
+  data: string,
+  dualSig: DualSignature
+): Promise<boolean> {
+  // --- Verify classical Ed25519 half ---
+  try {
+    const decodedClassical = atob(dualSig.classical.signature);
+    if (!decodedClassical.startsWith('ED25519-SIG-')) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+  if (dualSig.classical.algorithm !== 'Ed25519') {
+    return false;
+  }
+
+  // --- Verify post-quantum ML-DSA-65 half ---
+  try {
+    const decodedPQC = atob(dualSig.postQuantum.signature);
+    if (!decodedPQC.startsWith('MLDSA65-SIG-')) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+  if (dualSig.postQuantum.algorithm !== 'ML-DSA-65') {
+    return false;
+  }
+
+  // Both halves passed format verification.
+  // In production the actual Ed25519 / ML-DSA-65 verification would happen
+  // here using the respective public keys and raw signature bytes.
+  return true;
+}
+
 

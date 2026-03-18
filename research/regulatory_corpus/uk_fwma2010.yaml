@@ -1,0 +1,36 @@
+statute_id: UK-FWMA-2010
+title: Flood and Water Management Act 2010
+jurisdiction: UK
+type: primary_legislation
+url: https://www.legislation.gov.uk/ukpga/2010/29/contents
+
+relevant_sections:
+  - section: "Section 1"
+    title: "National flood and coastal erosion risk management strategy"
+    summary: "Environment Agency must develop and maintain a strategy for managing flood and coastal erosion risk."
+    munin_mapping: "Munin's dependency graph and cascade simulation support strategic risk assessment."
+
+  - section: "Section 9"
+    title: "Local flood risk management strategies"
+    summary: "Lead local flood authorities must develop local strategies."
+    munin_mapping: "Munin playbooks can be tailored to local flood risk management strategies."
+
+  - section: "Section 19"
+    title: "Investigations into flooding"
+    summary: "Lead local flood authorities must investigate significant flood events."
+    munin_mapping: "Munin's audit trail and evidence windows provide data for post-flood investigations."
+
+  - section: "Schedule 1"
+    title: "Risk management authorities"
+    summary: "Defines risk management authorities and their responsibilities."
+    munin_mapping: "Munin's M-of-N signing maps to authority responsibilities for cross-agency coordination."
+
+authorities:
+  - name: "Environment Agency"
+    role: "Strategic overview of flood risk management"
+  - name: "Lead Local Flood Authorities"
+    role: "Local flood risk management"
+  - name: "Internal Drainage Boards"
+    role: "Water level management in specific areas"
+  - name: "Water and sewerage companies"
+    role: "Surface water drainage"

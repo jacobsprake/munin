@@ -1,0 +1,128 @@
+# ==========================================================================
+# Munin Constitutional Constraints
+# ==========================================================================
+#
+# These constraints are inviolable.  No playbook, operator override, or
+# automated action may contravene them.  They are enforced by the
+# safety_guard engine and audited on every decision cycle.
+#
+# Last reviewed : 2026-03-18
+# Review cadence: 90 days (see sunset_clause below)
+# ==========================================================================
+
+version: "1.0"
+effective_date: "2026-03-18"
+
+constraints:
+
+  # ------------------------------------------------------------------------
+  # 1. Life-safety takes absolute precedence
+  # ------------------------------------------------------------------------
+  life_safety_priority:
+    id: CONST-001
+    summary: >
+      Life-critical services (drinking water supply, flood defences,
+      emergency power) are always prioritised over economic or
+      operational concerns.  No optimisation objective may reduce the
+      safety margin of a life-critical system.
+    enforcement: hard
+    applies_to: all_playbooks
+    examples:
+      - "Never reduce flood barrier capacity to save energy costs."
+      - "Emergency water supply must not be interrupted for maintenance scheduling."
+
+  # ------------------------------------------------------------------------
+  # 2. Mandatory human approval
+  # ------------------------------------------------------------------------
+  mandatory_human_approval:
+    id: CONST-002
+    summary: >
+      No irreversible or safety-relevant action may be executed without
+      explicit human sign-off.  The system may recommend, pre-stage, and
+      prepare — but a qualified human operator must authorise execution.
+    enforcement: hard
+    applies_to: all_playbooks
+    minimum_approval_roles:
+      - control_room_operator
+      - shift_supervisor
+    timeout_behaviour: >
+      If no human approval is received within the configured window the
+      action is escalated, never auto-executed.
+
+  # ------------------------------------------------------------------------
+  # 3. No redundant-system simultaneous isolation
+  # ------------------------------------------------------------------------
+  no_redundant_isolation:
+    id: CONST-003
+    summary: >
+      The system must never recommend or permit the simultaneous
+      isolation, shutdown, or disabling of redundant components that
+      together provide a single safety function.  At least one
+      redundant path must remain operational at all times.
+    enforcement: hard
+    applies_to: all_playbooks
+    examples:
+      - "Never isolate both backup pumps serving the same catchment."
+      - "Never disable both independent power feeds to a treatment works."
+
+  # ------------------------------------------------------------------------
+  # 4. Non-discrimination in response priorities
+  # ------------------------------------------------------------------------
+  non_discrimination:
+    id: CONST-004
+    summary: >
+      Response priorities must be determined solely by objective risk
+      assessment — population at risk, probability of harm, severity of
+      consequences — and never by political, commercial, or demographic
+      considerations.
+    enforcement: hard
+    applies_to: all_playbooks
+    audit_fields:
+      - risk_score
+      - population_at_risk
+      - consequence_severity
+      - justification_text
+
+  # ------------------------------------------------------------------------
+  # 5. Transparency of evidence and uncertainty
+  # ------------------------------------------------------------------------
+  transparency:
+    id: CONST-005
+    summary: >
+      Every recommendation produced by the system must include:
+        (a) the evidence on which it is based (sensor readings, model
+            outputs, historical precedents);
+        (b) a quantified or qualified statement of uncertainty;
+        (c) the reasoning chain that led from evidence to recommendation.
+      Recommendations without supporting evidence are prohibited.
+    enforcement: hard
+    applies_to: all_playbooks
+    required_fields:
+      - evidence_sources
+      - uncertainty_estimate
+      - reasoning_chain
+
+  # ------------------------------------------------------------------------
+  # 6. Sunset clause — playbook expiry and re-validation
+  # ------------------------------------------------------------------------
+  sunset_clause:
+    id: CONST-006
+    summary: >
+      Every playbook has a maximum validity period.  If a playbook is
+      not explicitly reviewed and re-validated before its expiry date
+      it is automatically disabled and flagged for review.  This
+      prevents stale logic from persisting in the decision engine.
+    enforcement: hard
+    applies_to: all_playbooks
+    default_validity_days: 180
+    grace_period_days: 14
+    on_expiry: disable_and_alert
+    alert_recipients:
+      - playbook_owner
+      - safety_review_board
+
+# ==========================================================================
+# Meta: These constraints are themselves subject to formal review.
+# Amendments require sign-off from the Safety Review Board and must be
+# recorded in the audit ledger with full justification.
+# ==========================================================================
