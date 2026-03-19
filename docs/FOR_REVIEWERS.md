@@ -30,8 +30,9 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-You'll see the government-grade login screen with classification banners.
-Create an operator via `POST /api/auth/users` (or use the Users page when logged in as admin), then authenticate with Operator ID and passphrase to access the command interface.
+**Demo credentials:** `flood_officer_01` / `demo` (run `npm run seed:demo` with the server up to create if needed).
+
+You'll see the government-grade login screen with classification banners. Log in with the demo operator to access the command interface.
 
 ---
 
@@ -131,7 +132,7 @@ See `engine/infer_graph.py` for the algorithm and `engine/sensor_health.py` for 
 | Zero-trust | `lib/zeroTrust.ts` |
 | Ministry API | `app/api/ministries/route.ts` |
 | Session auth | `lib/auth/sessions.ts` |
-| 44 test suites (216 tests) | `npm test` |
+| 49 test suites (246 tests) | `npm test` |
 | 59 Python tests | `PYTHONPATH=engine pytest engine/tests/` |
 
 ---

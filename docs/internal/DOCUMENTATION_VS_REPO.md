@@ -36,4 +36,4 @@ This note records what is documented in Munin docs (README, ARCHITECTURE, FOR_RE
 
 - When adding a **new documented feature**, add the corresponding file or stub and note it here if it’s a key user-facing item.
 - When **removing or renaming** a file that docs reference, update the doc and this checklist.
-- After major doc updates, re-run a quick scan: grep for `engine/`, `app/`, `components/`, `scripts/`, `playbooks/`, `research/`, `docs/` in README and ARCHITECTURE and confirm paths exist.
+- After major doc updates, re-run: `./scripts/check_docs.sh` to validate documented paths exist.

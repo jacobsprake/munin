@@ -12,6 +12,7 @@
     "connectors": "PYTHONPATH=engine python engine/connector_runner.py --once",
     "connectors:continuous": "PYTHONPATH=engine python engine/connector_runner.py --interval 300",
     "demo": "node scripts/run_engine.js && echo 'Engine done. Run: npm run dev'",
+    "demo:full": "./scripts/demo_full.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
