@@ -25,6 +25,14 @@ pip install pandas numpy pyyaml
 
 This runs the full pipeline — ingest, graph inference, cascade simulation, playbook matching, packet generation — and produces a self-contained report at `engine/out/demo_carlisle/report.md`. See [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
 
+### Web demo (with UI)
+
+```bash
+./demo.sh --full   # or: npm run demo:full
+# Runs engine, starts dev server, seeds demo operator. Open http://localhost:3000
+# Login: flood_officer_01 / demo
+```
+
 ## What to look at next
 
 | If you have... | Start here |

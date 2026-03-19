@@ -14,6 +14,7 @@ import { useAppStore } from '@/lib/store';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Search, Filter, Download } from 'lucide-react';
+import CoordinationLatencyCard from '@/components/CoordinationLatencyCard';
 
 function HandshakesContent() {
   const [packets, setPackets] = useState<HandshakePacket[]>([]);
@@ -166,8 +167,10 @@ function HandshakesContent() {
       rightPanelCollapsed={false}
     >
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Controls */}
-        <div className="p-4 border-b border-base-700 flex items-center gap-3">
+        {/* Coordination latency + Controls */}
+        <div className="p-4 border-b border-base-700 space-y-3">
+          <CoordinationLatencyCard packets={packets} />
+          <div className="flex items-center gap-3">
           <div className="flex-1 flex items-center gap-2 bg-base-800 border border-base-700 rounded px-3 py-2">
             <Search className="w-4 h-4 text-text-muted" />
             <input
@@ -201,6 +204,7 @@ function HandshakesContent() {
           <button className="bg-base-800 border border-base-700 rounded px-3 py-2 hover:bg-base-750">
             <Filter className="w-4 h-4 text-text-secondary" />
           </button>
+          </div>
         </div>
 
         {/* Table */}

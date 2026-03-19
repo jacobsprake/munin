@@ -64,16 +64,19 @@ export default function DemoPathPage() {
 
           <div className="flex flex-wrap gap-4">
             <Link href="/graph">
-              <Button>Open dependency graph (Shadow Links)</Button>
+              <Button>1. Dependency graph (Shadow Links)</Button>
+            </Link>
+            <Link href="/simulation">
+              <Button variant="outline">2. Simulation & cascade</Button>
+            </Link>
+            <Link href="/handshakes">
+              <Button variant="outline">3. Handshakes (packets + sign-off)</Button>
             </Link>
             <Link href="/demos">
               <Button variant="outline">Disaster demos (Katrina, Fukushima, UK)</Button>
             </Link>
             <Link href="/carlisle-dashboard">
               <Button variant="outline">Carlisle flood dashboard</Button>
-            </Link>
-            <Link href="/simulation">
-              <Button variant="outline">Simulation & handshakes</Button>
             </Link>
           </div>
 

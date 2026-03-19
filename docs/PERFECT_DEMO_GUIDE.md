@@ -10,8 +10,11 @@
 
 ## 🚀 For reviewers (shortest path)
 
+**Option A – One command:** `./demo.sh --full` (runs engine, starts server, seeds operator). Open http://localhost:3000, login `flood_officer_01` / `demo`.
+
+**Option B – Manual:**
 1. Run `npm run engine` then `npm run dev`. Run `npm run seed:demo` (with server up) to create demo operator.
-2. Open `http://localhost:3000`. Log in (e.g. `flood_officer_01` / `demo`).
+2. Open `http://localhost:3000`. Log in (`flood_officer_01` / `demo`).
 3. Go to `/demo-path` for thesis flow, or directly to `/graph` (Shadow Links), `/demos` (disaster timelines), `/carlisle-dashboard` (flood metrics), `/handshakes` (packets + packet diff viewer).
 
 See [FOR_REVIEWERS.md](FOR_REVIEWERS.md) for one-page summary and CLI path.
