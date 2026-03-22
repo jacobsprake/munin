@@ -341,7 +341,9 @@ See also: [SAFETY_ANALYSIS_STPA.md](docs/SAFETY_ANALYSIS_STPA.md), [IEC62443_MAP
 
 **All Rights Reserved. Evaluation License Only.**
 
-This software and associated documentation are proprietary and confidential. This repository is provided for evaluation and demonstration purposes only. Commercial use, production deployment, or integration into operational systems requires explicit written authorization. See the [LICENSE](./LICENSE) file.
+This software and associated documentation are proprietary and confidential. This repository is provided for evaluation and demonstration purposes only. Commercial use, production deployment, or integration into operational systems requires explicit written authorization.
+
+**Commercial licensing available** — contact jacob@sprake.co for government procurement, pilot programs, and enterprise licensing. See the [LICENSE](./LICENSE) file.
 
 ---
 

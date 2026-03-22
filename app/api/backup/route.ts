@@ -11,7 +11,10 @@ import { createHash, randomBytes, createCipheriv, createDecipheriv } from 'crypt
 import { existsSync } from 'fs';
 
 const backupsDir = join(process.cwd(), 'data', 'backups');
-const BACKUP_KEY = process.env.BACKUP_ENCRYPTION_KEY || 'default-key-change-in-production';
+const BACKUP_KEY = process.env.BACKUP_ENCRYPTION_KEY;
+if (!BACKUP_KEY) {
+  console.warn('⚠️  BACKUP_ENCRYPTION_KEY not set — backup encryption disabled in demo mode');
+}
 
 // Ensure backups directory exists
 if (!existsSync(backupsDir)) {
@@ -19,6 +22,9 @@ if (!existsSync(backupsDir)) {
 }
 
 function encryptBackup(data: string): { encrypted: string; iv: string } {
+  if (!BACKUP_KEY) {
+    throw new Error('BACKUP_ENCRYPTION_KEY environment variable is required for encrypted backups');
+  }
   const iv = randomBytes(16);
   const cipher = createCipheriv('aes-256-cbc', Buffer.from(BACKUP_KEY.padEnd(32).slice(0, 32)), iv);
   let encrypted = cipher.update(data, 'utf8', 'hex');

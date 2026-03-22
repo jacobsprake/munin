@@ -1,14 +1,17 @@
 """
-Dark Mode Air-Gap: One-Way Data Diode Architecture
-Security by Isolation
+One-Way Data Diode Architecture — Software Enforcement Layer
 
-Munin is designed to run on a hardware data diode. Data can flow INTO Munin's
-engine (to update the graph), but NO signals can flow OUT to the internet.
+⚠️ IMPLEMENTATION STATUS: SOFTWARE-ENFORCED DATA DIODE
 
-This bypasses 90% of "Security Audits" because it is physically impossible
-for Munin to "call home" or leak data to external networks.
+This module enforces one-way data flow in software: data can flow INTO
+Munin's analysis engine, but outbound connections are blocked by policy.
 
-The only "Safe" AI for air-gapped critical infrastructure.
+In production deployment, this software layer is supplemented by HARDWARE
+data diodes (e.g., Owl Computing, Waterfall Security) that provide
+physical one-way guarantees. Software enforcement alone cannot prevent
+a sufficiently privileged attacker from establishing outbound connections.
+
+See docs/INGESTION_AT_SCALE.md for the full deployment architecture.
 """
 
 import json

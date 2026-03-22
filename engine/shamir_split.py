@@ -200,7 +200,7 @@ if __name__ == "__main__":
     print("[PASS] GF(256) arithmetic")
 
     # --- Basic split / reconstruct ---
-    secret = b"MUNIN-MASTER-KEY-2026"
+    secret = b"TEST-SECRET-DO-NOT-USE"
     n, k = 5, 3
     shares = split_secret(secret, n, k)
     assert len(shares) == n
