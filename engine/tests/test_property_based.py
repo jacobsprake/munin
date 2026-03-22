@@ -199,7 +199,7 @@ class TestSensorHealthProperties:
         result = detect_missingness(series, threshold=0.1)
         actual_ratio = np.sum(mask) / n_samples
         if actual_ratio > 0.1:
-            assert result is True, (
+            assert bool(result) is True, (
                 f"Expected missingness detection with ratio {actual_ratio:.2f}"
             )
 
@@ -216,7 +216,7 @@ class TestSensorHealthProperties:
         values = np.full(n_samples, constant_value) + rng.normal(0, 1e-8, n_samples)
         series = pd.Series(values)
 
-        assert detect_stuck_at(series) is True, (
+        assert bool(detect_stuck_at(series)) is True, (
             f"Expected stuck-at detection for near-constant series "
             f"(var={series.var():.2e})"
         )
@@ -232,7 +232,7 @@ class TestSensorHealthProperties:
         values = rng.randn(n_samples) * 10 + 100
         series = pd.Series(values)
 
-        assert detect_stuck_at(series) is False, (
+        assert bool(detect_stuck_at(series)) is False, (
             f"False positive: healthy sensor flagged as stuck "
             f"(var={series.var():.2f})"
         )

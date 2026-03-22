@@ -1,12 +1,19 @@
 /**
- * Post-Quantum Cryptography (PQC) Implementation
- * 2026 Reality Feature: Quantum-Resistant Handshakes
- * 
- * Uses NIST FIPS 203 (Kyber) and FIPS 204 (Dilithium) algorithms
- * for quantum-resistant cryptographic operations.
- * 
- * Note: This is a demo implementation. In production, use a proper
- * PQC library like pqc-js or liboqs.
+ * ⚠️ PQC IMPLEMENTATION STATUS: ARCHITECTURAL PLACEHOLDER
+ *
+ * This module defines the interface for FIPS 204 (ML-DSA-65) post-quantum
+ * cryptographic signing. The current implementation uses SHA-256 as a
+ * structural placeholder — it is NOT quantum-resistant.
+ *
+ * Production path: Replace with liboqs Node.js bindings (oqs-provider)
+ * or pqcrypto-js when available. The interface is designed for drop-in
+ * replacement — all callers use generatePQCKeyPair(), signWithPQC(),
+ * and verifyPQCSignature() which will not change.
+ *
+ * Classical cryptography (Ed25519) IS production-ready and used for
+ * all current signing operations.
+ *
+ * See: docs/PQC_ROADMAP.md for integration timeline
  */
 
 export interface PQCKeyPair {

@@ -17,23 +17,47 @@ def detect_missingness(series: pd.Series, threshold: float = 0.1) -> bool:
     missing_ratio = series.isna().sum() / len(series)
     return missing_ratio > threshold
 
-def detect_stuck_at(series: pd.Series, threshold: float = 0.01) -> bool:
+def detect_stuck_at(series: pd.Series, threshold: float = 0.01, window_fraction: float = 0.2) -> bool:
     """
     Detect if series variance is near zero (stuck sensor).
-    
+
+    Checks both the full series and rolling windows so that partial
+    stuck-at conditions (e.g. adversarial injection on a sub-range)
+    are also detected.
+
     Threshold rationale:
     - CV < 0.01: Sensor likely stuck at constant value
     - Realistic SCADA sensors show CV > 0.05 even for stable processes
     - Stuck sensors create spurious correlations with other stuck sensors
     """
-    if len(series.dropna()) < 10:
+    clean = series.dropna()
+    if len(clean) < 10:
         return True
-    variance = series.var()
-    mean_abs = series.abs().mean()
+    variance = clean.var()
+    mean_abs = clean.abs().mean()
     if mean_abs == 0:
         return True
     cv = variance / (mean_abs + 1e-10)  # Coefficient of variation
-    return cv < threshold
+    if cv < threshold:
+        return True
+
+    # Check for partial stuck-at using rolling windows of varying sizes.
+    # Use progressively smaller windows to catch short stuck-at segments.
+    window_sizes = sorted(set([
+        max(10, int(len(clean) * window_fraction)),
+        max(10, int(len(clean) * window_fraction / 2)),
+        max(10, int(len(clean) * window_fraction / 4)),
+        10,
+    ]), reverse=True)
+    for window_size in window_sizes:
+        rolling_var = clean.rolling(window=window_size, min_periods=window_size).var()
+        valid_vars = rolling_var.dropna()
+        if len(valid_vars) > 0:
+            min_window_cv = float(valid_vars.min()) / (mean_abs + 1e-10)
+            if min_window_cv < threshold:
+                return True
+
+    return False
 
 def detect_drift(series: pd.Series, window_size: int = 10, multiplier: float = 2.0) -> bool:
     """

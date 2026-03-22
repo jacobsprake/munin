@@ -1,18 +1,19 @@
 /**
- * Trusted Execution Environment (TEE) Implementation
- * 2026 Reality Feature: Hardware-Rooted Truth + Logic-Lock
- * 
- * Uses hardware-level enclaves (Intel SGX, ARM TrustZone) to process
- * Authoritative Handshakes. Even with root access, commands cannot be
- * faked or audit logs altered.
- * 
- * Logic-Lock Integration: The TEE validates commands against physics
- * constraints before signing. If a command violates the laws of physics
- * (e.g., spinning a turbine too fast), the TEE refuses to sign it, making
- * it physically impossible to execute the command even with root access.
- * 
- * This provides Mathematical Certainty - a competitive advantage that cannot
- * be replicated by software-only solutions.
+ * ⚠️ TEE IMPLEMENTATION STATUS: SOFTWARE FALLBACK
+ *
+ * This module defines the interface for Trusted Execution Environment
+ * (TEE) attestation and Logic-Lock validation. The current implementation
+ * runs entirely in SOFTWARE_FALLBACK mode — constraints are enforced in
+ * regular process memory, not in a hardware enclave.
+ *
+ * A compromised operating system could theoretically bypass Logic-Lock
+ * constraints in the current implementation.
+ *
+ * Production path: Intel SGX via Open Enclave SDK, AMD SEV via sev-tool,
+ * ARM TrustZone via OP-TEE. The interface supports multi-vendor attestation
+ * quorum (2-of-3 vendors) for sovereignty over foreign hardware.
+ *
+ * See: docs/TEE_ROADMAP.md for hardware integration plan
  */
 
 export type TEEPlatform = 'INTEL_SGX' | 'ARM_TRUSTZONE' | 'AMD_SEV' | 'SOFTWARE_FALLBACK';

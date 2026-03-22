@@ -478,7 +478,267 @@ infrastructure for the following reasons:
 
 ---
 
-## 9. Document Cross-References
+## 9. STRIDE Analysis
+
+This section applies the STRIDE framework to the Munin architecture,
+enumerating threats by category and mapping each to architectural mitigations
+already present in the system design.
+
+### 9.1 Spoofing
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| S-1: Ministry signature forgery | An adversary forges a ministry-level approval signature to authorise an illegitimate configuration change or policy override. | All ministry actions require Ed25519 digital signatures verified against a pre-enrolled public key set. Configuration changes further require M-of-N quorum approval (`engine/byzantine_resilience.py`), ensuring no single compromised key can authorise action. |
+| S-2: Sensor identity spoofing | An adversary injects fabricated sensor data into the ingestion pipeline by impersonating a legitimate field device. | The hardware data diode (`engine/data_diode.py`) constrains the ingestion path to a single physically authenticated fibre link. Sensor frames are validated against registered device identifiers and checksums at the diode boundary. No arbitrary network source can reach the ingestion interface. |
+| S-3: Operator impersonation | An adversary assumes the identity of a legitimate operator to access the Munin console and influence situational awareness. | Operator authentication uses Argon2id password hashing (`lib/auth/`) with per-session tokens (`lib/auth/sessions.ts`). Role-based access control (`lib/auth/rbac.ts`) limits each authenticated session to the minimum privilege set required. Session tokens are bound to origin and expire on a policy-defined schedule. |
+
+### 9.2 Tampering
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| T-1: Packet modification in transit | An adversary modifies data packets between the diode interface and the analysis engine to alter sensor readings or metadata. | All ingested data frames are incorporated into a Merkle hash chain (`lib/merkle.ts`) at the point of ingestion. Any subsequent modification invalidates the chain and is detected by the independent verification module (`lib/audit/auditLogVerification.ts`). |
+| T-2: Engine logic manipulation | An adversary modifies the inference engine, Logic-Lock constraints, or playbook definitions to bias analysis outputs. | The analysis engine operates within an air-gapped zone with no inbound network management path. Code changes require two-person review and Byzantine quorum approval. CI safety tests and property-based tests verify engine invariants before deployment. |
+| T-3: Evidence alteration | An adversary retroactively modifies audit log entries to conceal malicious activity or fabricate a false operational history. | The audit log is append-only, with each entry cryptographically chained via Merkle tree construction (`lib/merkle.ts`) and signed with Ed25519 keys stored in HSM (`lib/audit/keyManagement.ts`). Any modification to a historical entry breaks the chain, and gap detection identifies missing entries. |
+
+### 9.3 Repudiation
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| R-1: Ministry denial of authorisation | A ministry authority denies having authorised a configuration change or policy override after the fact. | All quorum-protected actions record the full set of Ed25519 signatures, timestamps, and action descriptions in the immutable audit chain. The Merkle chain provides tamper-evident proof that the signatures were present at the recorded time. |
+| R-2: Operator denial of action | An operator denies having acknowledged, dismissed, or acted upon a recommendation displayed by the Munin console. | All UI interactions with recommendations, alerts, and advisory outputs are logged with operator identity, timestamp, and action type. Interaction logs are incorporated into the Merkle-chained audit trail and signed. |
+| R-3: Collector denial of data submission | A data collection point denies having submitted a particular sensor reading or telemetry frame. | All data frames received through the diode interface carry source-signed metadata. Frame signatures, sequence numbers, and timestamps are recorded at ingestion and incorporated into the provenance tracking system (`engine/provenance_tracker.py`). |
+
+### 9.4 Information Disclosure
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| I-1: Infrastructure dependency map exposure | An adversary obtains Munin's causal graph outputs, revealing dependency relationships between critical infrastructure components. | Munin operates in an air-gapped zone with no outbound network connectivity. No cloud services, telemetry endpoints, or external APIs are reachable from the deployment environment. CSP headers (`middleware.ts`) enforce `connect-src 'self'`. Physical exfiltration controls (USB port disable, physical access logging) further constrain data removal. |
+| I-2: Sensor telemetry disclosure | An adversary extracts raw SCADA telemetry data ingested by Munin, revealing operational parameters of the underlying infrastructure. | The Munin zone maintains no outbound network path. Telemetry data resides in runtime memory and temporary storage within the air-gapped zone. RBAC (`lib/auth/rbac.ts`) restricts data access by role, and all data access events are audit-logged. |
+| I-3: Packet content exposure across jurisdictions | In multi-site deployments, an adversary gains access to packet data from a jurisdiction outside their authorisation. | Jurisdiction isolation is enforced at the deployment architecture level: each jurisdiction operates an independent Munin instance with no cross-instance data sharing. All data at rest is encrypted. Packet type definitions (`lib/packet/types.ts`) carry jurisdiction metadata for access control enforcement. |
+
+### 9.5 Denial of Service
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| D-1: Simulation overload | An adversary or fault condition triggers computationally expensive graph inference operations that exhaust system resources, rendering Munin unresponsive during a critical event. | Resource caps are enforced on inference execution. Backpressure management (`engine/data_ingestion_status.py`) throttles ingestion when processing capacity is saturated. N-version programming (`engine/n_version_programming.py`) provides fallback inference paths. Health monitoring (`app/api/health/`) detects resource exhaustion and triggers alerting. |
+| D-2: Sensor data flood | An adversary or malfunctioning device generates high-volume data through the diode interface, overwhelming the ingestion pipeline. | Rate limiting is enforced at the diode ingestion boundary (`engine/data_diode.py`). Backpressure management drops excess frames with audit logging. The hardware diode's fixed bandwidth provides an inherent upper bound on ingestion rate. |
+| D-3: Key ceremony disruption | An adversary disrupts the key generation or rotation ceremony, preventing the system from maintaining cryptographic operations. | Signing keys are generated offline in a physically secured environment. Shamir secret sharing provides backup key recovery without single-point-of-failure risk. Key rotation procedures are documented in the operations runbook (`docs/OPERATIONS_RUNBOOK.md`) with contingency procedures for ceremony interruption. |
+
+### 9.6 Elevation of Privilege
+
+| Threat | Description | Mitigation |
+|--------|-------------|------------|
+| E-1: Role impersonation | An adversary with low-privilege access escalates to a higher role (e.g., Analyst to Administrator) to perform unauthorised actions. | RBAC (`lib/auth/rbac.ts`) enforces role separation with distinct session tokens per role. Role assignment requires quorum approval. Session tokens encode role claims and are validated at every API boundary (`middleware.ts`). |
+| E-2: Read-only mode escape | An adversary attempts to enable write capabilities in the analysis engine, circumventing the advisory-only design constraint. | The `WRITE_ACCESS_ENABLED` flag is permanently set to `false` and enforced by the safety guard (`engine/safety_guard.py`). Static analysis in the CI pipeline verifies that no code path can set this flag to `true`. The packet type system (`lib/packet/types.ts`) prevents construction of command-type packets at the type level. |
+| E-3: Collector-to-enclave escalation | An adversary who has compromised a data collection point at Level 3 attempts to use the diode link to gain execution capability within the Munin analysis zone. | The hardware data diode provides a physically unidirectional link with no return path. The diode software interface (`engine/data_diode.py`) treats all received data as untrusted input, applying strict parsing, validation, and sandboxed processing. No control channel, shell protocol, or remote execution interface exists on the diode link. |
+
+---
+
+## 10. Extended Attacker Profiles
+
+This section expands upon the attacker profiles defined in Section 3 with
+detailed capability assessments, strategic objectives, and comprehensive
+mitigation strategies for each adversary class.
+
+### 10.1 Nation-State Advanced Persistent Threat (APT)
+
+**Capabilities**:
+
+- Dedicated offensive cyber units with multi-year operational timelines and
+  substantial state funding.
+- Zero-day vulnerability stockpiles across operating systems, embedded firmware,
+  and application-layer software.
+- Custom implant development with anti-forensics capabilities, including
+  firmware-level persistence and fileless malware.
+- Human intelligence (HUMINT) operations for insider recruitment, social
+  engineering, and physical interdiction of hardware supply chains.
+- Signals intelligence (SIGINT) capabilities including passive network
+  monitoring and side-channel analysis.
+- Capability to conduct coordinated multi-domain operations combining cyber,
+  physical, and information warfare.
+
+**Strategic Goals**:
+
+1. **Pre-positioning**: Establish persistent access to critical infrastructure
+   monitoring systems for activation during geopolitical escalation.
+2. **Intelligence collection**: Exfiltrate infrastructure dependency maps,
+   operational patterns, and vulnerability assessments to inform kinetic or
+   cyber targeting.
+3. **Confidence degradation**: Undermine operator trust in Munin's
+   recommendations during a coordinated attack, delaying defensive response.
+4. **Attribution obfuscation**: Conduct operations through intermediary
+   infrastructure and false-flag techniques to complicate attribution.
+
+**Mitigations**:
+
+- Air-gapped deployment eliminates remote access vectors entirely. No internet
+  connectivity exists to the Munin analysis zone.
+- Hardware data diode prevents lateral movement from OT networks into the
+  Munin zone and eliminates any return path for command-and-control.
+- Sovereign build pipeline (`engine/eurostack_sovereign.py`) with reproducible
+  builds, dependency hash verification, and SBOM generation reduces supply
+  chain attack surface.
+- Byzantine quorum (`engine/byzantine_resilience.py`) requires compromise of
+  M-of-N independent key holders, distributed across separate organisational
+  units and geographic locations.
+- Merkle-chained audit trail with HSM-backed signatures provides
+  tamper-evident logging that survives individual node compromise.
+- Physical security controls at the deployment site constrain HUMINT-enabled
+  physical access operations.
+
+### 10.2 Malicious Insider
+
+**Capabilities**:
+
+- Legitimate credentials with an assigned role (Operator, Analyst, or
+  Administrator) within the Munin deployment.
+- Physical access to the deployment zone, including the analysis servers, HSM
+  hardware, and operator consoles.
+- Institutional knowledge of system architecture, operational procedures, and
+  security controls.
+- Ability to act over extended periods, establishing patterns of legitimate
+  activity before executing malicious actions.
+- Potential access to documentation, source code repositories, and internal
+  communications describing system limitations.
+
+**Strategic Goals**:
+
+1. **Sabotage**: Suppress or manipulate critical recommendations during an
+   infrastructure event to delay or misdirect operator response.
+2. **Data exfiltration**: Extract infrastructure telemetry, causal graph
+   outputs, or vulnerability assessments for sale or transfer to external
+   adversaries.
+3. **Audit trail manipulation**: Conceal evidence of malicious activity by
+   corrupting or suppressing audit entries.
+4. **Credential theft**: Harvest credentials or key material for transfer to
+   external threat actors.
+
+**Mitigations**:
+
+- RBAC (`lib/auth/rbac.ts`) enforces least privilege, ensuring each role
+  accesses only the data and functions required for its duties.
+- Byzantine quorum for critical operations prevents any single insider from
+  unilaterally executing configuration changes, key rotations, or system
+  shutdowns.
+- Merkle-chained audit logging records all operator interactions, data access
+  events, and administrative actions with cryptographic integrity guarantees
+  that persist even if the insider holds an Administrator role.
+- Separation of duties ensures that the individual who authors a change cannot
+  be the sole approver.
+- Physical exfiltration controls (USB port disable, removable media policy,
+  physical access logging) constrain data removal from the air-gapped zone.
+- Behavioural monitoring and periodic access reviews detect anomalous patterns
+  of system usage.
+
+### 10.3 Compromised Supply Chain
+
+**Capabilities**:
+
+- Ability to inject malicious code into software dependencies (Python packages,
+  Node.js modules, system libraries) consumed by the Munin build pipeline.
+- Ability to compromise build tools, compilers, or container base images used
+  in the Munin deployment process.
+- Potential for hardware-level implants in server components, HSM devices, or
+  data diode hardware.
+- Sophisticated obfuscation techniques that pass superficial code review,
+  including typosquatting, dependency confusion, and conditional payload
+  activation.
+- Long dwell times: compromised components may remain dormant for months or
+  years before activation.
+
+**Strategic Goals**:
+
+1. **Backdoor insertion**: Establish persistent access to the Munin analysis
+   engine that survives software updates and security audits.
+2. **Inference manipulation**: Introduce subtle biases into graph inference
+   algorithms that degrade recommendation quality without triggering obvious
+   anomalies.
+3. **Covert exfiltration**: Embed data exfiltration routines that encode
+   sensitive information into seemingly normal system outputs or timing
+   patterns.
+4. **Cascading compromise**: Use Munin as an entry point to compromise the
+   broader operational environment (mitigated by air-gap and data diode).
+
+**Mitigations**:
+
+- Dependency pinning with cryptographic hash verification ensures that no
+  package can be substituted or modified without detection.
+- Reproducible builds enable independent verification that compiled artefacts
+  correspond to audited source code.
+- Sovereign build pipeline (`engine/eurostack_sovereign.py`) constructs
+  deployment artefacts in a controlled, air-gapped environment.
+- SBOM (Software Bill of Materials) generation provides a complete inventory
+  of all software components for vulnerability tracking and provenance
+  verification.
+- Hardware procurement follows established supply chain security procedures
+  with tamper-evident packaging and vendor attestation.
+- Property-based testing and formal verification of critical engine invariants
+  detect behavioural deviations introduced by compromised components.
+
+### 10.4 Quantum Adversary (10--15 Year Horizon)
+
+**Capabilities**:
+
+- Access to a cryptographically relevant quantum computer (CRQC) capable of
+  executing Shor's algorithm against currently deployed asymmetric
+  cryptographic schemes.
+- Ability to conduct "harvest now, decrypt later" operations: capturing
+  encrypted data or signed artefacts today for future cryptanalysis once
+  quantum capability matures.
+- Potential to forge digital signatures on schemes relying on the hardness of
+  integer factorisation or discrete logarithm problems (RSA, ECDSA, classical
+  Diffie-Hellman).
+- Timeline: Current intelligence community assessments place CRQC availability
+  at 10--15 years. Munin's design horizon must account for data that remains
+  sensitive beyond this window.
+
+**Strategic Goals**:
+
+1. **Signature forgery**: Forge Ed25519 audit log signatures to fabricate or
+   repudiate historical operational records.
+2. **Harvest-decrypt**: Capture encrypted-at-rest data stores or key material
+   today for decryption once quantum capability is available.
+3. **Quorum bypass**: Forge quorum member signatures to authorise configuration
+   changes without legitimate approval.
+
+**PQC Migration Path**:
+
+Munin implements a cryptographic agility architecture to manage the transition
+to post-quantum cryptography:
+
+1. **Current state**: The PQC library (`lib/pqc.ts`) implements
+   post-quantum key encapsulation and signature schemes alongside classical
+   Ed25519. The architecture supports dual-signature (classical + PQC) for
+   audit entries and quorum approvals.
+
+2. **Phase 1 --- Hybrid mode (current)**: All new cryptographic operations
+   generate both classical and PQC signatures. Verification accepts either
+   scheme, enabling gradual rollout without breaking backward compatibility
+   with existing audit chains.
+
+3. **Phase 2 --- PQC-primary (planned)**: Once NIST PQC standards are
+   finalised and implementations achieve sufficient maturity, the system
+   transitions to PQC-primary with classical signatures retained for
+   backward verification of historical records only.
+
+4. **Phase 3 --- Classical deprecation (future)**: Classical-only signatures
+   are no longer accepted for new operations. Historical audit chains retain
+   their classical signatures as supplementary evidence alongside PQC
+   re-signatures of archival records.
+
+5. **Key management**: PQC key sizes and operational characteristics are
+   accommodated in the HSM strategy and key ceremony procedures. The
+   operations runbook (`docs/OPERATIONS_RUNBOOK.md`) includes PQC-specific
+   ceremony procedures.
+
+6. **Algorithm selection**: Munin tracks NIST PQC standardisation
+   (ML-KEM, ML-DSA, SLH-DSA) and maintains the ability to substitute
+   algorithms via the cryptographic agility layer without architectural
+   changes.
+
+---
+
+## 11. Document Cross-References
 
 | Document                  | ID     | Relationship                                     |
 |---------------------------|--------|--------------------------------------------------|
