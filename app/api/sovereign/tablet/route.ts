@@ -1,3 +1,7 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires physical air-gapped tablet hardware,
+// real biometric enrollment (iris + palm), and FIPS 140-3 token issuance.
+
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';

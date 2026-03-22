@@ -7,7 +7,7 @@ import { packetsRepo, auditLogRepo } from '@/lib/db/repositories';
 import { signWithPQC } from '@/lib/pqc';
 import { getCurrentKey, generateNewKey, loadKeyStore, saveKeyStore } from '@/lib/pqc_key_management';
 import { signPacketInTEE, detectTEEPlatform } from '@/lib/tee';
-import { generateLegalCertificate } from '@/lib/compliance';
+import { generateComplianceReport } from '@/lib/compliance';
 import { getPythonPath } from '@/lib/serverUtils';
 import yaml from 'js-yaml';
 
@@ -277,7 +277,7 @@ export async function POST(request: Request) {
         console.warn(`Failed to load playbook for certificate: ${playbookError}`);
       }
 
-      legalCertificate = await generateLegalCertificate(
+      legalCertificate = await generateComplianceReport(
         packetId,
         playbookId,
         playbookTitle,

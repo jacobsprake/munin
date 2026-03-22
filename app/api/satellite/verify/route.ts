@@ -1,7 +1,11 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires real satellite imagery API integration
+// (e.g., Capella Space SAR), ground-truth calibration, and actual InSAR processing.
+
 /**
  * Satellite Cross-Verification API
  * 2026 End-State Feature: Space-Integrated Resilience
- * 
+ *
  * Cross-verifies ground sensor data against satellite observations to detect sensor hacks.
  */
 

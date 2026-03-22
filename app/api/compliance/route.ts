@@ -1,17 +1,17 @@
 /**
  * POST /api/compliance
- * Generate legal certificate for a handshake packet
+ * Generate compliance report for a handshake packet
  * GET /api/compliance?playbookId=xxx
  * Get compliance mapping for a playbook
  */
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { 
-  generateLegalCertificate, 
+import {
+  generateComplianceReport,
   getPlaybookComplianceStatus,
   searchStatutes,
-  NATIONAL_STATUTES 
+  NATIONAL_STATUTES
 } from '@/lib/compliance';
 import yaml from 'js-yaml';
 
@@ -69,8 +69,8 @@ export async function POST(request: Request) {
     const hasTechnicalVerification = !!packet.technicalVerification;
     const hasTEEAttestation = !!packet.tee;
 
-    // Generate legal certificate
-    const certificate = await generateLegalCertificate(
+    // Generate compliance report
+    const certificate = await generateComplianceReport(
       packetId,
       playbookId,
       playbookTitle,

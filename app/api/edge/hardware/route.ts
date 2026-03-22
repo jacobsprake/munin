@@ -1,7 +1,11 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires real GaN/SiC edge hardware nodes,
+// environmental sensor telemetry, and hardware health monitoring integration.
+
 /**
  * Wide-Bandgap Edge Hardware API
  * 2026 End-State Feature: Materials Science Moat
- * 
+ *
  * Manages wide-bandgap edge nodes (GaN/SiC) that can survive extreme environments.
  */
 

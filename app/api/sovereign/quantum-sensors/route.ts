@@ -1,3 +1,7 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires real PQC-encrypted sensor hardware,
+// a Kyber-768 key management service, and actual quantum sensor network integration.
+
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';

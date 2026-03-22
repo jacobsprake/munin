@@ -1,16 +1,11 @@
 /**
- * Statutory Compliance Mapping: Legal-as-a-Service
- * 2026 Reality Feature: Liability Shield
- * 
- * Every Munin Playbook is hard-linked to National Emergency Statutes.
- * When a human hits the "Handshake," Munin generates a legal certificate
- * proving the action was performed in accordance with statutory law.
- * 
- * This turns Munin into an "Insurance Policy" for every bureaucrat
- * in the country - they cannot go to jail if they follow Munin's
- * pre-validated authority.
- * 
- * Strategic Value: You become the mandatory regulatory standard.
+ * Regulatory Compliance Mapping
+ *
+ * Maps Munin playbook actions to relevant regulatory frameworks for
+ * informational purposes. Regulatory mapping is informational only
+ * and does not constitute legal certification or liability protection.
+ *
+ * Consult qualified legal counsel for compliance determinations.
  */
 
 export interface NationalStatute {
@@ -24,10 +19,10 @@ export interface NationalStatute {
   authority: string; // What authority this grants
   emergencyScope: string[]; // Types of emergencies this covers
   actions: string[]; // Actions this statute authorizes
-  liabilityProtection: {
-    level: 'FULL' | 'PARTIAL' | 'CONDITIONAL';
+  regulatoryRelevance: {
+    level: 'HIGH' | 'MODERATE' | 'LOW';
     conditions: string[];
-    exclusions?: string[];
+    notes?: string[];
   };
   lastUpdated: string;
   citation: string; // Legal citation format
@@ -47,36 +42,36 @@ export interface ComplianceMapping {
   requiredAuthorities: string[];
 }
 
-export interface LegalCertificate {
-  certificateId: string;
+export interface ComplianceReport {
+  reportId: string;
   issuedAt: string;
   packetId: string;
   playbookId: string;
   operatorId: string;
   operatorRole: string;
-  
-  // Statutory basis
-  statutoryBasis: Array<{
+
+  // Regulatory mapping
+  regulatoryMapping: Array<{
     statute: NationalStatute;
     actionCovered: string;
-    complianceLevel: 'FULL' | 'PARTIAL' | 'CONDITIONAL';
+    relevanceLevel: 'HIGH' | 'MODERATE' | 'LOW';
   }>;
-  
-  // Legal protection
-  liabilityProtection: {
-    level: 'FULL' | 'PARTIAL' | 'CONDITIONAL';
+
+  // Regulatory context
+  regulatoryContext: {
+    level: 'HIGH' | 'MODERATE' | 'LOW';
     statement: string;
     conditions: string[];
-    exclusions?: string[];
+    notes?: string[];
   };
-  
-  // Authority granted
-  authorityGranted: {
+
+  // Referenced authority
+  referencedAuthority: {
     scope: string[];
     limitations: string[];
     expiration?: string;
   };
-  
+
   // Audit trail
   auditTrail: {
     playbookExecuted: string;
@@ -85,10 +80,10 @@ export interface LegalCertificate {
     technicalVerification: boolean;
     teeAttestation: boolean;
   };
-  
-  // Certification statement
-  certificationStatement: string;
-  
+
+  // Report statement
+  reportStatement: string;
+
   // Digital signature
   signature: {
     algorithm: string;
@@ -103,13 +98,13 @@ export interface LegalCertificate {
  */
 export const NATIONAL_STATUTES: NationalStatute[] = [
   {
-    id: 'FRA-2026-4.2',
-    actName: '2026 Flood Resilience Act',
-    jurisdiction: 'National',
-    section: 'Section 4.2',
-    title: 'Emergency Service Continuity',
-    requirement: 'Maintain service continuity during declared flood emergencies',
-    authority: 'Authorizes isolation and rerouting of affected infrastructure',
+    id: 'EU-CER-2022/2557',
+    actName: 'EU Critical Entities Resilience Directive',
+    jurisdiction: 'EU',
+    section: 'Article 12',
+    title: 'Resilience of Critical Entities',
+    requirement: 'Ensure continuity of essential services during disruptions',
+    authority: 'Framework for resilience measures by critical entities',
     emergencyScope: ['flood', 'water_emergency'],
     actions: [
       'isolate_affected_systems',
@@ -117,50 +112,50 @@ export const NATIONAL_STATUTES: NationalStatute[] = [
       'reroute_services',
       'divert_flow'
     ],
-    liabilityProtection: {
-      level: 'FULL',
+    regulatoryRelevance: {
+      level: 'HIGH',
       conditions: [
-        'Action taken during declared emergency',
-        'Playbook pre-approved by regulatory authority',
-        'Technical verification confirms safety'
+        'Entity designated as critical under CER Directive',
+        'Resilience plan in place per Article 13',
+        'Member State notification requirements met'
       ]
     },
-    lastUpdated: '2026-01-15',
-    citation: 'FRA 2026, s. 4.2'
+    lastUpdated: '2023-01-16',
+    citation: 'Directive (EU) 2022/2557, Art. 12'
   },
   {
-    id: 'WQP-2026-01',
-    actName: 'Water Quality Protection Standards',
-    jurisdiction: 'National',
-    section: 'WQP-2026-01',
-    title: 'Contamination Prevention',
-    requirement: 'Isolate affected systems to prevent contamination spread',
-    authority: 'Authorizes immediate isolation without waiting for approval',
+    id: 'UK-FWMA-2010',
+    actName: 'UK Flood and Water Management Act 2010',
+    jurisdiction: 'UK',
+    section: 'Part 1',
+    title: 'Flood and Coastal Erosion Risk Management',
+    requirement: 'Manage flood risk and water quality',
+    authority: 'Framework for flood risk management authorities',
     emergencyScope: ['contamination', 'water_quality', 'flood'],
     actions: [
       'isolate_affected_systems',
       'activate_backup_systems',
       'divert_flow'
     ],
-    liabilityProtection: {
-      level: 'FULL',
+    regulatoryRelevance: {
+      level: 'HIGH',
       conditions: [
-        'Contamination risk detected',
-        'Isolation protocol followed',
-        'Backup systems activated'
+        'Applicable to lead local flood authorities',
+        'Flood risk management plan in effect',
+        'Coordination with Environment Agency'
       ]
     },
-    lastUpdated: '2026-01-10',
-    citation: 'WQP Standards 2026, Art. 01'
+    lastUpdated: '2010-04-08',
+    citation: 'Flood and Water Management Act 2010, c.29'
   },
   {
-    id: 'NEA-2025-12',
-    actName: 'National Emergency Act 2025',
-    jurisdiction: 'National',
-    section: 'Article 12',
-    title: 'Critical Infrastructure Protection',
-    requirement: 'Protect critical infrastructure from cascading failures',
-    authority: 'Authorizes coordinated response across sectors',
+    id: 'EU-NIS2-2022/2555',
+    actName: 'NIS2 Directive',
+    jurisdiction: 'EU',
+    section: 'Article 21',
+    title: 'Cybersecurity Risk-Management Measures',
+    requirement: 'Implement measures to manage risks to network and information systems',
+    authority: 'Framework for cybersecurity of essential and important entities',
     emergencyScope: ['power_instability', 'cascading_failure', 'critical_infrastructure'],
     actions: [
       'load_shedding',
@@ -168,54 +163,54 @@ export const NATIONAL_STATUTES: NationalStatute[] = [
       'cross_sector_coordination',
       'emergency_shutdown'
     ],
-    liabilityProtection: {
-      level: 'FULL',
+    regulatoryRelevance: {
+      level: 'HIGH',
       conditions: [
-        'Cascading failure risk identified',
-        'Coordinated response protocol followed',
-        'Technical verification confirms necessity'
+        'Entity classified as essential or important under NIS2',
+        'Risk management measures per Article 21 in place',
+        'Incident reporting per Article 23 requirements met'
       ]
     },
-    lastUpdated: '2025-12-01',
-    citation: 'NEA 2025, Art. 12'
+    lastUpdated: '2023-01-16',
+    citation: 'Directive (EU) 2022/2555, Art. 21'
   },
   {
-    id: 'DRA-2026-3.1',
-    actName: 'Drought Response Act 2026',
-    jurisdiction: 'National',
-    section: 'Section 3.1',
-    title: 'Water Resource Diversion',
-    requirement: 'Authorize reservoir diversion during declared drought',
-    authority: 'Authorizes diversion of water resources to critical areas',
+    id: 'US-NSM-22',
+    actName: 'US National Security Memorandum 22',
+    jurisdiction: 'US',
+    section: 'Section 3',
+    title: 'Critical Infrastructure Security and Resilience',
+    requirement: 'Strengthen security and resilience of critical infrastructure',
+    authority: 'Framework for sector-specific risk management',
     emergencyScope: ['drought', 'water_shortage'],
     actions: [
       'reservoir_diversion',
       'priority_allocation',
       'conservation_measures'
     ],
-    liabilityProtection: {
-      level: 'CONDITIONAL',
+    regulatoryRelevance: {
+      level: 'MODERATE',
       conditions: [
-        'Drought declared by national authority',
-        'Diversion plan pre-approved',
-        'Critical infrastructure prioritized'
+        'Applicable to designated critical infrastructure sectors',
+        'Coordination with Sector Risk Management Agencies',
+        'Alignment with National Infrastructure Protection Plan'
       ],
-      exclusions: [
-        'Actions outside approved diversion plan',
-        'Unauthorized water allocation'
+      notes: [
+        'Specific actions require authorization from relevant agencies',
+        'State and local authority may vary'
       ]
     },
-    lastUpdated: '2026-02-01',
-    citation: 'DRA 2026, s. 3.1'
+    lastUpdated: '2024-04-30',
+    citation: 'NSM-22 (April 30, 2024), Sec. 3'
   },
   {
-    id: 'CIP-2025-8',
-    actName: 'Critical Infrastructure Protection Act 2025',
-    jurisdiction: 'National',
-    section: 'Section 8',
-    title: 'Emergency Coordination Authority',
-    requirement: 'Enable rapid coordination across critical infrastructure sectors',
-    authority: 'Authorizes cross-sector emergency response',
+    id: 'US-NERC-CIP',
+    actName: 'NERC Critical Infrastructure Protection Standards',
+    jurisdiction: 'US/Canada',
+    section: 'CIP-001 through CIP-014',
+    title: 'Critical Infrastructure Protection',
+    requirement: 'Protect bulk electric system cyber assets and ensure reliability',
+    authority: 'Mandatory reliability standards for bulk power system',
     emergencyScope: ['multi_sector', 'national_emergency', 'cyber_attack'],
     actions: [
       'cross_sector_coordination',
@@ -223,16 +218,16 @@ export const NATIONAL_STATUTES: NationalStatute[] = [
       'isolation_protocols',
       'backup_activation'
     ],
-    liabilityProtection: {
-      level: 'FULL',
+    regulatoryRelevance: {
+      level: 'HIGH',
       conditions: [
-        'National emergency declared',
-        'Coordination protocol followed',
-        'All sectors notified'
+        'Applicable to registered entities in NERC registry',
+        'Compliance monitored by Regional Entities',
+        'FERC enforcement authority'
       ]
     },
-    lastUpdated: '2025-11-15',
-    citation: 'CIP Act 2025, s. 8'
+    lastUpdated: '2024-01-01',
+    citation: 'NERC CIP Standards (CIP-001 through CIP-014)'
   }
 ];
 
@@ -301,9 +296,10 @@ export function mapPlaybookToStatutes(
 }
 
 /**
- * Generate legal certificate for a handshake authorization
+ * Generate a compliance report mapping actions to relevant regulatory frameworks.
+ * This report is informational only and does not constitute legal advice.
  */
-export async function generateLegalCertificate(
+export async function generateComplianceReport(
   packetId: string,
   playbookId: string,
   playbookTitle: string,
@@ -313,9 +309,9 @@ export async function generateLegalCertificate(
   evidenceRefs: string[],
   hasTechnicalVerification: boolean,
   hasTEEAttestation: boolean
-): Promise<LegalCertificate> {
+): Promise<ComplianceReport> {
   const complianceMapping = mapPlaybookToStatutes(playbookId, playbookTitle, actions);
-  
+
   // Collect all applicable statutes
   const allStatutes = Array.from(
     new Set(
@@ -323,95 +319,88 @@ export async function generateLegalCertificate(
     )
   );
 
-  // Determine liability protection level (use highest level from applicable statutes)
-  const protectionLevels = allStatutes.map(s => s.liabilityProtection.level);
-  const highestProtection = protectionLevels.includes('FULL') 
-    ? 'FULL' 
-    : protectionLevels.includes('PARTIAL') 
-    ? 'PARTIAL' 
-    : 'CONDITIONAL';
+  // Determine relevance level (use highest level from applicable statutes)
+  const relevanceLevels = allStatutes.map(s => s.regulatoryRelevance.level);
+  const highestRelevance = relevanceLevels.includes('HIGH')
+    ? 'HIGH'
+    : relevanceLevels.includes('MODERATE')
+    ? 'MODERATE'
+    : 'LOW';
 
   // Collect all conditions
   const allConditions = Array.from(
     new Set(
-      allStatutes.flatMap(s => s.liabilityProtection.conditions)
+      allStatutes.flatMap(s => s.regulatoryRelevance.conditions)
     )
   );
 
-  // Collect all exclusions
-  const allExclusions = Array.from(
+  // Collect all notes
+  const allNotes = Array.from(
     new Set(
       allStatutes
-        .filter(s => s.liabilityProtection.exclusions)
-        .flatMap(s => s.liabilityProtection.exclusions || [])
+        .filter(s => s.regulatoryRelevance.notes)
+        .flatMap(s => s.regulatoryRelevance.notes || [])
     )
   );
 
-  // Build statutory basis
-  const statutoryBasis = complianceMapping.actions
+  // Build regulatory mapping
+  const regulatoryMapping = complianceMapping.actions
     .filter(a => a.statutes.length > 0)
-    .flatMap(a => 
+    .flatMap(a =>
       a.statutes.map(statute => ({
         statute,
         actionCovered: a.actionName,
-        complianceLevel: statute.liabilityProtection.level as 'FULL' | 'PARTIAL' | 'CONDITIONAL'
+        relevanceLevel: statute.regulatoryRelevance.level as 'HIGH' | 'MODERATE' | 'LOW'
       }))
     );
 
-  // Build certification statement
+  // Build report statement
   const statuteCitations = allStatutes.map(s => s.citation).join(', ');
-  const certificationStatement = `
-This action was performed in accordance with the following National Emergency Statutes:
-${statuteCitations}
+  const reportStatement = `This report maps operational actions to relevant regulatory frameworks for informational purposes. It does not constitute legal advice. Consult qualified legal counsel for compliance determinations.
 
-The operator (${operatorId}, ${operatorRole}) executed the playbook "${playbookTitle}" 
-in compliance with statutory requirements. All actions were pre-validated against 
-applicable emergency statutes and technical verification confirms safety.
+Referenced regulations: ${statuteCitations}
 
-Liability Protection Level: ${highestProtection}
-${highestProtection === 'FULL' 
-  ? 'Full statutory protection applies. Operator is protected from liability when following this pre-validated protocol.' 
-  : highestProtection === 'PARTIAL' 
-  ? 'Partial protection applies. Some conditions must be met for full protection.' 
-  : 'Conditional protection applies. Review conditions carefully.'}
+The operator (${operatorId}, ${operatorRole}) executed the playbook "${playbookTitle}".
+Actions have been mapped to potentially relevant regulatory frameworks listed above.
 
-This certificate serves as legal documentation that the action was performed in 
-accordance with national emergency statutes and regulatory requirements.
-  `.trim();
+Regulatory relevance: ${highestRelevance}
 
-  // Generate certificate hash
-  const certificateData = JSON.stringify({
+This report is generated for record-keeping and audit trail purposes.
+Regulatory compliance status should be confirmed by qualified legal counsel.`.trim();
+
+  // Generate report hash
+  const reportData = JSON.stringify({
     packetId,
     playbookId,
     operatorId,
-    statutoryBasis: statutoryBasis.map(b => b.statute.id),
+    regulatoryMapping: regulatoryMapping.map(b => b.statute.id),
     issuedAt: new Date().toISOString()
   });
-  const certificateHash = await crypto.subtle.digest(
+  const reportHash = await crypto.subtle.digest(
     'SHA-256',
-    new TextEncoder().encode(certificateData)
+    new TextEncoder().encode(reportData)
   );
-  const hashArray = Array.from(new Uint8Array(certificateHash));
+  const hashArray = Array.from(new Uint8Array(reportHash));
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-  const certificate: LegalCertificate = {
-    certificateId: `LEGAL-${packetId}-${Date.now()}`,
+  const report: ComplianceReport = {
+    reportId: `COMPLIANCE-${packetId}-${Date.now()}`,
     issuedAt: new Date().toISOString(),
     packetId,
     playbookId,
     operatorId,
     operatorRole,
-    statutoryBasis,
-    liabilityProtection: {
-      level: highestProtection,
-      statement: certificationStatement,
+    regulatoryMapping,
+    regulatoryContext: {
+      level: highestRelevance,
+      statement: reportStatement,
       conditions: allConditions,
-      exclusions: allExclusions.length > 0 ? allExclusions : undefined
+      notes: allNotes.length > 0 ? allNotes : undefined
     },
-    authorityGranted: {
+    referencedAuthority: {
       scope: complianceMapping.requiredAuthorities,
-      limitations: allExclusions,
-      expiration: undefined // Certificates don't expire, but actions may have time limits
+      limitations: allNotes,
+      expiration: undefined
     },
     auditTrail: {
       playbookExecuted: playbookTitle,
@@ -420,7 +409,7 @@ accordance with national emergency statutes and regulatory requirements.
       technicalVerification: hasTechnicalVerification,
       teeAttestation: hasTEEAttestation
     },
-    certificationStatement,
+    reportStatement,
     signature: {
       algorithm: 'SHA-256',
       hash: hashHex,
@@ -428,8 +417,11 @@ accordance with national emergency statutes and regulatory requirements.
     }
   };
 
-  return certificate;
+  return report;
 }
+
+/** @deprecated Use generateComplianceReport instead */
+export const generateLegalCertificate = generateComplianceReport;
 
 /**
  * Get compliance status for a playbook

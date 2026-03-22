@@ -1,23 +1,30 @@
 /**
  * POST /api/logic-lock
  * Validate command against physics constraints (Logic-Lock)
- * 
+ *
  * This endpoint validates commands before they are executed, ensuring
  * they don't violate physics constraints. When integrated with TEE,
  * this provides hardware-level enforcement.
  */
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+// Shell metacharacters that must not appear in user input
+const SHELL_METACHAR_PATTERN = /[;&|`$(){}[\]!#~<>\\'"*?\n\r]/;
+
+function containsShellMetachars(value: string): boolean {
+  return SHELL_METACHAR_PATTERN.test(value);
+}
 
 export async function POST(request: Request) {
   try {
     const { command, assetId, assetType } = await request.json();
-    
+
     if (!command || !assetId || !assetType) {
       return NextResponse.json(
         { error: 'Missing required fields: command, assetId, assetType' },
@@ -25,9 +32,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Input validation: reject shell metacharacters
+    for (const [field, value] of Object.entries({ command, assetId, assetType })) {
+      if (typeof value === 'string' && containsShellMetachars(value)) {
+        return NextResponse.json(
+          { error: `Invalid characters in field: ${field}` },
+          { status: 400 }
+        );
+      }
+    }
+
     const engineDir = join(process.cwd(), 'engine');
     const scriptPath = join(engineDir, 'logic_lock.py');
-    
+
     // Create temporary command file
     const commandData = {
       command_id: `cmd_${Date.now()}`,
@@ -35,25 +52,24 @@ export async function POST(request: Request) {
       asset_type: assetType,
       command: command
     };
-    
+
     const commandPath = join(engineDir, 'out', 'temp_command.json');
     const { writeFile, mkdir } = await import('fs/promises');
     await mkdir(join(engineDir, 'out'), { recursive: true });
     await writeFile(commandPath, JSON.stringify(commandData, null, 2));
-    
-    // Run Logic-Lock validation
+
+    // Run Logic-Lock validation using execFile (no shell interpolation)
     const pythonPath = getPythonPath();
-    const pythonCmd = `${pythonPath} -c "
+    const pythonScript = `
 import sys
 from pathlib import Path
-sys.path.insert(0, '${engineDir}')
+sys.path.insert(0, ${JSON.stringify(engineDir)})
 from logic_lock import LogicLockEngine, AssetType
 import json
 
-command_data = json.load(open('${commandPath}'))
+command_data = json.load(open(${JSON.stringify(commandPath)}))
 engine = LogicLockEngine()
 
-# Map asset type string to enum
 asset_type_map = {
     'turbine': AssetType.TURBINE,
     'pump': AssetType.PUMP,
@@ -83,37 +99,36 @@ result = {
 }
 
 print(json.dumps(result))
-"`;
-    
+`.trim();
+
     try {
-      const { stdout, stderr } = await execAsync(pythonCmd, {
-        cwd: engineDir
+      const { stdout, stderr } = await execFileAsync(pythonPath, ['-c', pythonScript], {
+        cwd: engineDir,
+        timeout: 10000
       });
-      
+
       if (stderr && !stderr.includes('Warning')) {
         console.error('Python stderr:', stderr);
       }
-      
+
       const result = JSON.parse(stdout.trim());
-      
+
       return NextResponse.json({
         success: true,
         validation: result
       });
     } catch (execError: any) {
-      console.error('Logic-Lock validation error:', execError);
+      console.error('Logic-Lock validation error:', execError.stderr || execError.message);
       return NextResponse.json(
-        { error: 'Failed to validate command', details: execError.message },
+        { error: 'Failed to validate command' },
         { status: 500 }
       );
     }
   } catch (error: any) {
     console.error('Error in Logic-Lock endpoint:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
-
-

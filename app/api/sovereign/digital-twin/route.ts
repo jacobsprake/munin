@@ -1,3 +1,7 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires a real digital twin simulation engine,
+// persistent state management, and integration with live infrastructure topology.
+
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';

@@ -1,3 +1,7 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires hardware-backed key storage,
+// physical key verification, and cryptographic snapshot/restore with integrity proofs.
+
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';

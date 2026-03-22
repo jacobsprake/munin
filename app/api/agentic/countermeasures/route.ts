@@ -1,7 +1,11 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires integration with the Python agentic_reasoning
+// engine, real-time threat detection pipeline, and autonomous response orchestration.
+
 /**
  * Agentic Countermeasures API
  * 2026 End-State Feature: AI vs. AI Defense
- * 
+ *
  * Deploys autonomous countermeasures to fight agentic threats at wire-speed.
  */
 

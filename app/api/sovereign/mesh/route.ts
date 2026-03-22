@@ -1,3 +1,7 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires actual mesh networking hardware,
+// LoRa/satellite radio integration, and real node-to-node message routing.
+
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';

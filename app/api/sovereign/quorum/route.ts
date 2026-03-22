@@ -1,3 +1,8 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// Production implementation requires persistent quorum state storage,
+// real biometric verification hardware (iris + palm scanners), and
+// air-gapped tablet integration with FIPS 140-3 security tokens.
+
 import { NextRequest, NextResponse } from 'next/server';
 
 type QuorumState = 'PENDING' | 'PARTIAL' | 'AUTHORIZED' | 'REJECTED' | 'EXPIRED';

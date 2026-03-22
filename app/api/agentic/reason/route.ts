@@ -1,3 +1,9 @@
+// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// The Python agentic_reasoning engine is real, but when it fails to produce
+// output, this route falls back to hardcoded mock reasoning steps.
+// Production implementation requires a reliable agentic reasoning engine
+// and should not silently fall back to mock data.
+
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';

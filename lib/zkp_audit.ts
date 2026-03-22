@@ -1,17 +1,23 @@
 /**
- * Zero-Knowledge Sovereign Audit: ZKP Reporting
- * The "Transparency vs. Security" Paradox Solver
- * 
- * Governments want to be audited, but they don't want to share their secrets
- * with you or anyone else.
- * 
- * The "One-of-One" Feature: Zero-Knowledge Proof (ZKP) Reporting
- * Use ZKPs to prove to a regulator that the water supply is safe WITHOUT
- * revealing the location of the pumps or the specific pressure levels.
- * 
- * Strategic Value: You have solved the "Transparency vs. Security" paradox.
- * You are the only company that can provide Public Trust without exposing
- * National Secrets.
+ * ⚠️ DEMO IMPLEMENTATION — NOT ZERO-KNOWLEDGE
+ *
+ * This module provides audit reporting with a ZKP-inspired interface.
+ * "Proofs" are base64-encoded JSON, NOT cryptographic zero-knowledge proofs.
+ * Current implementation does NOT provide cryptographic privacy guarantees.
+ *
+ * Production path: snarkjs/circom integration for actual ZKP circuits.
+ * The Python PoC at research/zk-proof-poc/ demonstrates the concept
+ * with real Pedersen commitments.
+ */
+
+/**
+ * Audit Reporting with ZKP-Inspired Interface
+ *
+ * Goal: Allow infrastructure operators to demonstrate compliance to auditors
+ * while limiting exposure of sensitive operational details.
+ *
+ * NOTE: The current implementation uses simulated proofs (base64-encoded JSON).
+ * It does NOT provide real cryptographic privacy. See disclaimer above.
  */
 
 export interface ZKPStatement {
@@ -19,7 +25,7 @@ export interface ZKPStatement {
   claim: string;
   /** Public parameters (non-sensitive) */
   publicParams: Record<string, any>;
-  /** Proof that claim is true without revealing secrets */
+  /** Simulated proof data (base64-encoded JSON — NOT a real ZKP) */
   proof: string;
   /** Verification key */
   verificationKey: string;
@@ -41,17 +47,15 @@ export interface ZKPAuditReport {
     lastVerified: string;
     verificationStatus: 'verified' | 'pending' | 'failed';
   };
-  /** Regulator can verify without seeing secrets */
+  /** Instructions for reviewing this report */
   verificationInstructions: string;
 }
 
 /**
- * Generate a Zero-Knowledge Proof that water supply is safe
- * WITHOUT revealing:
- * - Location of pumps
- * - Specific pressure levels
- * - Exact flow rates
- * - Infrastructure topology
+ * Generate a simulated audit statement for water supply safety.
+ * Demonstrates compliance mapping without exposing raw sensor data.
+ *
+ * NOTE: This does NOT generate a real ZKP. The "proof" is base64-encoded JSON.
  */
 export async function generateWaterSafetyZKP(
   pressureReadings: number[], // Secret: actual pressure values
@@ -86,11 +90,10 @@ export async function generateWaterSafetyZKP(
 }
 
 /**
- * Generate a Zero-Knowledge Proof that grid is stable
- * WITHOUT revealing:
- * - Frequency values
- * - Node locations
- * - Load distribution
+ * Generate a simulated audit statement for grid stability.
+ * Demonstrates compliance mapping without exposing raw frequency data.
+ *
+ * NOTE: This does NOT generate a real ZKP. The "proof" is base64-encoded JSON.
  */
 export async function generateGridStabilityZKP(
   frequencyReadings: number[], // Secret: actual frequency values
@@ -122,8 +125,8 @@ export async function generateGridStabilityZKP(
 }
 
 /**
- * Verify a Zero-Knowledge Proof
- * Regulators can verify claims without seeing secrets
+ * Verify a simulated audit statement.
+ * NOTE: This checks format and freshness only — not a real cryptographic verification.
  */
 export async function verifyZKPStatement(statement: ZKPStatement): Promise<{
   valid: boolean;
@@ -167,8 +170,8 @@ export async function verifyZKPStatement(statement: ZKPStatement): Promise<{
 }
 
 /**
- * Generate a comprehensive ZKP audit report
- * This report can be shared publicly without revealing national secrets
+ * Generate an audit report with simulated ZKP-style statements.
+ * NOTE: The "proofs" are NOT cryptographic. See file-level disclaimer.
  */
 export async function generateZKPAuditReport(
   auditType: ZKPAuditReport['auditType'],
@@ -199,11 +202,10 @@ export async function generateZKPAuditReport(
       3. Verify that the proof demonstrates the claim is true
       4. No secret information is required for verification
       
-      This report proves compliance without revealing:
-      - Exact sensor readings
-      - Infrastructure locations
-      - Operational parameters
-      - Network topology
+      This report demonstrates compliance mapping.
+      NOTE: Current "proofs" are simulated (base64 JSON), not cryptographic ZKPs.
+      Sensitive values (sensor readings, locations) are excluded from the report
+      but are NOT protected by cryptographic privacy guarantees.
     `
   };
 }
@@ -243,7 +245,7 @@ async function hashData(data: string): Promise<string> {
 }
 
 /**
- * Example: Generate a water safety audit that proves safety without revealing secrets
+ * Example: Generate a water safety audit report with simulated compliance statements.
  */
 export async function exampleWaterSafetyAudit(): Promise<ZKPAuditReport> {
   // Secret data (not shared with regulator)
