@@ -1,10 +1,19 @@
+// DEMO ENDPOINT — returns advisory results only.
+// Formal verification requires TLA+ model checker integration.
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET(request: Request) {
   try {
@@ -26,14 +35,16 @@ export async function GET(request: Request) {
         no_deadlocks: { verified: true, proof: 'Model checking: No deadlocks found' },
         handshake_integrity: { verified: true, proof: 'Cryptographic proof: Handshake packets protected by PQC + TEE' }
       },
-      overall_status: 'proven_safe',
-      mathematical_certainty: true
+      overall_status: 'advisory_only',
+      mathematical_certainty: false,
+      mode: 'DEMO — formal verification requires TLA+ model checker integration'
     };
     
     return NextResponse.json(verification);
   } catch (error: any) {
+    console.error('Safety verification error:', error);
     return NextResponse.json(
-      { error: 'Failed to verify graph', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

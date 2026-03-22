@@ -8,22 +8,31 @@ import { NextResponse } from 'next/server';
 import { join } from 'path';
 import { getPythonPath } from '@/lib/serverUtils';
 import { getDb } from '@/lib/db';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET() {
   try {
     const engineDir = join(process.cwd(), 'engine');
     const pythonPath = getPythonPath();
-    const { stdout } = await execAsync(
-      `cd ${engineDir} && PYTHONPATH=. ${pythonPath} -c "
+    const script = `
 from threshold_monitor import run_threshold_check
 import json
 result = run_threshold_check()
 print(json.dumps(result))
-"`
+`;
+    const { stdout } = await execFileAsync(
+      pythonPath, ['-c', script],
+      { cwd: engineDir, timeout: 10000, env: { ...process.env, PYTHONPATH: '.' } }
     );
     const result = JSON.parse(stdout.trim());
     // Auto-create alerts when thresholds breached
@@ -58,7 +67,7 @@ print(json.dumps(result))
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Threshold check failed',
+        error: 'Threshold check failed',
         breached: [],
         triggered_playbooks: [],
       },

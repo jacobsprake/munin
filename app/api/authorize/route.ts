@@ -26,15 +26,17 @@ export async function POST(request: Request) {
 
     // Check CMI Protocol status - if active, require Ministry of Defense authorization
     try {
-      const { exec } = await import('child_process');
+      const { execFile } = await import('child_process');
       const { promisify } = await import('util');
-      const execAsync = promisify(exec);
+      const execFileAsync = promisify(execFile);
       const engineDir = join(process.cwd(), 'engine');
-      
+
       try {
         const pythonPath = getPythonPath();
-        const { stdout } = await execAsync(
-          `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))"`
+        const script = 'from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))';
+        const { stdout } = await execFileAsync(
+          pythonPath, ['-c', script],
+          { cwd: engineDir, timeout: 10000 }
         );
         const cmiStatus = JSON.parse(stdout.trim());
         

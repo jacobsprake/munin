@@ -1,15 +1,22 @@
-// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// DEMO ENDPOINT -- Returns simulated data for demonstration purposes.
 // Production implementation requires real PQC-encrypted sensor hardware,
 // a Kyber-768 key management service, and actual quantum sensor network integration.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (action === 'status') {
       // Get quantum sensor network status
       const sensorsPath = join(process.cwd(), 'engine', 'out', 'quantum_sensors.json');
-      
+
       try {
         const sensorsData = await readFile(sensorsPath, 'utf-8');
         const sensors = JSON.parse(sensorsData);
@@ -42,7 +49,7 @@ export async function GET(request: NextRequest) {
     if (action === 'sensor' && searchParams.get('sensorId')) {
       // Get specific sensor status
       const sensorId = searchParams.get('sensorId');
-      
+
       // In production, would fetch from database or sensor network
       return NextResponse.json({
         status: 'ok',
@@ -58,7 +65,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to get quantum sensor status' },
+      { error: 'Failed to get quantum sensor status' },
       { status: 500 }
     );
   }
@@ -72,7 +79,7 @@ export async function POST(request: NextRequest) {
     if (action === 'collect_reading') {
       // Collect encrypted reading from sensor
       const { sensorId, value } = params;
-      
+
       if (!sensorId || value === undefined) {
         return NextResponse.json(
           { error: 'Missing sensorId or value' },
@@ -100,16 +107,16 @@ export async function POST(request: NextRequest) {
     if (action === 'initialize_network') {
       // Initialize quantum sensor network from graph
       const scriptPath = join(process.cwd(), 'engine', 'quantum_sensors.py');
-      
+
       // Run Python script to create sensor network
       const pythonPath = getPythonPath();
-      const { stdout, stderr } = await execAsync(
-        `${pythonPath} "${scriptPath}"`,
-        { cwd: process.cwd() }
+      const { stdout, stderr } = await execFileAsync(
+        pythonPath, [scriptPath],
+        { cwd: process.cwd(), timeout: 10000 }
       );
 
       if (stderr && !stderr.includes('Warning')) {
-        throw new Error(stderr);
+        throw new Error('Sensor network initialization failed');
       }
 
       return NextResponse.json({
@@ -122,10 +129,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to process quantum sensor request' },
+      { error: 'Failed to process quantum sensor request' },
       { status: 500 }
     );
   }
 }
-
-

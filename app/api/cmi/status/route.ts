@@ -3,12 +3,19 @@
  * Get current CMI Protocol status
  */
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET(request: Request) {
   try {
@@ -16,11 +23,13 @@ export async function GET(request: Request) {
     const engineDir = join(process.cwd(), 'engine');
     try {
       const pythonPath = getPythonPath();
-      const { stdout } = await execAsync(
-        `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))"`
+      const script = 'from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))';
+      const { stdout } = await execFileAsync(
+        pythonPath, ['-c', script],
+        { cwd: engineDir, timeout: 10000 }
       );
       const result = JSON.parse(stdout.trim());
-      
+
       return NextResponse.json({
         success: true,
         ...result
@@ -37,10 +46,8 @@ export async function GET(request: Request) {
     }
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
-
-

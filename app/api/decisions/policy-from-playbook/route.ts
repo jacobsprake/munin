@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server';
 import { resolveMinistryCodesFromApproval } from '@/lib/ministry/roleMapping';
 import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import yaml from 'js-yaml';
 
 export async function GET(request: Request) {
@@ -19,10 +19,30 @@ export async function GET(request: Request) {
       );
     }
 
-    const playbookPath = join(process.cwd(), 'playbooks', playbookId.endsWith('.yaml') ? playbookId : `${playbookId}.yaml`);
+    // Path traversal protection
+    if (playbookId.includes('..') || playbookId.includes('/') || playbookId.includes('\\')) {
+      return NextResponse.json(
+        { error: 'Invalid playbook ID' },
+        { status: 400 }
+      );
+    }
+
+    const playbooksDir = join(process.cwd(), 'playbooks');
+    const playbookPath = join(playbooksDir, playbookId.endsWith('.yaml') ? playbookId : `${playbookId}.yaml`);
+
+    // Validate resolved path stays within playbooks directory
+    const resolvedPath = resolve(playbookPath);
+    const resolvedPlaybooksDir = resolve(playbooksDir);
+    if (!resolvedPath.startsWith(resolvedPlaybooksDir + '/')) {
+      return NextResponse.json(
+        { error: 'Invalid playbook ID' },
+        { status: 400 }
+      );
+    }
+
     if (!existsSync(playbookPath)) {
       return NextResponse.json(
-        { error: `Playbook not found: ${playbookId}` },
+        { error: 'Playbook not found' },
         { status: 404 }
       );
     }
@@ -52,7 +72,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     console.error('Error deriving policy from playbook:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to derive policy' },
+      { error: 'Failed to derive policy' },
       { status: 500 }
     );
   }

@@ -1,6 +1,6 @@
 /**
  * CMI (Civilian-Military Integration) API Routes
- * 
+ *
  * POST /api/cmi/activate - Activate CMI Protocol (State of Emergency)
  * POST /api/cmi/deactivate - Deactivate CMI Protocol
  * GET /api/cmi/status - Get current CMI status
@@ -8,12 +8,19 @@
  * POST /api/cmi/authorize - Check authorization for action in CMI mode
  */
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 // In-memory CMI state (in production, use database or distributed state)
 let cmiState = {
@@ -31,23 +38,25 @@ export async function POST(request: Request) {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     const action = pathParts[pathParts.length - 1];
-    
+
     if (action === 'activate') {
       // Activate CMI Protocol via Python engine
       const engineDir = join(process.cwd(), 'engine');
       try {
         const pythonPath = getPythonPath();
-        const { stdout } = await execAsync(
-          `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import activate_cmi_protocol; import json; print(json.dumps(activate_cmi_protocol()))"`
+        const script = 'from cmi_logic import activate_cmi_protocol; import json; print(json.dumps(activate_cmi_protocol()))';
+        const { stdout } = await execFileAsync(
+          pythonPath, ['-c', script],
+          { cwd: engineDir, timeout: 10000 }
         );
         const result = JSON.parse(stdout.trim());
-        
+
         cmiState = {
           active: true,
           activatedAt: result.timestamp,
           emergencyLevel: 'national_emergency'
         };
-        
+
         return NextResponse.json({
           success: true,
           ...result,
@@ -60,7 +69,7 @@ export async function POST(request: Request) {
           activatedAt: new Date().toISOString(),
           emergencyLevel: 'national_emergency'
         };
-        
+
         return NextResponse.json({
           success: true,
           status: 'CMI_PROTOCOL_ACTIVATED',
@@ -75,17 +84,19 @@ export async function POST(request: Request) {
       const engineDir = join(process.cwd(), 'engine');
       try {
         const pythonPath = getPythonPath();
-        const { stdout } = await execAsync(
-          `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import deactivate_cmi_protocol; import json; print(json.dumps(deactivate_cmi_protocol()))"`
+        const script = 'from cmi_logic import deactivate_cmi_protocol; import json; print(json.dumps(deactivate_cmi_protocol()))';
+        const { stdout } = await execFileAsync(
+          pythonPath, ['-c', script],
+          { cwd: engineDir, timeout: 10000 }
         );
         const result = JSON.parse(stdout.trim());
-        
+
         cmiState = {
           active: false,
           activatedAt: null,
           emergencyLevel: 'peacetime'
         };
-        
+
         return NextResponse.json({
           success: true,
           ...result,
@@ -98,7 +109,7 @@ export async function POST(request: Request) {
           activatedAt: null,
           emergencyLevel: 'peacetime'
         };
-        
+
         return NextResponse.json({
           success: true,
           status: 'CMI_PROTOCOL_DEACTIVATED',
@@ -112,25 +123,34 @@ export async function POST(request: Request) {
       // Check authorization for action
       const body = await request.json();
       const { impactLevel, sectorPriority, requestingSector, hasMinistryOfDefenseKey } = body;
-      
+
+      // Sanitize user inputs before building Python script
+      const safeImpactLevel = sanitizeInput(impactLevel || 'MEDIUM');
+      const safeSectorPriority = Number(sectorPriority) || 5;
+      const safeRequestingSector = sanitizeInput(requestingSector || 'unknown');
+      const safeHasModKey = hasMinistryOfDefenseKey ? 'True' : 'False';
+
       const engineDir = join(process.cwd(), 'engine');
       try {
         const pythonPath = getPythonPath();
-        const cmd = `cd ${engineDir} && ${pythonPath} -c "
+        const script = `
 from cmi_logic import authorize_action, ImpactLevel
 import json
-impact = ImpactLevel.${impactLevel || 'MEDIUM'}
+impact = ImpactLevel.${safeImpactLevel}
 result = authorize_action(
     impact_level=impact,
-    sector_priority=${sectorPriority || 5},
-    requesting_sector='${requestingSector || 'unknown'}',
-    has_ministry_of_defense_key=${hasMinistryOfDefenseKey ? 'True' : 'False'}
+    sector_priority=${safeSectorPriority},
+    requesting_sector='${safeRequestingSector}',
+    has_ministry_of_defense_key=${safeHasModKey}
 )
 print(json.dumps({'authorized': result[0], 'reason': result[1], 'metadata': result[2]}))
-"`;
-        const { stdout } = await execAsync(cmd);
+`;
+        const { stdout } = await execFileAsync(
+          pythonPath, ['-c', script],
+          { cwd: engineDir, timeout: 10000 }
+        );
         const result = JSON.parse(stdout.trim());
-        
+
         return NextResponse.json({
           success: true,
           ...result
@@ -141,7 +161,7 @@ print(json.dumps({'authorized': result[0], 'reason': result[1], 'metadata': resu
         return NextResponse.json({
           success: true,
           authorized,
-          reason: authorized 
+          reason: authorized
             ? 'AUTHORIZED: Action approved'
             : 'REJECTED: Ministry of Defense authorization required in CMI mode',
           metadata: {
@@ -152,11 +172,11 @@ print(json.dumps({'authorized': result[0], 'reason': result[1], 'metadata': resu
         });
       }
     }
-    
+
     // Legacy POST endpoint for prioritization
     const body = await request.json();
     const { assetId, emergencyLevel } = body;
-    
+
     if (!assetId || !emergencyLevel) {
       return NextResponse.json(
         { error: 'Missing required fields: assetId, emergencyLevel' },
@@ -170,7 +190,7 @@ print(json.dumps({'authorized': result[0], 'reason': result[1], 'metadata': resu
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -186,17 +206,19 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     const action = pathParts[pathParts.length - 1];
-    
+
     if (action === 'status') {
       // Get CMI status
       const engineDir = join(process.cwd(), 'engine');
       try {
         const pythonPath = getPythonPath();
-        const { stdout } = await execAsync(
-          `cd ${engineDir} && ${pythonPath} -c "from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))"`
+        const script = 'from cmi_logic import get_cmi_status; import json; print(json.dumps(get_cmi_status()))';
+        const { stdout } = await execFileAsync(
+          pythonPath, ['-c', script],
+          { cwd: engineDir, timeout: 10000 }
         );
         const result = JSON.parse(stdout.trim());
-        
+
         return NextResponse.json({
           success: true,
           ...result,
@@ -214,11 +236,11 @@ export async function GET(request: Request) {
         });
       }
     }
-    
+
     // Legacy GET endpoint for prioritization plans
     const { searchParams } = new URL(request.url);
     const emergencyLevel = searchParams.get('emergencyLevel') || cmiState.emergencyLevel;
-    
+
     // Try to get prioritization from Python engine
     const engineDir = join(process.cwd(), 'engine');
     try {
@@ -253,7 +275,7 @@ export async function GET(request: Request) {
           }
         ]
       };
-      
+
       return NextResponse.json({
         success: true,
         emergencyLevel,
@@ -263,13 +285,13 @@ export async function GET(request: Request) {
       });
     } catch (error: any) {
       return NextResponse.json(
-        { error: 'Internal server error', details: error.message },
+        { error: 'Internal server error' },
         { status: 500 }
       );
     }
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -1,39 +1,45 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 /**
  * Shadow Link Discovery API
- * 
+ *
  * Runs temporal correlation analysis to discover hidden dependencies
  * between assets that are not in the registry.
- * 
+ *
  * This is the "Secret" - finding dependencies humans would miss.
  */
 export async function POST() {
   try {
     const enginePath = join(process.cwd(), 'engine');
-    const scriptPath = join(enginePath, 'infer_graph.py');
-    
+
     // Run the graph inference which includes shadow link detection
     const pythonPath = getPythonPath();
-    const { stdout, stderr } = await execAsync(
-      `cd ${enginePath} && ${pythonPath} infer_graph.py`,
-      { timeout: 30000 }
+    const { stdout, stderr } = await execFileAsync(
+      pythonPath, ['infer_graph.py'],
+      { cwd: enginePath, timeout: 30000 }
     );
-    
+
     if (stderr && !stderr.includes('Warning')) {
       console.error('Graph inference stderr:', stderr);
     }
-    
+
     // Read the generated graph to find shadow links
     const fs = await import('fs/promises');
     const graphPath = join(enginePath, 'out', 'graph.json');
-    
+
     // Check if graph exists, if not we need normalized data first
     let graphExists = false;
     try {
@@ -45,9 +51,9 @@ export async function POST() {
       try {
         await fs.access(normalizedPath);
         // We have data, just need to infer graph
-        const { stdout: inferStdout } = await execAsync(
-          `cd ${enginePath} && ${pythonPath} infer_graph.py`,
-          { timeout: 30000 }
+        await execFileAsync(
+          pythonPath, ['infer_graph.py'],
+          { cwd: enginePath, timeout: 30000 }
         );
         graphExists = true;
       } catch {
@@ -59,17 +65,17 @@ export async function POST() {
         }, { status: 404 });
       }
     }
-    
+
     const graphData = JSON.parse(await fs.readFile(graphPath, 'utf-8'));
-    
+
     // Filter for shadow links
     const shadowLinks = graphData.edges.filter((edge: any) => edge.isShadowLink === true);
-    
+
     // Find the most significant shadow link (highest confidence)
-    const topShadowLink = shadowLinks.sort((a: any, b: any) => 
+    const topShadowLink = shadowLinks.sort((a: any, b: any) =>
       (b.confidenceScore || 0) - (a.confidenceScore || 0)
     )[0];
-    
+
     if (!topShadowLink) {
       return NextResponse.json({
         success: false,
@@ -77,14 +83,14 @@ export async function POST() {
         shadowLinks: []
       });
     }
-    
+
     // Get node labels
     const sourceNode = graphData.nodes.find((n: any) => n.id === topShadowLink.source);
     const targetNode = graphData.nodes.find((n: any) => n.id === topShadowLink.target);
-    
+
     // Calculate correlation percentage
     const correlationPercent = Math.round((topShadowLink.confidenceScore || 0) * 100);
-    
+
     return NextResponse.json({
       success: true,
       shadowLink: {
@@ -116,10 +122,9 @@ export async function POST() {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to discover shadow links'
+        error: 'Failed to discover shadow links'
       },
       { status: 500 }
     );
   }
 }
-

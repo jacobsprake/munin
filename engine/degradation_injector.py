@@ -37,7 +37,7 @@ def inject_missingness(df: pd.DataFrame, node_id: str, missing_rate: float = 0.2
     n_missing = int(len(series) * missing_rate)
     # Use deterministic RNG seeded by node_id for reproducibility
     import hashlib
-    node_seed = int(hashlib.md5(node_id.encode()).hexdigest()[:8], 16) + _rng_config.get_synthetic_seed()
+    node_seed = int(hashlib.sha256(node_id.encode()).hexdigest()[:8], 16) + _rng_config.get_synthetic_seed()
     rng = np.random.RandomState(node_seed % (2**31))
     missing_indices = rng.choice(series.index, size=n_missing, replace=False)
     series.loc[missing_indices] = np.nan

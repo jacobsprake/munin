@@ -283,7 +283,7 @@ def create_nodes_from_data(df: pd.DataFrame) -> List[Dict]:
         # Mock health (would come from sensor_health in real system)
         # Use deterministic RNG based on node_id hash for reproducibility
         import hashlib
-        node_hash = int(hashlib.md5(node_id.encode()).hexdigest()[:8], 16)
+        node_hash = int(hashlib.sha256(node_id.encode()).hexdigest()[:8], 16)
         rng_state = np.random.RandomState(node_hash % (2**31))
         health_score = rng_state.uniform(0.7, 1.0)
         if health_score < 0.8:

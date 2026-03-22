@@ -1,31 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 /**
  * POST /api/physical-verification
- * 
+ *
  * Verify digital SCADA reading against physical RF/acoustic signals.
  */
 export async function POST(request: Request) {
   try {
     const { nodeId, scadaReading, rfFingerprint, acousticFingerprint } = await request.json();
-    
+
     if (!nodeId || scadaReading === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields: nodeId, scadaReading' },
         { status: 400 }
       );
     }
-    
+
     const engineDir = join(process.cwd(), 'engine');
     const pythonPath = getPythonPath();
-    
+
     // Create verification request
     const verificationRequest = {
       sensor_id: nodeId,
@@ -47,19 +54,19 @@ export async function POST(request: Request) {
         location: ''
       }
     };
-    
+
     const requestPath = join(engineDir, 'out', 'physical_verification_request.json');
     await writeFile(requestPath, JSON.stringify(verificationRequest, null, 2), 'utf-8');
-    
+
     // Run Python physical truth engine
-    const command = `cd ${engineDir} && ${pythonPath} -c "
+    const script = `
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path('${engineDir}').absolute()))
+sys.path.insert(0, str(Path(r'${engineDir}').absolute()))
 from physical_truth import get_unified_physical_truth_engine
 import json
 
-request = json.load(open('${requestPath}'))
+request = json.load(open(r'${requestPath}'))
 engine = get_unified_physical_truth_engine()
 
 result = engine.verify_digital_vs_physical(
@@ -69,16 +76,19 @@ result = engine.verify_digital_vs_physical(
 )
 
 print(json.dumps(result))
-"`;
-    
-    const { stdout } = await execAsync(command);
+`;
+
+    const { stdout } = await execFileAsync(
+      pythonPath, ['-c', script],
+      { cwd: engineDir, timeout: 10000 }
+    );
     const result = JSON.parse(stdout.trim());
-    
+
     // Determine if hardware hack detected
-    const isHack = !result.verified && 
-                   (result.discrepancy_type === 'hardware_hack' || 
+    const isHack = !result.verified &&
+                   (result.discrepancy_type === 'hardware_hack' ||
                     result.discrepancy_type === 'tampering_detected');
-    
+
     return NextResponse.json({
       verified: result.verified,
       isHardwareHack: isHack,
@@ -93,7 +103,7 @@ print(json.dumps(result))
   } catch (error: any) {
     console.error('Physical verification error:', error);
     return NextResponse.json(
-      { error: 'Physical verification failed', details: error.message },
+      { error: 'Physical verification failed' },
       { status: 500 }
     );
   }
@@ -101,7 +111,7 @@ print(json.dumps(result))
 
 /**
  * GET /api/physical-verification
- * 
+ *
  * Get physical verification statistics and discrepancies.
  */
 export async function GET(request: NextRequest) {
@@ -109,9 +119,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const nodeId = searchParams.get('nodeId');
     const action = searchParams.get('action') || 'statistics';
-    
+
     if (action === 'statistics') {
-      // Return statistics about physical vs digital discrepancies
       return NextResponse.json({
         totalVerifications: 0,
         verifiedCount: 0,
@@ -121,9 +130,8 @@ export async function GET(request: NextRequest) {
         topDiscrepancies: []
       });
     }
-    
+
     if (nodeId && action === 'fingerprint') {
-      // Return fingerprint for specific node
       return NextResponse.json({
         nodeId,
         fingerprint: {
@@ -133,11 +141,11 @@ export async function GET(request: NextRequest) {
         }
       });
     }
-    
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Failed to get physical verification data', details: error.message },
+      { error: 'Failed to get physical verification data' },
       { status: 500 }
     );
   }

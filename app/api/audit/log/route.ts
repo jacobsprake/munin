@@ -86,7 +86,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     console.error('Error reading audit log:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to read audit log' },
+      { error: 'Failed to read audit log' },
       { status: 500 }
     );
   }
@@ -119,25 +119,28 @@ export async function POST(request: Request) {
       }
 
       // Run Python verification script
-      const { exec } = await import('child_process');
+      const { execFile } = await import('child_process');
       const { promisify } = await import('util');
-      const execAsync = promisify(exec);
+      const execFileAsync = promisify(execFile);
 
       const engineDir = join(process.cwd(), 'engine');
       const pythonPath = getPythonPath();
-      const cmd = `cd ${engineDir} && ${pythonPath} -c "
+      const script = `
 from audit_log import get_audit_log
 from pathlib import Path
 import json
 
-log_path = Path('${logPath}')
+log_path = Path(r'${logPath}')
 log_dir = log_path.parent
 audit_log = get_audit_log(log_dir)
 result = audit_log.verify_chain()
 print(json.dumps(result))
-"`;
+`;
 
-      const { stdout } = await execAsync(cmd);
+      const { stdout } = await execFileAsync(
+        pythonPath, ['-c', script],
+        { cwd: engineDir, timeout: 10000 }
+      );
       const result = JSON.parse(stdout.trim());
 
       return NextResponse.json(result);
@@ -151,7 +154,7 @@ print(json.dumps(result))
   } catch (error: any) {
     console.error('Error verifying audit log:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to verify audit log' },
+      { error: 'Failed to verify audit log' },
       { status: 500 }
     );
   }

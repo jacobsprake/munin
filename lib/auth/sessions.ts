@@ -16,7 +16,10 @@ import { createHmac, randomBytes } from 'crypto';
 import { getDb } from '../db';
 
 const SESSION_TTL_HOURS = parseInt(process.env.SESSION_TTL_HOURS || '8', 10);
-const SESSION_SECRET = process.env.SESSION_SECRET || randomBytes(32).toString('hex');
+const SESSION_SECRET = process.env.SESSION_SECRET || (() => {
+  console.warn('⚠️  SESSION_SECRET not set — using random fallback (sessions will not persist across restarts)');
+  return randomBytes(32).toString('hex');
+})();
 
 export interface Session {
   id: string;

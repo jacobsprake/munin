@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Error starting engine pipeline:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to start engine pipeline' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -82,7 +82,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     console.error('Error querying engine jobs:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to query engine jobs' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

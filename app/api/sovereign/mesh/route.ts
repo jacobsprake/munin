@@ -1,15 +1,22 @@
-// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// DEMO ENDPOINT -- Returns simulated data for demonstration purposes.
 // Production implementation requires actual mesh networking hardware,
 // LoRa/satellite radio integration, and real node-to-node message routing.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (action === 'status') {
       // Get mesh network status
       const meshPath = join(process.cwd(), 'engine', 'out', 'mesh_network.json');
-      
+
       try {
         const meshData = await readFile(meshPath, 'utf-8');
         const mesh = JSON.parse(meshData);
@@ -42,7 +49,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to get mesh status' },
+      { error: 'Failed to get mesh status' },
       { status: 500 }
     );
   }
@@ -56,17 +63,16 @@ export async function POST(request: NextRequest) {
     if (action === 'initialize') {
       // Initialize mesh network from graph
       const scriptPath = join(process.cwd(), 'engine', 'sovereign_mesh.py');
-      const outDir = join(process.cwd(), 'engine', 'out');
-      
+
       // Run Python script to create mesh network
       const pythonPath = getPythonPath();
-      const { stdout, stderr } = await execAsync(
-        `${pythonPath} "${scriptPath}"`,
-        { cwd: process.cwd() }
+      const { stdout, stderr } = await execFileAsync(
+        pythonPath, [scriptPath],
+        { cwd: process.cwd(), timeout: 10000 }
       );
 
       if (stderr && !stderr.includes('Warning')) {
-        throw new Error(stderr);
+        throw new Error('Mesh initialization failed');
       }
 
       return NextResponse.json({
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
     if (action === 'send_message') {
       // Send message through mesh
       const { sourceNodeId, targetNodeId, payload } = params;
-      
+
       // In production, this would interface with actual mesh hardware
       // For demo, we'll simulate message sending
       return NextResponse.json({
@@ -95,10 +101,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to process mesh request' },
+      { error: 'Failed to process mesh request' },
       { status: 500 }
     );
   }
 }
-
-

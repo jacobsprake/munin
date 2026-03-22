@@ -1,15 +1,22 @@
-// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
+// DEMO ENDPOINT -- Returns simulated data for demonstration purposes.
 // Production implementation requires a real digital twin simulation engine,
 // persistent state management, and integration with live infrastructure topology.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+function sanitizeInput(input: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(input)) {
+    throw new Error('Invalid input');
+  }
+  return input;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +27,7 @@ export async function GET(request: NextRequest) {
     if (action === 'status') {
       // Get digital twin status
       const twinPath = join(process.cwd(), 'engine', 'out', 'digital_twin.json');
-      
+
       try {
         const twinData = await readFile(twinPath, 'utf-8');
         const twin = JSON.parse(twinData);
@@ -42,7 +49,7 @@ export async function GET(request: NextRequest) {
     if (action === 'simulation' && simulationId) {
       // Get simulation result
       const simPath = join(process.cwd(), 'engine', 'out', 'simulations', `${simulationId}.json`);
-      
+
       try {
         const simData = await readFile(simPath, 'utf-8');
         const simulation = JSON.parse(simData);
@@ -61,7 +68,7 @@ export async function GET(request: NextRequest) {
     if (action === 'audit_report') {
       // Get resilience audit report
       const reportPath = join(process.cwd(), 'engine', 'out', 'resilience_audit.json');
-      
+
       try {
         const reportData = await readFile(reportPath, 'utf-8');
         const report = JSON.parse(reportData);
@@ -82,11 +89,11 @@ export async function GET(request: NextRequest) {
 
     if (action === 'living_replay') {
       const replayId = searchParams.get('replayId');
-      
+
       if (replayId) {
         // Get specific living replay
         const replayPath = join(process.cwd(), 'engine', 'out', 'replays', `${replayId}.json`);
-        
+
         try {
           const replayData = await readFile(replayPath, 'utf-8');
           const replay = JSON.parse(replayData);
@@ -112,7 +119,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to get digital twin status' },
+      { error: 'Failed to get digital twin status' },
       { status: 500 }
     );
   }
@@ -126,7 +133,7 @@ export async function POST(request: NextRequest) {
     if (action === 'initialize') {
       // Initialize digital twin from graph
       const { graphData } = params;
-      
+
       if (!graphData) {
         return NextResponse.json(
           { error: 'Missing graphData' },
@@ -153,7 +160,7 @@ export async function POST(request: NextRequest) {
         cascadeDepth,
         severity
       } = params;
-      
+
       if (!scenarioType || !failureNodes || !Array.isArray(failureNodes)) {
         return NextResponse.json(
           { error: 'Missing required scenario parameters' },
@@ -163,7 +170,7 @@ export async function POST(request: NextRequest) {
 
       // In production, would run actual simulation
       const simulationId = `sim_${Date.now()}`;
-      
+
       return NextResponse.json({
         status: 'ok',
         simulationId,
@@ -182,16 +189,16 @@ export async function POST(request: NextRequest) {
     if (action === 'generate_audit_report') {
       // Generate National Resilience Audit report
       const scriptPath = join(process.cwd(), 'engine', 'sovereign_digital_twin.py');
-      
+
       // Run Python script to generate audit report
       const pythonPath = getPythonPath();
-      const { stdout, stderr } = await execAsync(
-        `${pythonPath} "${scriptPath}"`,
-        { cwd: process.cwd() }
+      const { stdout, stderr } = await execFileAsync(
+        pythonPath, [scriptPath],
+        { cwd: process.cwd(), timeout: 10000 }
       );
 
       if (stderr && !stderr.includes('Warning')) {
-        throw new Error(stderr);
+        throw new Error('Audit report generation failed');
       }
 
       return NextResponse.json({
@@ -242,9 +249,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to process digital twin request' },
+      { error: 'Failed to process digital twin request' },
       { status: 500 }
     );
   }
 }
-

@@ -14,7 +14,78 @@
  */
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { validateSession } from './lib/auth/sessions';
 
+/**
+ * Public API routes that do NOT require authentication.
+ * Add new public routes here when needed.
+ *
+ *   - /api/auth/login
+ *   - /api/auth/register
+ *   - /api/auth/session
+ *   - /api/health  (and sub-routes like /api/health/readiness)
+ *   - /api/airgap/verify
+ */
+const PUBLIC_API_ROUTES = [
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/session',
+  '/api/health',
+  '/api/airgap/verify',
+];
+
+function isPublicApiRoute(pathname: string): boolean {
+  return PUBLIC_API_ROUTES.some(
+    route => pathname === route || pathname.startsWith(route + '/')
+  );
+}
+
+/**
+ * Check authentication for protected API routes.
+ * Extracts token from Authorization header (Bearer or raw) or session cookie.
+ * Returns a 401 response if no valid session is found, or null if auth passed.
+ */
+function checkApiAuth(request: NextRequest): NextResponse | null {
+  const authHeader = request.headers.get('authorization');
+  let token: string | null = null;
+
+  if (authHeader) {
+    token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+  } else {
+    token = request.cookies.get('session_token')?.value || null;
+  }
+
+  if (!token) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const session = validateSession(token);
+    if (!session.valid) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+  } catch {
+    // If session validation throws (e.g. DB not ready), deny access
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
+  return null; // Auth passed
+}
+
+// ⚠️ RATE LIMITER LIMITATION: In-memory Map resets on restart and doesn't
+// scale across instances. For production: use SQLite-backed rate limiting
+// (appropriate for air-gap deployment) or Redis for multi-instance.
+// X-Forwarded-For is used as key — spoofable in non-proxy configurations.
+//
 // Simple in-memory rate limiter (no external dependencies)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
@@ -35,6 +106,11 @@ function isRateLimited(key: string, maxRequests: number): boolean {
   entry.count++;
   return entry.count > maxRequests;
 }
+
+// CSRF NOTE: API routes use Authorization header (Bearer token), not cookies.
+// This provides natural CSRF protection since browsers don't auto-attach
+// Authorization headers in cross-origin requests. If cookie-based auth is
+// added in future, CSRF tokens must be implemented.
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -59,6 +135,14 @@ export function middleware(request: NextRequest) {
       { error: 'Too many requests. Try again later.' },
       { status: 429, headers: { 'Retry-After': '60' } }
     );
+  }
+
+  // Authentication check for protected API routes
+  if (pathname.startsWith('/api/') && !isPublicApiRoute(pathname)) {
+    const authResponse = checkApiAuth(request);
+    if (authResponse) {
+      return authResponse;
+    }
   }
 
   const response = NextResponse.next();
