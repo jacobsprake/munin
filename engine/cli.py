@@ -20,6 +20,7 @@ Usage:
   munin regulatory [UK|US|EU]  Regulatory compliance mapper
   munin demo carlisle --ministry-view  Generate ministry executive briefing
   munin demo real-data         Real Environment Agency flood data demo
+  munin demo thames            Real EA data demo – Thames catchment
   munin baseline               Compare Munin vs traditional response
   munin ministry-report [dir]  Generate ministry briefing from existing outputs
   munin twin <hours>           Run digital twin simulation
@@ -761,7 +762,10 @@ def main() -> int:
             return rc
         if event in ("real-data", "ea", "real"):
             return _run_demo_real_data()
-        print(f"Unknown demo event: {event}. Use: carlisle | real-data")
+        if event == "thames":
+            from demo_thames import run_thames_demo
+            return run_thames_demo()
+        print(f"Unknown demo event: {event}. Use: carlisle | real-data | thames")
         return 1
 
     if cmd == "baseline":
