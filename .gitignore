@@ -79,3 +79,12 @@ scenarios_analysis.md
 playbooks/generated/
 .hypothesis/
 .pytest_cache/
+
+# business / fundraising (never commit to public repo)
+*.pptx
+*.docx
+CLAUDE_CODE_INSTRUCTIONS*.md
+BRAND_SYSTEM.md
+*_market_research_*.md
+*_1517_*.md
+/fundraising/
