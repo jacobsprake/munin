@@ -1,0 +1,20 @@
+name: Demo Smoke Test
+on: [push, pull_request]
+jobs:
+  demo-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python deps
+        run: pip install pandas numpy pyyaml
+      - name: Run Carlisle demo
+        run: |
+          cd engine
+          python cli.py demo carlisle
+      - name: Verify output exists
+        run: |
+          test -f engine/out/demo_carlisle/report.md || exit 1
+          echo "Demo smoke test passed"

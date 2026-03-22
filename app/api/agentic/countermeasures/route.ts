@@ -1,20 +1,20 @@
-// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
-// Production implementation requires integration with the Python agentic_reasoning
-// engine, real-time threat detection pipeline, and autonomous response orchestration.
+// ⚠️ DEMO ENDPOINT — Uses rule-based pattern matching, not AI/ML inference.
+// Production path: integrate with inference engine for learned threat models.
+//
+// The current implementation uses simple threshold checks (anomalyScore > 0.8)
+// and returns hardcoded response templates. No machine learning, neural networks,
+// or autonomous reasoning is involved. "Countermeasures" are simulated labels only.
 
 /**
- * Agentic Countermeasures API
- * 2026 End-State Feature: AI vs. AI Defense
+ * Countermeasures API
+ * 2026 End-State Feature: Automated Defense (rule-based demo)
  *
- * Deploys autonomous countermeasures to fight agentic threats at wire-speed.
+ * Returns simulated countermeasure responses based on threshold rules.
+ * Does NOT deploy real autonomous countermeasures.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import path from 'path';
-
-const execAsync = promisify(exec);
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       targetNodeId: nodeId,
       action: anomalyScore > 0.8 ? 'cross_verify' : 'quarantine_node',
       confidence: Math.min(0.95, anomalyScore + 0.1),
-      reasoning: `Anomaly score ${anomalyScore} indicates potential agentic threat. Deploying autonomous countermeasure.`,
+      reasoning: `Anomaly score ${anomalyScore} exceeds threshold. Rule-based countermeasure selected (not ML inference).`,
       deployedAt: new Date().toISOString(),
       status: 'active'
     };
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       countermeasure,
-      message: 'Autonomous countermeasure deployed'
+      message: 'Simulated countermeasure (rule-based demo, not autonomous deployment)'
     });
   } catch (error: any) {
     return NextResponse.json(

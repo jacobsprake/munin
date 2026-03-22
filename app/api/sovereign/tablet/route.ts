@@ -3,12 +3,8 @@
 // real biometric enrollment (iris + palm), and FIPS 140-3 token issuance.
 
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { join } from 'path';
-import { readFile, writeFile } from 'fs/promises';
-
-const execAsync = promisify(exec);
+import { readFile } from 'fs/promises';
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,10 +56,13 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // In production, this would enroll biometric on the tablet
+      // DEMO ENDPOINT — No real biometric enrollment is performed.
+      // Production requires hardware biometric module.
       return NextResponse.json({
         status: 'ok',
         enrolled: true,
+        mode: 'DEMO — no real biometric enrollment',
+        warning: 'Production requires hardware biometric module',
         operatorId,
         biometricType,
         timestamp: new Date().toISOString()
@@ -81,13 +80,16 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // In production, this would issue a FIPS 140-3 token
+      // DEMO ENDPOINT — No real FIPS 140-3 token is issued.
+      // Production requires physical token hardware and HSM.
       return NextResponse.json({
         status: 'ok',
-        tokenId: `token_${Date.now()}`,
+        tokenId: `demo_token_${Date.now()}`,
         operatorId,
         serialNumber,
         issued: true,
+        mode: 'DEMO — no real token issuance',
+        warning: 'Production requires FIPS 140-3 hardware token',
         timestamp: new Date().toISOString()
       });
     }
@@ -110,19 +112,22 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // In production, this would verify all factors on the tablet
-      // For demo, we'll simulate verification
+      // DEMO ENDPOINT — No real biometric verification is performed.
+      // Production requires hardware biometric module (iris scanner + palm reader)
+      // and FIPS 140-3 token validation against enrolled templates.
       const authorization = {
         authorized: true,
+        mode: 'DEMO — no real biometric verification',
+        warning: 'Production requires hardware biometric module',
         packetId,
         operatorId,
         authorizedAt: new Date().toISOString(),
         authenticationFactors: {
-          iris: { verified: true, confidence: 0.99 },
-          palm: { verified: true, confidence: 0.99 },
-          token: { verified: true, tokenId }
+          iris: { verified: true, confidence: 0.99, simulated: true },
+          palm: { verified: true, confidence: 0.99, simulated: true },
+          token: { verified: true, tokenId, simulated: true }
         },
-        signature: `auth_sig_${Date.now()}`
+        signature: `demo_auth_sig_${Date.now()}`
       };
 
       return NextResponse.json({

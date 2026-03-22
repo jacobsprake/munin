@@ -1,17 +1,16 @@
 """
-Return to Atoms: RF & Acoustic Verification
-Physical Truth in a World of Digital Lies
+Physical Verification — Out-of-Band Signal Cross-Check (PROTOTYPE)
 
-Digital data can be faked (Deepfakes for SCADA). Physics cannot.
+Defines data structures for comparing a digital SCADA reading against a
+secondary physical measurement (acoustic, RF, thermal, magnetic). The
+cross-check logic (value tolerance, spectral correlation) is implemented
+in-memory with NumPy arrays.
 
-The Solution: Out-of-Band Physical Fingerprinting. Use Munin to listen to the Electrical Noise (RF) 
-or Acoustics of a pump or substation.
-
-The Narrative: "The digital signal says the pump is at 50% RPM, but Munin's acoustic sensor detects 
-a 60Hz vibration, meaning the sensor has been hijacked. We verify the bits against the atoms."
-
-Why they want it: This is the ultimate defense against "Stuxnet-style" attacks. You are providing 
-Physical Truth in a world of digital lies.
+NOTE: This module does NOT integrate with real sensor hardware. There is
+no microphone, accelerometer, SDR, or thermal camera driver. All signal
+data must be supplied as NumPy arrays by the caller. Acoustic / RF
+"fingerprinting" refers to spectral-peak comparison on pre-loaded data,
+not live sensor acquisition.
 """
 
 import json

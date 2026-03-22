@@ -14,4 +14,8 @@ COPY playbooks/ playbooks/
 
 ENV PYTHONPATH=/app/engine
 
+# Run as non-root user for security
+RUN addgroup --system munin && adduser --system --ingroup munin munin
+USER munin
+
 CMD ["python3", "engine/run.py"]

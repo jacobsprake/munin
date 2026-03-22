@@ -1,35 +1,49 @@
-// ⚠️ DEMO ENDPOINT — Returns simulated data for demonstration purposes.
-// The Python agentic_reasoning engine is real, but when it fails to produce
-// output, this route falls back to hardcoded mock reasoning steps.
-// Production implementation requires a reliable agentic reasoning engine
-// and should not silently fall back to mock data.
+// ⚠️ DEMO ENDPOINT — Uses rule-based pattern matching, not AI/ML inference.
+// Production path: integrate with inference engine for learned threat models.
+//
+// The Python agentic_reasoning engine is a rule-based script. When it fails
+// to produce output, this route falls back to hardcoded mock reasoning steps.
+// Despite the naming, no machine learning or neural inference is involved.
+// Production implementation requires a real ML inference pipeline.
 
 import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { getPythonPath } from '@/lib/serverUtils';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+
+/** Reject input containing shell metacharacters to prevent injection. */
+function sanitizeInput(value: string): string {
+  if (/[;&|`$(){}[\]<>!#"'\\]/.test(value)) {
+    throw new Error('Input contains disallowed characters');
+  }
+  return value;
+}
 
 export async function POST(request: Request) {
   try {
     const { incidentId, brokenSensorId } = await request.json();
-    
+
     if (!incidentId) {
       return NextResponse.json({ error: 'Missing incidentId' }, { status: 400 });
     }
 
+    // Validate inputs against shell metacharacters
+    const safeIncidentId = sanitizeInput(String(incidentId));
+    const safeBrokenSensorId = sanitizeInput(String(brokenSensorId || ''));
+
     const scriptPath = join(process.cwd(), 'engine', 'agentic_reasoning.py');
     const outDir = join(process.cwd(), 'engine', 'out');
-    
-    // Run the agentic reasoning engine
+
+    // Run the agentic reasoning engine using execFile (safe from shell injection)
     const pythonPath = getPythonPath();
-    const pythonCmd = `${pythonPath} "${scriptPath}"`;
-    const { stdout, stderr } = await execAsync(pythonCmd, {
+    const { stdout, stderr } = await execFileAsync(pythonPath, [scriptPath], {
       cwd: join(process.cwd(), 'engine'),
-      env: { ...process.env, INCIDENT_ID: incidentId, BROKEN_SENSOR_ID: brokenSensorId || '' }
+      env: { ...process.env, INCIDENT_ID: safeIncidentId, BROKEN_SENSOR_ID: safeBrokenSensorId },
+      timeout: 10000
     });
 
     if (stderr && !stderr.includes('Warning')) {
@@ -104,8 +118,12 @@ export async function POST(request: Request) {
     }
   } catch (error: any) {
     console.error('Agentic reasoning error:', error);
+    // Sanitize error response — do not leak internal paths or stack traces
+    const safeMessage = error.message?.includes('disallowed characters')
+      ? 'Invalid input: contains disallowed characters'
+      : 'Failed to generate recovery plan';
     return NextResponse.json(
-      { error: 'Failed to generate agentic recovery plan', details: error.message },
+      { error: safeMessage },
       { status: 500 }
     );
   }

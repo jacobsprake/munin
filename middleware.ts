@@ -66,7 +66,10 @@ export function middleware(request: NextRequest) {
   // Air-gap Content Security Policy — Palantir-grade: zero external resources
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // Next.js hydration requires these
+    // NOTE: 'unsafe-inline' is required by Next.js styled-jsx and inline styles.
+    // This is a known limitation — nonce-based CSP requires custom Next.js server
+    // configuration. 'unsafe-eval' has been removed as it is not required.
+    "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
@@ -84,7 +87,7 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY');
   // X-XSS-Protection intentionally omitted: deprecated header that can introduce
   // vulnerabilities in older browsers. Modern CSP provides superior protection.
-  response.headers.set('Referrer-Policy', 'no-referrer'); // Zero referrer leakage for classified data
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()');
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');

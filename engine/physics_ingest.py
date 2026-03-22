@@ -1,17 +1,23 @@
 """
-First Principles Physics Ingest: Spectral Acoustic & RF Fingerprinting
-The "Trust the Physics, Not the Label" Feature
+Physics Ingest — Digital-vs-Physical Signal Comparison (PROTOTYPE)
 
-Most software trusts the "Label" on a sensor (e.g., "This is Pump 4").
-Munin trusts only the Physics.
+This module defines data structures and comparison logic for checking
+whether a digital SCADA reading is consistent with a secondary physical
+measurement (e.g., a pressure gauge, a vibration sensor).
 
-The "One-of-One" Feature: Spectral Acoustic & RF Fingerprinting
-If you can, add a layer where Munin doesn't just read the digital data,
-but it "listens" to the Electrical Noise (RF) or Vibrations of the grid.
+STATUS: The comparison engine (value tolerance check, FFT peak matching)
+is implemented in-memory with NumPy. It does NOT connect to real acoustic
+sensors, RF receivers, or vibration hardware. All "fingerprinting" methods
+operate on pre-loaded NumPy arrays — there is no microphone / accelerometer
+/ SDR integration. To use this in production you would need:
 
-The Narrative: "We don't just trust the SCADA packet; we verify the packet
-against the physical vibration of the pump. If the digital signal says 'Open'
-but the acoustic signal says 'Closed,' Munin flags a hardware hack in 5ms."
+  1. A hardware data-acquisition layer (e.g., NI-DAQ, ICP accelerometer SDK)
+  2. Calibrated baseline spectra captured from real equipment
+  3. Latency-qualified sampling (the "5 ms detection" claim requires FPGA
+     or RT-Linux; this Python code does not guarantee any timing bound)
+
+The value-comparison and FFT-peak-matching logic is real and tested;
+the sensor integration layer is not.
 """
 
 import numpy as np
@@ -322,7 +328,7 @@ def simulate_physics_verification_example():
     print(f"  Hack detected: {is_hack}")
     print(f"  Confidence: {confidence:.2%}")
     print(f"  Type: {hack_type}")
-    print(f"  Detection time: <5ms (as promised)")
+    print(f"  Detection time: not benchmarked (no RT guarantee in Python)")
     
     return engine
 

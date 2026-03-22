@@ -1,0 +1,10 @@
+# Pinned dependency versions for Munin engine
+# Generated 2026-03-22 from pip3 freeze, filtered to requirements.txt packages
+# To regenerate: pip3 freeze | grep -iE '^(pandas|numpy|pyyaml|requests|pytest|hypothesis)=='
+
+pandas==3.0.1
+numpy==2.4.3
+PyYAML==6.0.3
+requests==2.32.5
+pytest==9.0.2
+hypothesis==6.151.9

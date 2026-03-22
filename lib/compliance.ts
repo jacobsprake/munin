@@ -228,6 +228,138 @@ export const NATIONAL_STATUTES: NationalStatute[] = [
     },
     lastUpdated: '2024-01-01',
     citation: 'NERC CIP Standards (CIP-001 through CIP-014)'
+  },
+  {
+    id: 'EU-NIS2-2022/2555-Art21',
+    actName: 'NIS2 Directive — Article 21 Risk Management Measures',
+    jurisdiction: 'EU',
+    section: 'Article 21',
+    title: 'Cybersecurity Risk-Management Measures (Detailed)',
+    requirement: 'Essential and important entities shall take appropriate and proportionate technical, operational, and organisational measures to manage risks posed to the security of network and information systems, including incident handling, supply chain security, business continuity, and crisis management',
+    authority: 'Mandates risk management measures including incident handling procedures, supply chain security policies, and crisis management protocols for essential and important entities',
+    emergencyScope: ['cyber_attack', 'supply_chain_compromise', 'cascading_failure', 'critical_infrastructure'],
+    actions: [
+      'incident_handling',
+      'supply_chain_verification',
+      'crisis_management',
+      'cross_sector_coordination',
+      'backup_activation',
+      'business_continuity'
+    ],
+    regulatoryRelevance: {
+      level: 'HIGH',
+      conditions: [
+        'Entity classified as essential or important under NIS2 Annex I or II',
+        'Incident handling and response procedures established per Art. 21(2)(b)',
+        'Supply chain security policies in place per Art. 21(2)(d)',
+        'Business continuity and crisis management measures per Art. 21(2)(c)'
+      ],
+      notes: [
+        'Member States must ensure entities adopt an all-hazards approach',
+        'Measures must be proportionate to the risk, entity size, and likelihood/severity of incidents'
+      ]
+    },
+    lastUpdated: '2023-01-16',
+    citation: 'Directive (EU) 2022/2555, Art. 21(1)-(2)'
+  },
+  {
+    id: 'UK-SEMD-2001',
+    actName: 'UK Security and Emergency Measures Direction 2001',
+    jurisdiction: 'UK',
+    section: 'Direction 1-6',
+    title: 'Security and Emergency Measures for Water Undertakers',
+    requirement: 'Water undertakers must maintain security plans and emergency response measures to protect water supply infrastructure from threats including contamination, terrorism, and natural disasters',
+    authority: 'Secretary of State direction requiring water undertakers to prepare, maintain, and test security and emergency plans for safeguarding water supply',
+    emergencyScope: ['contamination', 'water_emergency', 'water_quality', 'terrorism', 'flood'],
+    actions: [
+      'isolate_affected_systems',
+      'activate_backup_systems',
+      'emergency_shutdown',
+      'divert_flow',
+      'contamination_response',
+      'security_lockdown'
+    ],
+    regulatoryRelevance: {
+      level: 'HIGH',
+      conditions: [
+        'Applicable to all water undertakers in England and Wales',
+        'Security plan approved by Defra and reviewed annually',
+        'Emergency plans tested through regular exercises',
+        'Coordination with Drinking Water Inspectorate and Environment Agency'
+      ],
+      notes: [
+        'Issued under Section 208 of the Water Industry Act 1991',
+        'Plans must address both malicious threats and natural hazards'
+      ]
+    },
+    lastUpdated: '2022-06-01',
+    citation: 'Security and Emergency Measures Direction 2001 (as amended), issued under WIA 1991 s.208'
+  },
+  {
+    id: 'US-NERC-CIP-008',
+    actName: 'NERC CIP-008 Incident Reporting and Response Planning',
+    jurisdiction: 'US/Canada',
+    section: 'CIP-008-6',
+    title: 'Incident Reporting and Response Planning',
+    requirement: 'Responsible entities must implement Cyber Security Incident response plans that include procedures for identifying, classifying, and responding to Cyber Security Incidents, and for reporting Reportable Cyber Security Incidents to the Electricity Subsector Coordinating Council (E-ISAC)',
+    authority: 'Mandatory reliability standard requiring documented incident response plans, incident classification, response team activation, and mandatory reporting timelines',
+    emergencyScope: ['cyber_attack', 'critical_infrastructure', 'power_instability', 'cascading_failure'],
+    actions: [
+      'incident_handling',
+      'isolation_protocols',
+      'cross_sector_coordination',
+      'emergency_shutdown',
+      'backup_activation',
+      'forensic_preservation'
+    ],
+    regulatoryRelevance: {
+      level: 'HIGH',
+      conditions: [
+        'Applicable to registered entities with high and medium impact BES Cyber Systems',
+        'Incident response plan tested at least once every 15 months',
+        'Reportable incidents must be reported to E-ISAC within 1 hour of identification',
+        'Compliance monitored by NERC Regional Entities with FERC enforcement'
+      ],
+      notes: [
+        'CIP-008-6 became effective October 1, 2020',
+        'Response plan must include roles, communication procedures, and incident handling procedures'
+      ]
+    },
+    lastUpdated: '2020-10-01',
+    citation: 'NERC Standard CIP-008-6, Requirements R1-R4'
+  },
+  {
+    id: 'EU-GDPR-Art32',
+    actName: 'General Data Protection Regulation — Article 32',
+    jurisdiction: 'EU/EEA',
+    section: 'Article 32',
+    title: 'Security of Processing',
+    requirement: 'Controllers and processors shall implement appropriate technical and organisational measures to ensure a level of security appropriate to the risk, including pseudonymisation and encryption of personal data, the ability to ensure ongoing confidentiality, integrity, availability and resilience of processing systems, and the ability to restore availability and access to personal data in a timely manner following a physical or technical incident',
+    authority: 'Legal obligation for data controllers and processors to implement security measures proportionate to risk, including encryption, resilience, and disaster recovery capabilities',
+    emergencyScope: ['data_breach', 'cyber_attack', 'critical_infrastructure', 'cascading_failure'],
+    actions: [
+      'encryption_enforcement',
+      'data_isolation',
+      'backup_activation',
+      'incident_handling',
+      'business_continuity',
+      'access_control_enforcement'
+    ],
+    regulatoryRelevance: {
+      level: 'HIGH',
+      conditions: [
+        'Processing of personal data within EU/EEA or relating to EU/EEA data subjects',
+        'Risk assessment conducted per Art. 32(1) considering state of the art and implementation costs',
+        'Regular testing and evaluation of security measures per Art. 32(1)(d)',
+        'Data sovereignty requirements met for cross-border data processing'
+      ],
+      notes: [
+        'Relevant to Munin deployments processing operator identity or infrastructure telemetry containing personal data',
+        'Supervisory authority enforcement with fines up to EUR 10 million or 2% of annual worldwide turnover per Art. 83(4)'
+      ]
+    },
+    lastUpdated: '2018-05-25',
+    citation: 'Regulation (EU) 2016/679, Art. 32(1)(a)-(d)'
   }
 ];
 

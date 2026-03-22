@@ -1,14 +1,13 @@
 """
-Protocol Translator: Universal OT-to-Graph Connectors
-Zero-Rip-and-Replace Architecture
+⚠️ PROTOCOL FRAMEWORK — ADAPTER STUBS
 
-This module provides "drivers" for every major industrial protocol (Modbus, DNP3, 
-Profibus, BacNet) and vendor (Siemens, Schneider, Honeywell). Munin can "inhale" 
-legacy data from 1980s hardware mixed with 2024 tech without requiring any 
-hardware replacement.
+This module defines the adapter interface for SCADA protocol translation.
+Current adapters handle CSV and JSON ingestion formats. Modbus/DNP3/BACnet/
+OPC-UA adapters are stubbed — they define the interface but require
+pymodbus/pydnp3/opcua libraries for real protocol parsing.
 
-The "Library of Ancestry" - pre-loaded protocol drivers that make Munin 
-plug-and-play for the state.
+The unified schema (timestamp, node_id, value, quality, protocol) is
+production-ready. Only the protocol-specific parsing layer needs extension.
 """
 
 import pandas as pd

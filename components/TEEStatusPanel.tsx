@@ -22,18 +22,28 @@ export default function TEEStatusPanel() {
         </div>
       </div>
 
+      {/* SOFTWARE SIMULATION BANNER */}
+      <div className="p-3 bg-yellow-500/20 border border-yellow-500/50 rounded flex items-center gap-2">
+        <span className="text-yellow-400 font-bold text-xs mono px-2 py-0.5 bg-yellow-500/30 rounded">
+          SOFTWARE SIMULATION
+        </span>
+        <span className="text-yellow-300 text-xs mono">
+          No real TEE hardware connected. Values below are simulated for demonstration.
+        </span>
+      </div>
+
       <div className="p-4 bg-base-800 rounded border border-base-700 space-y-3">
         <div className="flex items-center justify-between">
           <div className="text-label mono text-text-primary">
             ROOT OF TRUST
           </div>
-          <Badge status="ok">VALIDATED</Badge>
+          <Badge status="ok">SIMULATED</Badge>
         </div>
-        
+
         <div className="space-y-2 text-body-mono mono text-xs">
           <div>
             <span className="text-text-muted">Platform:</span>{' '}
-            <span className="text-text-primary">Intel SGX Enclave #4401</span>
+            <span className="text-text-primary">Intel SGX Enclave #4401 (simulated)</span>
           </div>
           <div>
             <span className="text-text-muted">Measurement:</span>{' '}
@@ -44,7 +54,7 @@ export default function TEEStatusPanel() {
           <div>
             <span className="text-text-muted">Quote:</span>{' '}
             <span className="text-text-secondary font-mono">
-              Verified by Intel Attestation Service
+              Software-generated (no Intel Attestation Service connection)
             </span>
           </div>
         </div>
@@ -52,8 +62,8 @@ export default function TEEStatusPanel() {
 
       <div className="p-3 bg-safety-emerald/10 border border-safety-emerald/30 rounded">
         <div className="text-body-mono mono text-text-secondary text-xs">
-          All cryptographic operations executed within hardware-isolated enclave.
-          Commands validated against physics constraints before execution.
+          In production, cryptographic operations execute within a hardware-isolated enclave.
+          This demo uses software-only simulation. See lib/tee.ts for implementation status.
         </div>
       </div>
     </Card>
