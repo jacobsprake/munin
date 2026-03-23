@@ -21,6 +21,7 @@ Usage:
   munin demo carlisle --ministry-view  Generate ministry executive briefing
   munin demo real-data         Real Environment Agency flood data demo
   munin demo thames            Real EA data demo – Thames catchment
+  munin demo cross-sector      Cross-sector shadow link discovery (weather↔water)
   munin baseline               Compare Munin vs traditional response
   munin ministry-report [dir]  Generate ministry briefing from existing outputs
   munin twin <hours>           Run digital twin simulation
@@ -765,7 +766,10 @@ def main() -> int:
         if event == "thames":
             from demo_thames import run_thames_demo
             return run_thames_demo()
-        print(f"Unknown demo event: {event}. Use: carlisle | real-data | thames")
+        if event in ("cross-sector", "cross_sector", "crosssector"):
+            from demo_cross_sector import run_cross_sector_demo
+            return run_cross_sector_demo()
+        print(f"Unknown demo event: {event}. Use: carlisle | real-data | thames | cross-sector")
         return 1
 
     if cmd == "baseline":

@@ -1,0 +1,513 @@
+{
+  "meta": {
+    "demo": "cross-sector",
+    "spr": "SPR-266",
+    "generated_utc": "2026-03-23T05:31:08.329686+00:00",
+    "data_sources": [
+      {
+        "name": "Open-Meteo",
+        "url": "https://open-meteo.com",
+        "type": "weather/atmospheric",
+        "auth": "none"
+      },
+      {
+        "name": "USGS NWIS",
+        "url": "https://waterservices.usgs.gov",
+        "type": "water/hydrological",
+        "auth": "none"
+      }
+    ],
+    "observation_window_days": 7,
+    "aligned_hours": 163
+  },
+  "nodes": [
+    {
+      "id": "weather_precip_mm",
+      "sector": "weather",
+      "label": "Weather Precip Mm",
+      "kind": "sensor",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "weather_temp_c",
+      "sector": "weather",
+      "label": "Weather Temp C",
+      "kind": "sensor",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "weather_wind_kmh",
+      "sector": "weather",
+      "label": "Weather Wind Kmh",
+      "kind": "sensor",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "usgs_potomac_upstream",
+      "sector": "water",
+      "label": "Usgs Potomac Upstream",
+      "kind": "gauge",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "usgs_potomac_upstream_flow",
+      "sector": "water",
+      "label": "Usgs Potomac Upstream Flow",
+      "kind": "gauge",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "usgs_potomac_downstream",
+      "sector": "water",
+      "label": "Usgs Potomac Downstream",
+      "kind": "gauge",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "usgs_potomac_downstream_flow",
+      "sector": "water",
+      "label": "Usgs Potomac Downstream Flow",
+      "kind": "gauge",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "weather_precip_6h_sum",
+      "sector": "weather",
+      "label": "Weather Precip 6H Sum",
+      "kind": "sensor",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    },
+    {
+      "id": "weather_precip_12h_sum",
+      "sector": "weather",
+      "label": "Weather Precip 12H Sum",
+      "kind": "sensor",
+      "region": "potomac_basin",
+      "lat": 38.95,
+      "lon": -77.13
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_0000",
+      "source": "weather_precip_mm",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.5351177786416256,
+      "inferredLagSeconds": 180,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.3662704318491302,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0001",
+      "source": "weather_precip_mm",
+      "target": "weather_precip_12h_sum",
+      "confidenceScore": 0.4306338603106492,
+      "inferredLagSeconds": 540,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_2"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.29040065715154123,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0002",
+      "source": "weather_precip_mm",
+      "target": "weather_wind_kmh",
+      "confidenceScore": 0.3820963272986667,
+      "inferredLagSeconds": 60,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_3"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.03607164218107283,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0003",
+      "source": "weather_precip_mm",
+      "target": "usgs_potomac_downstream_flow",
+      "confidenceScore": 0.27787795081617633,
+      "inferredLagSeconds": 2040,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_4"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.0471266213434468,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0004",
+      "source": "weather_precip_mm",
+      "target": "usgs_potomac_upstream_flow",
+      "confidenceScore": 0.2737030461590063,
+      "inferredLagSeconds": 1740,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_5"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.27043380698392966,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0005",
+      "source": "weather_precip_mm",
+      "target": "usgs_potomac_downstream",
+      "confidenceScore": 0.2720263331134821,
+      "inferredLagSeconds": 2040,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_6"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.04514174832632273,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0012",
+      "source": "weather_wind_kmh",
+      "target": "usgs_potomac_downstream_flow",
+      "confidenceScore": 0.7090257940286658,
+      "inferredLagSeconds": 1860,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_13"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.09469790002020512,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0013",
+      "source": "weather_wind_kmh",
+      "target": "usgs_potomac_downstream",
+      "confidenceScore": 0.7070906117378456,
+      "inferredLagSeconds": 1860,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_14"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.09522223543802787,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0014",
+      "source": "weather_wind_kmh",
+      "target": "weather_precip_12h_sum",
+      "confidenceScore": 0.5715101843571386,
+      "inferredLagSeconds": 240,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_15"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.3220420374718578,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0017",
+      "source": "weather_wind_kmh",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.529858338630301,
+      "inferredLagSeconds": 180,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_18"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.3229136045990224,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0018",
+      "source": "usgs_potomac_upstream",
+      "target": "usgs_potomac_upstream_flow",
+      "confidenceScore": 0.9998319197594964,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_19"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.9974508723415342,
+      "evidenceWindowCount": 1,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0019",
+      "source": "usgs_potomac_upstream",
+      "target": "usgs_potomac_downstream",
+      "confidenceScore": 0.7987750741725207,
+      "inferredLagSeconds": 900,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_20"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.405748237511538,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0020",
+      "source": "usgs_potomac_upstream",
+      "target": "usgs_potomac_downstream_flow",
+      "confidenceScore": 0.7939256558340402,
+      "inferredLagSeconds": 960,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_21"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.4112697718620892,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0022",
+      "source": "usgs_potomac_upstream",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.4505502091919511,
+      "inferredLagSeconds": 1980,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_23"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.44832128364710283,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0023",
+      "source": "usgs_potomac_upstream_flow",
+      "target": "usgs_potomac_downstream",
+      "confidenceScore": 0.7964935118145803,
+      "inferredLagSeconds": 960,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_24"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.41371342321639454,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0024",
+      "source": "usgs_potomac_upstream_flow",
+      "target": "usgs_potomac_downstream_flow",
+      "confidenceScore": 0.7924622562924409,
+      "inferredLagSeconds": 1980,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_25"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.4191748789753581,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows"
+      ]
+    },
+    {
+      "id": "edge_0026",
+      "source": "usgs_potomac_upstream_flow",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.4543258320204817,
+      "inferredLagSeconds": 1980,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_27"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.45013974937122947,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0027",
+      "source": "usgs_potomac_downstream",
+      "target": "usgs_potomac_downstream_flow",
+      "confidenceScore": 0.9997462088202311,
+      "inferredLagSeconds": 0,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_28"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.9997094749576488,
+      "evidenceWindowCount": 1,
+      "confounderNotes": null
+    },
+    {
+      "id": "edge_0028",
+      "source": "usgs_potomac_downstream",
+      "target": "weather_precip_12h_sum",
+      "confidenceScore": 0.6639842484232724,
+      "inferredLagSeconds": 1740,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_29"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.04708256302759917,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0029",
+      "source": "usgs_potomac_downstream",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.5512598110286727,
+      "inferredLagSeconds": 1920,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_30"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.0865967303050649,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0030",
+      "source": "usgs_potomac_downstream_flow",
+      "target": "weather_precip_12h_sum",
+      "confidenceScore": 0.6747580283899408,
+      "inferredLagSeconds": 1740,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_31"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.06024495486520344,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0031",
+      "source": "usgs_potomac_downstream_flow",
+      "target": "weather_precip_6h_sum",
+      "confidenceScore": 0.5627871431215138,
+      "inferredLagSeconds": 1920,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_32"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.0931584063610395,
+      "evidenceWindowCount": 1,
+      "confounderNotes": [
+        "Low stability across windows",
+        "Moderate correlation strength"
+      ]
+    },
+    {
+      "id": "edge_0032",
+      "source": "weather_precip_6h_sum",
+      "target": "weather_precip_12h_sum",
+      "confidenceScore": 0.8016970703511055,
+      "inferredLagSeconds": 360,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_33"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.7489910575265262,
+      "evidenceWindowCount": 1,
+      "confounderNotes": null
+    }
+  ],
+  "cross_sector_summary": {
+    "total_edges": 23,
+    "cross_sector_edges": 11,
+    "within_sector_edges": 12,
+    "shadow_links_found": true
+  }
+}
