@@ -1,0 +1,60 @@
+{
+  "nodes": [
+    {
+      "id": "thames_sandford",
+      "sector": "other",
+      "label": "Thames Sandford",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.777844097674736,
+        "status": "degraded"
+      }
+    },
+    {
+      "id": "thames_ditton",
+      "sector": "other",
+      "label": "Thames Ditton",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.9564877392410859,
+        "status": "ok"
+      }
+    },
+    {
+      "id": "thames_teddington",
+      "sector": "other",
+      "label": "Thames Teddington",
+      "kind": "service",
+      "region": "unknown",
+      "lat": null,
+      "lon": null,
+      "health": {
+        "score": 0.8338222011908809,
+        "status": "warning"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_0000",
+      "source": "thames_ditton",
+      "target": "thames_teddington",
+      "confidenceScore": 0.7273517056158217,
+      "inferredLagSeconds": 180,
+      "condition": null,
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "isShadowLink": false,
+      "stabilityScore": 0.6814949577104255,
+      "evidenceWindowCount": 1,
+      "confounderNotes": null
+    }
+  ]
+}

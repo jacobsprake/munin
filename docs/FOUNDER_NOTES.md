@@ -1,5 +1,23 @@
 # How I got here
 
+## Timeline
+
+Empty repo to working platform, solo.
+
+| Date | Milestone |
+|------|-----------|
+| **Jan 9, 2026** | First commit. Empty repo. |
+| **Jan 20** | Inference engine: shadow-link discovery from time-series correlation working on synthetic data. |
+| **Feb 3** | Digital twin: power-water-telecom cascade simulation with physics-based models. |
+| **Feb 10** | Carlisle 2015 flood demo running end-to-end on real Environment Agency data. |
+| **Feb 17** | Safety case (GSN), STPA hazard analysis, threat model (NIST 800-82). |
+| **Feb 24** | PQC dual-stack signatures (Ed25519 + ML-DSA). Adversarial testing module. |
+| **Mar 3** | Storm Desmond second demo on live data. 96 passing tests. Governance layer complete. |
+| **Mar 10** | 90+ files of documentation. CER Directive compliance mapping. Landing page live. |
+| **Mar 17** | Full platform: inference, simulation, playbooks, authorization packets, audit trail, CLI. 10 weeks. |
+
+---
+
 I didn't start with infrastructure. I started with the question: what systems are so important that getting them wrong kills people, and so complex that nobody has a complete picture?
 
 The answer is critical infrastructure — power, water, telecom. Not because the individual systems are poorly built (they're not), but because the *connections between them* are invisible. A water utility's monitoring system doesn't know that its pumps depend on a specific substation. The power grid doesn't know that a telecom tower's backup battery is about to die. When one sector fails, the cascade into adjacent sectors is discovered reactively, by humans making phone calls, not by any automated system.

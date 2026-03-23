@@ -4,9 +4,11 @@
 [![Test](https://github.com/jacobsprake/munin/actions/workflows/test.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/test.yml)
 [![CodeQL](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml)
 
-**[munin-site.vercel.app](https://munin-site.vercel.app)** | [Doctrine](docs/MUNIN_DOCTRINE.md) | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) | [Safety Case](docs/SAFETY_CASE.md)
+**[munin-site.vercel.app](https://munin-site.vercel.app)** | [Doctrine](docs/MUNIN_DOCTRINE.md) | [Demo Walkthrough](docs/internal/DEMO_WALKTHROUGH.md) | [Safety Case](docs/SAFETY_CASE.md)
 
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
+
+**Built from an empty repo to a full working platform in 10 weeks, solo.** Started January 9, 2026. 96 passing tests, 2 real-data demos on live Environment Agency data, 90+ files of technical documentation.
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
@@ -23,7 +25,7 @@ pip install pandas numpy pyyaml
 ./scripts/munin demo carlisle
 ```
 
-This runs the full pipeline — ingest, graph inference, cascade simulation, playbook matching, packet generation — and produces a self-contained report at `engine/out/demo_carlisle/report.md`. See [docs/DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
+This runs the full pipeline — ingest, graph inference, cascade simulation, playbook matching, packet generation — and produces a self-contained report at `engine/out/demo_carlisle/report.md`. See [docs/internal/DEMO_WALKTHROUGH.md](docs/internal/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
 
 ## What to look at next
 
@@ -31,9 +33,9 @@ This runs the full pipeline — ingest, graph inference, cascade simulation, pla
 |---------------|-----------|
 | **5 minutes** | Run the demo above, read the generated `engine/out/demo_carlisle/report.md` |
 | **10 minutes** | Read [The Munin Doctrine](docs/MUNIN_DOCTRINE.md) — the thesis, the vision, and why this is inevitable |
-| **15 minutes** | [Demo Walkthrough](docs/DEMO_WALKTHROUGH.md) — step-by-step CLI with `munin graph show`, `munin edge explain`, `munin packet verify` |
+| **15 minutes** | [Demo Walkthrough](docs/internal/DEMO_WALKTHROUGH.md) — step-by-step CLI with `munin graph show`, `munin edge explain`, `munin packet verify` |
 | **20 minutes** | [Safety Case](docs/SAFETY_CASE.md) + [Limitations](docs/LIMITATIONS.md) — what works, what doesn't, and why v1 can't hurt anyone |
-| **30 minutes** | [What's Next](docs/WHATS_NEXT.md), [Evaluation Results](research/munin_v1_results.md), [Progress Log](docs/PROGRESS_LOG.md) |
+| **30 minutes** | [What's Next](docs/WHATS_NEXT.md), [Evaluation Results](research/munin_v1_results.md), [Progress Log](docs/internal/PROGRESS_LOG.md) |
 
 ## Why this matters now
 
@@ -42,6 +44,12 @@ Infrastructure cascades move in minutes. Human coordination takes hours. This ga
 In the 2015 Carlisle floods, cross-agency coordination delays meant the cascade had already consumed entire sectors before response could be authorized. Every major infrastructure disaster follows the same pattern: the physics outpaces the bureaucracy.
 
 Munin compresses that gap — not by removing humans, but by pre-computing the evidence, pre-formatting the decision, and presenting it in a form that allows rapid, informed, auditable human approval. Ed25519 cryptographic signatures ensure authorization records are defensible today; the architecture supports ML-DSA (FIPS 204) dual-stack for post-quantum protection over the 30-50 year operational lifetime of the infrastructure (see [PQC Roadmap](docs/PQC_ROADMAP.md)).
+
+### Why now
+
+- **EU CER Directive deadline: July 17, 2026.** All 27 member states must transpose the Critical Entities Resilience Directive into national law, requiring cross-sector risk assessment and incident notification for essential services. No incumbent tool does cross-sector dependency discovery — the core capability Munin provides. See [CER Compliance Mapping](docs/CER_COMPLIANCE_MAPPING.md).
+- **Post-quantum crypto timeline.** NIST standardized ML-DSA (FIPS 204) in 2024. Authorization packets signed today for critical infrastructure need to remain unforgeable for 30-50 years. The window to adopt PQC before harvest-now-decrypt-later attacks become practical is closing.
+- **No cross-sector tooling exists.** SCADA vendors monitor within their sector. GIS vendors map assets. Nobody infers cross-sector dependencies from operational telemetry and pre-computes authorized response options.
 
 ---
 
@@ -330,7 +338,7 @@ Full technical documentation is in [`docs/`](docs/). Key entry points:
 | [PQC Roadmap](docs/PQC_ROADMAP.md) | Post-quantum crypto integration timeline |
 | [TEE Roadmap](docs/TEE_ROADMAP.md) | Hardware enclave integration plan |
 | [Evaluation Results](research/munin_v1_results.md) | Benchmark metrics on synthetic + real data |
-| [Progress Log](docs/PROGRESS_LOG.md) | Chronological build history |
+| [Progress Log](docs/internal/PROGRESS_LOG.md) | Chronological build history |
 | [Architecture Decisions](docs/adr/) | ADRs for key design choices |
 
 See also: [SAFETY_ANALYSIS_STPA.md](docs/SAFETY_ANALYSIS_STPA.md), [IEC62443_MAPPING.md](docs/IEC62443_MAPPING.md), [HAZARD_LOG.md](docs/HAZARD_LOG.md), [GOVERNANCE.md](docs/GOVERNANCE.md), [MISUSE_AND_ABUSE.md](docs/MISUSE_AND_ABUSE.md), [HUMAN_FACTORS.md](docs/HUMAN_FACTORS.md), [DIGITAL_TWIN.md](docs/DIGITAL_TWIN.md), [INGESTION_AT_SCALE.md](docs/INGESTION_AT_SCALE.md), [FOUNDER_NOTES.md](docs/FOUNDER_NOTES.md).
