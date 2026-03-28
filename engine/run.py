@@ -297,12 +297,19 @@ def main(
         # Quick training for pipeline integration (full training via CLI)
         trainer.train(data_array, data_array, epochs=min(config.anomaly.epochs, 10))
         anomaly_results = trainer.detect_anomalies(data_array)
+        total_anomalies = int(anomaly_results.flags.sum()) if anomaly_results.flags is not None else 0
+        anomaly_report = {
+            'total_anomalies': total_anomalies,
+            'threshold': float(anomaly_results.threshold),
+            'total_samples': len(anomaly_results.flags) if anomaly_results.flags is not None else 0,
+            'anomaly_indices': [int(i) for i in np.where(anomaly_results.flags)[0]] if anomaly_results.flags is not None else [],
+        }
         with open(out_dir / "anomaly_report.json", 'w') as f:
-            json.dump(anomaly_results, f, indent=2, default=str)
+            json.dump(anomaly_report, f, indent=2, default=str)
         logger.end_phase("anomaly_detection", {
-            'anomalies_detected': anomaly_results.get('total_anomalies', 0)
+            'anomalies_detected': total_anomalies
         })
-        print(f"  Anomalies detected: {anomaly_results.get('total_anomalies', 0)}")
+        print(f"  Anomalies detected: {total_anomalies}")
     except ImportError:
         print("  [SKIP] torch not installed — run: pip install torch scikit-learn")
         logger.end_phase("anomaly_detection", {'skipped': True})
@@ -367,7 +374,7 @@ def main(
                 )
                 predictor = CascadePredictor(cascade_cfg)
                 # Run prediction on first node as demo
-                pred = predictor.predict_cascade(gd, failure_node_indices=[0], t_horizon=2.0)
+                pred = predictor.predict_cascade(gd, failure_nodes=[nodes_list[0]['id']], t_horizon=2.0)
                 cascade_output = {
                     'affected_nodes': {k: v.tolist() if hasattr(v, 'tolist') else v for k, v in pred.affected_nodes.items()},
                     'time_to_impact': pred.time_to_impact,
@@ -401,7 +408,7 @@ def main(
                 'nodes': len(graph_data.get('nodes', [])),
                 'edges': len(graph_data.get('edges', [])),
                 'incidents': len(incidents_data.get('incidents', [])),
-                'anomalies': anomaly_results.get('total_anomalies', 0) if anomaly_results else 0,
+                'anomalies': int(anomaly_results.flags.sum()) if anomaly_results is not None and anomaly_results.flags is not None else 0,
             }
         )
         print(f"  Audit trail: {out_dir / 'ml_audit'}")
@@ -434,9 +441,12 @@ def main(
         packets_src = out_dir / "packets"
         packets_dst = parent_out / "packets"
         if packets_src.exists():
-            if packets_dst.exists():
-                shutil.rmtree(packets_dst)
-            shutil.copytree(packets_src, packets_dst)
+            try:
+                if packets_dst.exists():
+                    shutil.rmtree(packets_dst)
+                shutil.copytree(packets_src, packets_dst)
+            except PermissionError:
+                pass  # OK on read-only mounted filesystems
         _agent_log(run_id, "H5", "engine/run.py:copy_out", "Copied outputs to engine/out for app", {
             "parentOut": str(parent_out),
         })

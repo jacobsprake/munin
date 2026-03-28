@@ -52,6 +52,8 @@ def ingest_historian_data(data_dir: Path, db_path: Path | None = None, recursive
         )
 
     combined = pd.concat(all_data, ignore_index=True)
+    # Normalize timezone-aware and timezone-naive timestamps before sorting
+    combined['timestamp'] = pd.to_datetime(combined['timestamp'], utc=True)
     combined = combined.sort_values('timestamp')
     return combined
 
