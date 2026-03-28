@@ -21,6 +21,10 @@ from enum import Enum
 from datetime import datetime
 import hashlib
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class VersionID(Enum):
     """Different versions of the inference engine."""
@@ -375,50 +379,50 @@ if __name__ == "__main__":
     graph = {'nodes': [], 'edges': []}
     evidence = {'windows': []}
     
-    print("=" * 60)
-    print("N-VERSION PROGRAMMING ENGINE")
-    print("=" * 60)
-    
+    log.info("=" * 60)
+    log.info("N-VERSION PROGRAMMING ENGINE")
+    log.info("=" * 60)
+
     decision = engine.run_n_version_inference(input_data, graph, evidence)
-    
-    print(f"\nDecision ID: {decision.decision_id}")
-    print(f"Consensus Result: {decision.consensus_result.value}")
-    print(f"Threshold: {decision.threshold}-of-{len(decision.version_outputs)}")
-    
-    print(f"\nVersion Outputs:")
+
+    log.info(f"Decision ID: {decision.decision_id}")
+    log.info(f"Consensus Result: {decision.consensus_result.value}")
+    log.info(f"Threshold: {decision.threshold}-of-{len(decision.version_outputs)}")
+
+    log.info(f"Version Outputs:")
     for output in decision.version_outputs:
-        print(f"  {output.version_id.value}:")
-        print(f"    Command: {output.command.get('action')}")
-        print(f"    Confidence: {output.confidence:.2f}")
-        print(f"    Reasoning: {output.reasoning}")
-    
+        log.info(f"  {output.version_id.value}:")
+        log.info(f"    Command: {output.command.get('action')}")
+        log.info(f"    Confidence: {output.confidence:.2f}")
+        log.info(f"    Reasoning: {output.reasoning}")
+
     if decision.consensus_result == ConsensusResult.CONSENSUS:
-        print(f"\n✓ CONSENSUS REACHED")
-        print(f"  Agreed Command: {decision.agreed_command}")
+        log.info(f"CONSENSUS REACHED")
+        log.info(f"  Agreed Command: {decision.agreed_command}")
         if decision.disagreement_details:
-            print(f"  Disagreements: {len(decision.disagreement_details)} version(s) disagreed")
+            log.info(f"  Disagreements: {len(decision.disagreement_details)} version(s) disagreed")
     else:
-        print(f"\n✗ NO CONSENSUS")
-        print(f"  System BLOCKED - No command will be executed")
+        log.warning(f"NO CONSENSUS")
+        log.warning(f"  System BLOCKED - No command will be executed")
         if decision.disagreement_details:
             for detail in decision.disagreement_details:
-                print(f"    - {detail}")
-    
+                log.warning(f"    - {detail}")
+
     # Get statistics
     stats = engine.get_consensus_statistics()
-    print(f"\n{'=' * 60}")
-    print("CONSENSUS STATISTICS")
-    print(f"{'=' * 60}")
-    print(f"Total Decisions: {stats['total_decisions']}")
-    print(f"Consensus Rate: {stats['consensus_rate']:.1%}")
-    print(f"Disagreement Rate: {stats['disagreement_rate']:.1%}")
-    print(f"Byzantine Fault Tolerance: {stats['byzantine_fault_tolerance']}")
-    
+    log.info("=" * 60)
+    log.info("CONSENSUS STATISTICS")
+    log.info("=" * 60)
+    log.info(f"Total Decisions: {stats['total_decisions']}")
+    log.info(f"Consensus Rate: {stats['consensus_rate']:.1%}")
+    log.info(f"Disagreement Rate: {stats['disagreement_rate']:.1%}")
+    log.info(f"Byzantine Fault Tolerance: {stats['byzantine_fault_tolerance']}")
+
     # Generate certificate
     certificate = engine.generate_byzantine_fault_tolerance_certificate()
-    print(f"\n{'=' * 60}")
-    print("BYZANTINE FAULT TOLERANCE CERTIFICATE")
-    print(f"{'=' * 60}")
-    print(certificate['security_guarantee'])
+    log.info("=" * 60)
+    log.info("BYZANTINE FAULT TOLERANCE CERTIFICATE")
+    log.info("=" * 60)
+    log.info(certificate['security_guarantee'])
 
 

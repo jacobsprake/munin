@@ -6,6 +6,10 @@ from typing import Dict, List, Tuple, Optional
 import json
 from config import GraphInferenceConfig, get_config
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 def compute_correlation_with_lag(
     series1: pd.Series,
     series2: pd.Series,
@@ -342,7 +346,7 @@ def build_graph(input_path: Path, output_path: Path, registry_path: Path = None,
         json.dump(graph, f, indent=2)
     
     shadow_count = sum(1 for e in edges if e.get('isShadowLink', False))
-    print(f"Graph saved to {output_path}: {len(nodes)} nodes, {len(edges)} edges ({shadow_count} shadow links)")
+    log.info(f"Graph saved to {output_path}: {len(nodes)} nodes, {len(edges)} edges ({shadow_count} shadow links)")
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent

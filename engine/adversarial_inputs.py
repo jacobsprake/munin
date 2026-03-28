@@ -37,6 +37,10 @@ import pandas as pd
 ENGINE_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(ENGINE_DIR))
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 # ---------------------------------------------------------------------------
 # Attack type enum
@@ -326,21 +330,21 @@ def run_adversarial_test(
             attacks_to_run = list(ATTACK_CLASSES.keys())
         else:
             if attack_type not in ATTACK_CLASSES:
-                print(f"Unknown attack type: {attack_type}")
-                print(f"Available: {', '.join(ATTACK_CLASSES.keys())} | all")
+                log.error(f"Unknown attack type: {attack_type}")
+                log.info(f"Available: {', '.join(ATTACK_CLASSES.keys())} | all")
                 return 1
             attacks_to_run = [attack_type]
 
         node_ids = list(df_baseline.columns)
         if not node_ids:
-            print("No sensor columns found in data")
+            log.error("No sensor columns found in data")
             return 1
 
         target_node = node_ids[0]
         results: List[Dict] = []
         all_detected = True
 
-        print("\n--- Adversarial Red-Team Test Results ---\n")
+        log.info("--- Adversarial Red-Team Test Results ---")
 
         for atk_name in attacks_to_run:
             atk_cls = ATTACK_CLASSES[atk_name]
@@ -362,7 +366,7 @@ def run_adversarial_test(
             try:
                 build_graph(attacked_csv, graph_path)
             except Exception as exc:
-                print(f"  [{atk_name}] Graph inference failed: {exc}")
+                log.error(f"[{atk_name}] Graph inference failed: {exc}")
                 results.append({"attack": atk_name, "detected": False, "error": str(exc)})
                 all_detected = False
                 continue
@@ -376,7 +380,7 @@ def run_adversarial_test(
             detected = len(issues) > 0
 
             status = "DETECTED" if detected else "UNDETECTED"
-            print(f"  [{status}] {atk_name}: issues={issues}  meta={meta}")
+            log.info(f"[{status}] {atk_name}: issues={issues}  meta={meta}")
 
             results.append({
                 "attack": atk_name,
@@ -391,7 +395,7 @@ def run_adversarial_test(
         # Summary
         detected_count = sum(1 for r in results if r.get("detected"))
         total = len(results)
-        print(f"\n  Summary: {detected_count}/{total} attacks detected")
-        print(f"  Overall: {'PASS' if all_detected else 'FAIL'}\n")
+        log.info(f"Summary: {detected_count}/{total} attacks detected")
+        log.info(f"Overall: {'PASS' if all_detected else 'FAIL'}")
 
         return 0 if all_detected else 1

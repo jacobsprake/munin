@@ -12,6 +12,10 @@ from pathlib import Path
 import json
 import time
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class EAFloodClient:
     """Client for Environment Agency flood monitoring API."""
@@ -201,7 +205,7 @@ class EAFloodClient:
                     'value': value
                 })
             except (KeyError, ValueError) as e:
-                print(f"Warning: Skipping invalid reading: {e}")
+                log.warning(f"Skipping invalid reading: {e}")
                 continue
         
         df = pd.DataFrame(data)
@@ -298,10 +302,10 @@ def fetch_carlisle_stations_data(
     results = {}
     
     for station_key, station_info in stations.items():
-        print(f"\nFetching data for {station_info['label']}...")
+        log.info(f"Fetching data for {station_info['label']}...")
         station_id = station_info['station_id']
         node_id = station_info['node_id']
-        
+
         try:
             # Find measure based on type
             if station_info.get('measure_type') == 'rainfall':
@@ -310,23 +314,23 @@ def fetch_carlisle_stations_data(
                     rainfall_stations = client.search_rainfall_stations(area_name='Carlisle')
                     if rainfall_stations:
                         station_id = rainfall_stations[0].get('notation', '')
-                        print(f"  Found rainfall station: {station_id}")
+                        log.info(f"  Found rainfall station: {station_id}")
                     else:
-                        print(f"  Warning: Could not find rainfall station for Carlisle")
+                        log.warning(f"Could not find rainfall station for Carlisle")
                         continue
-                
+
                 measure_id = client.find_rainfall_measure(station_id)
                 if not measure_id:
-                    print(f"  Warning: Could not find rainfall measure for station {station_id}")
+                    log.warning(f"Could not find rainfall measure for station {station_id}")
                     continue
             else:
                 # Find level measure
                 measure_id = client.find_level_measure(station_id)
                 if not measure_id:
-                    print(f"  Warning: Could not find level measure for station {station_id}")
+                    log.warning(f"Could not find level measure for station {station_id}")
                     continue
-            
-            print(f"  Found measure: {measure_id}")
+
+            log.info(f"  Found measure: {measure_id}")
             
             # Fetch readings
             df = client.get_readings_as_dataframe(
@@ -337,20 +341,20 @@ def fetch_carlisle_stations_data(
             )
             
             if df.empty:
-                print(f"  Warning: No readings found for {station_info['label']}")
+                log.warning(f"No readings found for {station_info['label']}")
                 continue
-            
-            print(f"  Fetched {len(df)} readings from {df['timestamp'].min()} to {df['timestamp'].max()}")
-            
+
+            log.info(f"  Fetched {len(df)} readings from {df['timestamp'].min()} to {df['timestamp'].max()}")
+
             # Save to CSV
             output_file = output_dir / f"{node_id}.csv"
             df.to_csv(output_file, index=False)
-            print(f"  Saved to {output_file}")
+            log.info(f"  Saved to {output_file}")
             
             results[node_id] = df
             
         except Exception as e:
-            print(f"  Error fetching data for {station_info['label']}: {e}")
+            log.error(f"Error fetching data for {station_info['label']}: {e}")
             continue
     
     return results
@@ -366,11 +370,11 @@ if __name__ == "__main__":
     start_date = datetime(2015, 12, 5)
     end_date = datetime(2015, 12, 7, 23, 59, 59)
     
-    print("=" * 60)
-    print("CARLISLE FLOOD MONITORING DATA FETCH")
-    print("=" * 60)
-    print(f"Date range: {start_date.date()} to {end_date.date()}")
-    print(f"Output directory: {data_dir}")
+    log.info("=" * 60)
+    log.info("CARLISLE FLOOD MONITORING DATA FETCH")
+    log.info("=" * 60)
+    log.info(f"Date range: {start_date.date()} to {end_date.date()}")
+    log.info(f"Output directory: {data_dir}")
     
     results = fetch_carlisle_stations_data(
         start_date=start_date,
@@ -379,7 +383,7 @@ if __name__ == "__main__":
         cache_dir=cache_dir
     )
     
-    print(f"\n{'=' * 60}")
-    print(f"Fetch complete: {len(results)} stations")
+    log.info("=" * 60)
+    log.info(f"Fetch complete: {len(results)} stations")
     for node_id, df in results.items():
-        print(f"  {node_id}: {len(df)} readings")
+        log.info(f"  {node_id}: {len(df)} readings")

@@ -23,6 +23,10 @@ from compliance.regulatory_corpus import (
 )
 from compliance.regulatory_mapper import get_regulatory_summary, list_jurisdictions
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 # Scenario type -> default action sequence (step, action, parameters, task_owner_key)
 # task_owner_key can be "primary", "secondary", "comms", "regulatory" – mapped from authorities per jurisdiction.
@@ -280,10 +284,10 @@ def main():
     output_dir = args.output or root / "playbooks" / "generated"
     if args.all:
         design_all_playbooks(output_dir=output_dir)
-        print(f"Generated playbooks for all jurisdictions in {output_dir}")
+        log.info(f"Generated playbooks for all jurisdictions in {output_dir}")
     else:
         design_all_playbooks_for_jurisdiction(args.jurisdiction, output_dir=output_dir)
-        print(f"Generated playbooks for {args.jurisdiction} in {output_dir}")
+        log.info(f"Generated playbooks for {args.jurisdiction} in {output_dir}")
 
 
 if __name__ == "__main__":

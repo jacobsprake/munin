@@ -18,6 +18,10 @@ from datetime import datetime, timedelta
 import json
 import yaml
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 # Protocol definitions - "Library of Ancestry"
 PROTOCOL_DRIVERS = {
     'modbus': {
@@ -479,7 +483,7 @@ if __name__ == "__main__":
     node_mapping = {'01': 'pump_station_01'}
     
     df = translator.batch_translate(sample_frames, node_mapping)
-    print(f"Translated {len(df)} frames")
-    print(df.head())
+    log.info(f"Translated {len(df)} frames")
+    log.info(f"{df.head()}")
 
 

@@ -21,6 +21,10 @@ from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class SemiconductorType(Enum):
     """Wide-bandgap semiconductor types for extreme environments."""
@@ -301,17 +305,17 @@ def create_standard_edge_node_specs() -> List[EdgeNodeSpec]:
 
 
 if __name__ == "__main__":
-    print("="*70)
-    print("Wide-Bandgap Edge: Materials Science Moat")
-    print("="*70)
-    print("\nThe 2026 Advantage: Physical Survival in Extreme Environments")
-    print("\nStandard silicon chips fail at:")
-    print("  - Temperature: >125°C")
-    print("  - Voltage: >600V")
-    print("\nWide-Bandgap (GaN/SiC) can operate at:")
-    print("  - GaN: Up to 200°C, 12kV+")
-    print("  - SiC: Up to 600°C, 1.2kV+")
-    print("\n" + "="*70)
+    log.info("=" * 70)
+    log.info("Wide-Bandgap Edge: Materials Science Moat")
+    log.info("=" * 70)
+    log.info("The 2026 Advantage: Physical Survival in Extreme Environments")
+    log.info("Standard silicon chips fail at:")
+    log.info("  - Temperature: >125C")
+    log.info("  - Voltage: >600V")
+    log.info("Wide-Bandgap (GaN/SiC) can operate at:")
+    log.info("  - GaN: Up to 200C, 12kV+")
+    log.info("  - SiC: Up to 600C, 1.2kV+")
+    log.info("=" * 70)
     
     # Create network
     network = WideBandgapEdgeNetwork()
@@ -320,36 +324,36 @@ if __name__ == "__main__":
     specs = create_standard_edge_node_specs()
     for spec in specs:
         node = network.deploy_node(spec)
-        print(f"\nDeployed: {spec.node_id}")
-        print(f"  Type: {spec.semiconductor_type.value.upper()}")
-        print(f"  Environment: {spec.operating_environment.value}")
-        print(f"  Max Temp: {spec.max_operating_temperature}°C")
-        print(f"  Max Voltage: {spec.max_operating_voltage}V")
+        log.info(f"Deployed: {spec.node_id}")
+        log.info(f"  Type: {spec.semiconductor_type.value.upper()}")
+        log.info(f"  Environment: {spec.operating_environment.value}")
+        log.info(f"  Max Temp: {spec.max_operating_temperature}C")
+        log.info(f"  Max Voltage: {spec.max_operating_voltage}V")
     
     # Test extreme conditions
-    print("\n" + "="*70)
-    print("Testing Extreme Conditions")
-    print("="*70)
-    
+    log.info("=" * 70)
+    log.info("Testing Extreme Conditions")
+    log.info("=" * 70)
+
     gan_node = network.get_node("edge_gan_grid_001")
     if gan_node:
-        # Test at 150°C, 10kV (would kill standard silicon)
+        # Test at 150C, 10kV (would kill standard silicon)
         can_operate, reason = gan_node.can_operate_in_environment(150.0, 10000.0)
-        print(f"\nGaN Node at 150°C, 10kV: {can_operate}")
-        print(f"  Reason: {reason}")
-        
+        log.info(f"GaN Node at 150C, 10kV: {can_operate}")
+        log.info(f"  Reason: {reason}")
+
         gan_node.record_environmental_reading(150.0, 10000.0)
-        print(f"  Status: {gan_node.operational_status}")
+        log.info(f"  Status: {gan_node.operational_status}")
     
     # Network status
-    print("\n" + "="*70)
-    print("Network Status")
-    print("="*70)
+    log.info("=" * 70)
+    log.info("Network Status")
+    log.info("=" * 70)
     status = network.get_network_status()
-    print(json.dumps(status, indent=2))
-    
-    print("\n" + "="*70)
-    print("The Monopoly: Only Munin can survive at the Physical Foundations")
-    print("="*70)
+    log.info(json.dumps(status, indent=2))
+
+    log.info("=" * 70)
+    log.info("The Monopoly: Only Munin can survive at the Physical Foundations")
+    log.info("=" * 70)
 
 

@@ -20,6 +20,10 @@ from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class GlobalState(Enum):
     """Global system state - determines authorization behavior."""
@@ -233,77 +237,77 @@ def get_cmi_redirect_message(source_sector: str, target_sector: str) -> str:
 
 if __name__ == "__main__":
     # Example usage
-    print("=" * 60)
-    print("CMI Protocol Authorization Logic Test")
-    print("=" * 60)
-    
+    log.info("=" * 60)
+    log.info("CMI Protocol Authorization Logic Test")
+    log.info("=" * 60)
+
     # Test normal mode
-    print("\n1. Normal Mode Authorization:")
+    log.info("1. Normal Mode Authorization:")
     authorized, reason, metadata = authorize_action(
         impact_level=ImpactLevel.MEDIUM,
         sector_priority=5,  # Commercial
         requesting_sector="commercial_district_4"
     )
-    print(f"   Result: {reason}")
-    
+    log.info(f"   Result: {reason}")
+
     # Activate CMI Protocol
-    print("\n2. Activating CMI Protocol:")
+    log.info("2. Activating CMI Protocol:")
     activation = activate_cmi_protocol()
-    print(f"   Status: {activation['status']}")
-    print(f"   Message: {activation['message']}")
-    
+    log.info(f"   Status: {activation['status']}")
+    log.info(f"   Message: {activation['message']}")
+
     # Test emergency mode - commercial sector (should be rejected)
-    print("\n3. Emergency Mode - Commercial Sector Request:")
+    log.info("3. Emergency Mode - Commercial Sector Request:")
     authorized, reason, metadata = authorize_action(
         impact_level=ImpactLevel.MEDIUM,
         sector_priority=5,  # Commercial
         requesting_sector="commercial_district_4"
     )
-    print(f"   Result: {reason}")
-    
+    log.info(f"   Result: {reason}")
+
     # Test emergency mode - life support (should be authorized with MOD key)
-    print("\n4. Emergency Mode - Life Support Request (with MOD key):")
+    log.info("4. Emergency Mode - Life Support Request (with MOD key):")
     authorized, reason, metadata = authorize_action(
         impact_level=ImpactLevel.CRITICAL,
         sector_priority=10,  # Critical life support
         requesting_sector="regional_hospital_alpha",
         has_ministry_of_defense_key=True
     )
-    print(f"   Result: {reason}")
-    print(f"   Metadata: {metadata}")
-    
+    log.info(f"   Result: {reason}")
+    log.info(f"   Metadata: {metadata}")
+
     # Test emergency mode - life support (without MOD key - should still work for priority 10)
-    print("\n5. Emergency Mode - Life Support Request (without MOD key):")
+    log.info("5. Emergency Mode - Life Support Request (without MOD key):")
     authorized, reason, metadata = authorize_action(
         impact_level=ImpactLevel.CRITICAL,
         sector_priority=10,  # Critical life support
         requesting_sector="regional_hospital_alpha",
         has_ministry_of_defense_key=False
     )
-    print(f"   Result: {reason}")
-    
+    log.info(f"   Result: {reason}")
+
     # Test resource redirection
-    print("\n6. Resource Redirection Check:")
+    log.info("6. Resource Redirection Check:")
     should_redirect, from_sector, to_sector = check_resource_redirect(
         sector_priority=5,  # Commercial
         target_sector="health"
     )
     if should_redirect:
-        print(f"   Redirect: {get_cmi_redirect_message(from_sector, to_sector)}")
+        log.info(f"   Redirect: {get_cmi_redirect_message(from_sector, to_sector)}")
     else:
-        print("   No redirection needed")
-    
+        log.info("   No redirection needed")
+
     # Get CMI status
-    print("\n7. Current CMI Status:")
+    log.info("7. Current CMI Status:")
     status = get_cmi_status()
-    print(f"   Global State: {status['global_state']}")
-    print(f"   CMI Active: {status['cmi_active']}")
-    print(f"   MOD Key Required: {status['ministry_of_defense_key_required']}")
-    
+    log.info(f"   Global State: {status['global_state']}")
+    log.info(f"   CMI Active: {status['cmi_active']}")
+    log.info(f"   MOD Key Required: {status['ministry_of_defense_key_required']}")
+
     # Deactivate
-    print("\n8. Deactivating CMI Protocol:")
+    log.info("8. Deactivating CMI Protocol:")
     deactivation = deactivate_cmi_protocol()
-    print(f"   Status: {deactivation['status']}")
-    print(f"   Message: {deactivation['message']}")
+    log.info(f"   Status: {deactivation['status']}")
+    log.info(f"   Message: {deactivation['message']}")
 
 

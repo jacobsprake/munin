@@ -10,6 +10,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 # Add engine to path
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -38,7 +42,7 @@ def load_config() -> Dict[str, Any]:
 def run_rest_api_connector(conn: Dict[str, Any]) -> int:
     """Poll REST API and push to /api/sensors/data. Supports EA flood API format."""
     if not HAS_DEPS:
-        print("  [skip] rest_api requires requests")
+        log.warning("rest_api requires requests, skipping")
         return 0
     base_url = conn.get("base_url", "").rstrip("/")
     stations = conn.get("stations", [])
@@ -48,7 +52,7 @@ def run_rest_api_connector(conn: Dict[str, Any]) -> int:
         if stations:
             break
     if not base_url:
-        print("  [skip] rest_api missing base_url")
+        log.warning("rest_api missing base_url, skipping")
         return 0
     count = 0
     # EA flood API: use EAFloodClient when base_url matches
@@ -81,7 +85,7 @@ def run_rest_api_connector(conn: Dict[str, Any]) -> int:
                         if r.status_code == 200:
                             count += 1
                 except Exception as e:
-                    print(f"  [error] EA {station_id}: {e}")
+                    log.error(f"EA {station_id}: {e}")
             return count
         except ImportError:
             pass
@@ -118,7 +122,7 @@ def run_rest_api_connector(conn: Dict[str, Any]) -> int:
                 if r.status_code == 200:
                     count += len(readings)
         except Exception as e:
-            print(f"  [error] {station_id}: {e}")
+            log.error(f"{station_id}: {e}")
     return count
 
 
@@ -169,14 +173,14 @@ def run_once() -> Dict[str, Any]:
 
 def run_continuous(interval_seconds: int = 300):
     """Run connectors in a loop."""
-    print("Connector runner: continuous mode")
-    print(f"  API: {API_BASE}, interval: {interval_seconds}s")
+    log.info("Connector runner: continuous mode")
+    log.info(f"  API: {API_BASE}, interval: {interval_seconds}s")
     while True:
         try:
             r = run_once()
-            print(f"  [{time.strftime('%H:%M:%S')}] {r['total_readings']} readings from {len(r['connectors'])} connectors")
+            log.info(f"[{time.strftime('%H:%M:%S')}] {r['total_readings']} readings from {len(r['connectors'])} connectors")
         except Exception as e:
-            print(f"  [error] {e}")
+            log.error(f"{e}")
         time.sleep(interval_seconds)
 
 
@@ -187,6 +191,6 @@ if __name__ == "__main__":
     p.add_argument("--interval", type=int, default=300, help="Seconds between runs (default 300)")
     args = p.parse_args()
     if args.once:
-        print(json.dumps(run_once(), indent=2))
+        log.info(json.dumps(run_once(), indent=2))
     else:
         run_continuous(args.interval)

@@ -20,6 +20,10 @@ from datetime import datetime, timedelta
 from enum import Enum
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class SatelliteConstellation(Enum):
     """Satellite constellations for Earth Observation."""
@@ -407,14 +411,14 @@ class SatelliteVerificationEngine:
 
 
 if __name__ == "__main__":
-    print("="*70)
-    print("Space-Integrated Resilience: Earth Observation Cross-Verification")
-    print("="*70)
-    print("\nThe 2026 Capability: Satellite Shadowing")
-    print("  - Terrestrial sensors can be destroyed or jammed")
-    print("  - Satellite constellations provide space-based truth")
-    print("  - Cross-verification detects sensor hacks")
-    print("\n" + "="*70)
+    log.info("=" * 70)
+    log.info("Space-Integrated Resilience: Earth Observation Cross-Verification")
+    log.info("=" * 70)
+    log.info("The 2026 Capability: Satellite Shadowing")
+    log.info("  - Terrestrial sensors can be destroyed or jammed")
+    log.info("  - Satellite constellations provide space-based truth")
+    log.info("  - Cross-verification detects sensor hacks")
+    log.info("=" * 70)
     
     # Create verification engine
     engine = SatelliteVerificationEngine()
@@ -433,10 +437,10 @@ if __name__ == "__main__":
     engine.ingest_satellite_observation(insar_observation)
     
     # Cross-verify ground sensor
-    print("\nCross-Verifying Ground Sensor:")
-    print("  Sensor: ground_deformation_sensor_01")
-    print("  Location: 40.7128°N, 74.0060°W")
-    print("  Reading: 2.3mm deformation")
+    log.info("Cross-Verifying Ground Sensor:")
+    log.info("  Sensor: ground_deformation_sensor_01")
+    log.info("  Location: 40.7128N, 74.0060W")
+    log.info("  Reading: 2.3mm deformation")
     
     verification = engine.cross_verify_sensor(
         sensor_id="ground_deformation_sensor_01",
@@ -446,16 +450,16 @@ if __name__ == "__main__":
         timestamp=datetime.now().isoformat()
     )
     
-    print(f"\nVerification Result:")
-    print(f"  Status: {verification.verification_status}")
-    print(f"  Confidence: {verification.confidence:.1%}")
-    print(f"  Discrepancy: {verification.discrepancy:.2f}mm")
-    print(f"  Reasoning: {verification.reasoning}")
+    log.info(f"Verification Result:")
+    log.info(f"  Status: {verification.verification_status}")
+    log.info(f"  Confidence: {verification.confidence:.1%}")
+    log.info(f"  Discrepancy: {verification.discrepancy:.2f}mm")
+    log.info(f"  Reasoning: {verification.reasoning}")
     
     # Test sensor hack detection
-    print("\n" + "="*70)
-    print("Testing Sensor Hack Detection")
-    print("="*70)
+    log.info("=" * 70)
+    log.info("Testing Sensor Hack Detection")
+    log.info("=" * 70)
     
     # Fake sensor reading (hacked sensor reporting false data)
     hack_result = engine.detect_sensor_hack_via_satellite(
@@ -465,19 +469,19 @@ if __name__ == "__main__":
         sensor_type="ground_deformation"
     )
     
-    print(f"\nHack Detection Result:")
-    print(f"  Hack Detected: {hack_result['hack_detected']}")
-    print(f"  Narrative: {hack_result['narrative']}")
+    log.info(f"Hack Detection Result:")
+    log.info(f"  Hack Detected: {hack_result['hack_detected']}")
+    log.info(f"  Narrative: {hack_result['narrative']}")
     
     # Summary
-    print("\n" + "="*70)
-    print("Verification Summary")
-    print("="*70)
+    log.info("=" * 70)
+    log.info("Verification Summary")
+    log.info("=" * 70)
     summary = engine.get_verification_summary()
-    print(json.dumps(summary, indent=2))
-    
-    print("\n" + "="*70)
-    print("The Narrative: Space-based truth detects sensor hacks")
-    print("="*70)
+    log.info(json.dumps(summary, indent=2))
+
+    log.info("=" * 70)
+    log.info("The Narrative: Space-based truth detects sensor hacks")
+    log.info("=" * 70)
 
 

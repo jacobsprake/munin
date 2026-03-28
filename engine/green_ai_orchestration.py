@@ -22,6 +22,10 @@ from datetime import datetime, timedelta
 from enum import Enum
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class ResourceType(Enum):
     """Types of resources in the AI-Energy-Water nexus."""
@@ -374,18 +378,18 @@ if __name__ == "__main__":
     # Optimize
     actions = orchestrator.optimize_ai_energy_water_nexus()
     
-    print(f"Generated {len(actions)} balancing actions:")
+    log.info(f"Generated {len(actions)} balancing actions:")
     for action in actions:
-        print(f"  - {action.action_type} on {action.target_data_center}")
-        print(f"    Power reduction: {action.power_reduction_mw:.2f} MW")
-        print(f"    Water reduction: {action.water_reduction_lps:.2f} L/s")
-        print(f"    Estimated savings: ${action.estimated_savings:.2f}/hour")
-    
+        log.info(f"  - {action.action_type} on {action.target_data_center}")
+        log.info(f"    Power reduction: {action.power_reduction_mw:.2f} MW")
+        log.info(f"    Water reduction: {action.water_reduction_lps:.2f} L/s")
+        log.info(f"    Estimated savings: ${action.estimated_savings:.2f}/hour")
+
     # Get status
     status = orchestrator.get_nexus_status()
-    print(f"\nNexus Status: {json.dumps(status, indent=2)}")
-    
+    log.info(f"Nexus Status: {json.dumps(status, indent=2)}")
+
     # Get optimization report
     report = orchestrator.get_optimization_report()
-    print(f"\nOptimization Report: {json.dumps(report, indent=2)}")
+    log.info(f"Optimization Report: {json.dumps(report, indent=2)}")
 

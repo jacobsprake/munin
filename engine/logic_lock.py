@@ -19,6 +19,10 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 from datetime import datetime
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class PhysicsViolationType(Enum):
     """Types of physics violations that Logic-Lock can detect."""
@@ -370,17 +374,17 @@ if __name__ == "__main__":
         command=malicious_command
     )
     
-    print(f"Command ID: {validation.command_id}")
-    print(f"Asset: {validation.asset_id}")
-    print(f"Valid: {validation.valid}")
-    print(f"Blocked: {validation.blocked}")
-    print(f"Violations: {[v.value for v in validation.violations]}")
-    print(f"Reason: {validation.reason}")
-    
-    print("\n" + "="*60)
-    print("Logic-Lock Summary:")
+    log.info(f"Command ID: {validation.command_id}")
+    log.info(f"Asset: {validation.asset_id}")
+    log.info(f"Valid: {validation.valid}")
+    log.info(f"Blocked: {validation.blocked}")
+    log.info(f"Violations: {[v.value for v in validation.violations]}")
+    log.info(f"Reason: {validation.reason}")
+
+    log.info("=" * 60)
+    log.info("Logic-Lock Summary:")
     summary = engine.get_blocked_commands_summary()
-    print(f"Total Blocked: {summary['total_blocked']}")
-    print(f"Block Rate: {summary['block_rate']:.1%}")
+    log.info(f"Total Blocked: {summary['total_blocked']}")
+    log.info(f"Block Rate: {summary['block_rate']:.1%}")
 
 

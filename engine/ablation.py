@@ -24,6 +24,10 @@ from dataclasses import dataclass
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 @dataclass
 class AblationResult:
@@ -51,7 +55,7 @@ def run_ablation(scenario_dir: Path) -> List[AblationResult]:
     # Load ground truth
     gt_path = scenario_dir / "ground_truth.json"
     if not gt_path.exists():
-        print(f"No ground_truth.json in {scenario_dir}")
+        log.error(f"No ground_truth.json in {scenario_dir}")
         return []
 
     with open(gt_path) as f:
@@ -63,7 +67,7 @@ def run_ablation(scenario_dir: Path) -> List[AblationResult]:
     if not data_path.exists():
         data_path = scenario_dir / "synthetic_scada.csv"
     if not data_path.exists():
-        print(f"No data found in {scenario_dir}")
+        log.error(f"No data found in {scenario_dir}")
         return []
 
     import pandas as pd
@@ -134,14 +138,13 @@ def _run_pipeline(df, out_dir: Path, config) -> Dict:
 
 def print_ablation_table(results: List[AblationResult]) -> None:
     """Print ablation results as a formatted table."""
-    print("\n--- Ablation Results ---\n")
-    print(f"{'Layer Disabled':<30s} {'Precision':>9s} {'Recall':>8s} {'F1':>6s} {'FP':>4s} {'FN':>4s} {'SL-P':>6s} {'SL-R':>6s}")
-    print("-" * 80)
+    log.info("--- Ablation Results ---")
+    log.info(f"{'Layer Disabled':<30s} {'Precision':>9s} {'Recall':>8s} {'F1':>6s} {'FP':>4s} {'FN':>4s} {'SL-P':>6s} {'SL-R':>6s}")
+    log.info("-" * 80)
     for r in results:
-        print(f"{r.layer_disabled:<30s} {r.precision:>9.3f} {r.recall:>8.3f} {r.f1:>6.3f} "
-              f"{r.false_positives:>4d} {r.false_negatives:>4d} "
-              f"{r.shadow_link_precision:>6.3f} {r.shadow_link_recall:>6.3f}")
-    print()
+        log.info(f"{r.layer_disabled:<30s} {r.precision:>9.3f} {r.recall:>8.3f} {r.f1:>6.3f} "
+                 f"{r.false_positives:>4d} {r.false_negatives:>4d} "
+                 f"{r.shadow_link_precision:>6.3f} {r.shadow_link_recall:>6.3f}")
 
 
 def generate_ablation_markdown(results: List[AblationResult]) -> str:

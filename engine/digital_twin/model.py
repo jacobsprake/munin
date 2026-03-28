@@ -25,6 +25,9 @@ from digital_twin.subsystems import (
     SubsystemStatus,
 )
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 @dataclass
 class FaultEvent:
@@ -342,10 +345,10 @@ def save_twin_outputs(
     with open(output_dir / "cascade_timeline.json", "w") as f:
         json.dump({"events": cascade, "total": len(cascade)}, f, indent=2)
 
-    print(f"Digital twin outputs saved to {output_dir}")
-    print(f"  Telemetry: {len(df)} timesteps, {len(df.columns)} channels")
-    print(f"  Cascade events: {len(cascade)}")
-    print(f"  Ground truth edges: {len(ground_truth['ground_truth_graph']['edges'])}")
+    log.info(f"Digital twin outputs saved to {output_dir}")
+    log.info(f"  Telemetry: {len(df)} timesteps, {len(df.columns)} channels")
+    log.info(f"  Cascade events: {len(cascade)}")
+    log.info(f"  Ground truth edges: {len(ground_truth['ground_truth_graph']['edges'])}")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,9 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 import json
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 def generate_random_substation_failure(
     graph: Dict,
@@ -251,8 +254,8 @@ if __name__ == "__main__":
     
     if graph_path.exists():
         suite = generate_stress_test_suite(graph_path, output_path, num_scenarios=50)
-        print(f"Generated {len(suite['scenarios'])} synthetic scenarios")
-        print(f"Saved to {output_path}")
+        log.info(f"Generated {len(suite['scenarios'])} synthetic scenarios")
+        log.info(f"Saved to {output_path}")
     else:
-        print(f"Graph file not found: {graph_path}")
-        print("Run engine pipeline first to generate graph.json")
+        log.error(f"Graph file not found: {graph_path}")
+        log.info("Run engine pipeline first to generate graph.json")

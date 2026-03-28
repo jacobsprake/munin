@@ -26,6 +26,9 @@ try:
 except ImportError:
     from domain_registry import DomainRegistry, default_registry
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 @dataclass
 class HumanAction:
@@ -617,7 +620,7 @@ class ShadowModeEngine:
         report = self.generate_shadow_mode_report()
         with open(output_path, 'w') as f:
             json.dump(report, f, indent=2, default=str)
-        print(f"Shadow mode report exported to {output_path}")
+        log.info(f"Shadow mode report exported to {output_path}")
 
 
 if __name__ == "__main__":
@@ -659,12 +662,12 @@ if __name__ == "__main__":
         munin_prediction
     )
     
-    print(f"Human took {human_action.duration_seconds}s, Munin would take {munin_prediction.predicted_duration_seconds}s")
-    print(f"Time saved: {comparison.time_saved_seconds}s ({comparison.improvement_ratio:.1f}x faster)")
-    
+    log.info(f"Human took {human_action.duration_seconds}s, Munin would take {munin_prediction.predicted_duration_seconds}s")
+    log.info(f"Time saved: {comparison.time_saved_seconds}s ({comparison.improvement_ratio:.1f}x faster)")
+
     # Generate report
     report = engine.generate_shadow_mode_report()
-    print(f"\nShadow Mode Report:")
-    print(f"  Status: {report['shadow_mode_status']}")
-    print(f"  Total incidents: {report['summary']['total_incidents_observed']}")
+    log.info(f"Shadow Mode Report:")
+    log.info(f"  Status: {report['shadow_mode_status']}")
+    log.info(f"  Total incidents: {report['summary']['total_incidents_observed']}")
 

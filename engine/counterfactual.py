@@ -19,6 +19,9 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime, timedelta
 import itertools
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 class CounterfactualEngine:
     """
     Engine that simulates "What-If" scenarios using causal inference.
@@ -365,10 +368,10 @@ def run_counterfactual_simulation(
     with open(output_path, 'w') as f:
         json.dump(result, f, indent=2)
     
-    print(f"Counterfactual simulation complete: {result['scenario_id']}")
-    print(f"  Cascade path: {len(result['cascade_path'])} nodes")
-    print(f"  Predictions: {len(result['predictions'])}")
-    print(f"  Overall confidence: {result['overall_confidence']:.2%}")
+    log.info(f"Counterfactual simulation complete: {result['scenario_id']}")
+    log.info(f"  Cascade path: {len(result['cascade_path'])} nodes")
+    log.info(f"  Predictions: {len(result['predictions'])}")
+    log.info(f"  Overall confidence: {result['overall_confidence']:.2%}")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,10 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Set, Optional, Tuple
 from enum import Enum
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class ChaosScenarioType(Enum):
     """Comprehensive threat library for chaos simulation."""
@@ -359,7 +363,7 @@ def generate_all_chaos_scenarios(
     with open(output_path, 'w') as f:
         json.dump(scenarios_data, f, indent=2)
     
-    print(f"Generated {len(scenarios)} chaos scenarios to {output_path}")
+    log.info(f"Generated {len(scenarios)} chaos scenarios to {output_path}")
     return scenarios
 
 

@@ -7,6 +7,9 @@ import pandas as pd
 
 from shadow_simulation import ShadowModeEngine, HumanAction, MuninPrediction
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 class ShadowReplayHarness:
     """
@@ -115,7 +118,7 @@ class ShadowReplayHarness:
         for incident in incidents:
             incident_id = incident['id']
             if incident_id not in human_actions_map:
-                print(f"Warning: No human action found for incident {incident_id}")
+                log.warning(f"No human action found for incident {incident_id}")
                 continue
             
             try:
@@ -127,7 +130,7 @@ class ShadowReplayHarness:
                 )
                 results.append(result)
             except Exception as e:
-                print(f"Error replaying incident {incident_id}: {e}")
+                log.error(f"Error replaying incident {incident_id}: {e}")
                 continue
         
         self.replay_results.extend(results)
@@ -152,7 +155,7 @@ class ShadowReplayHarness:
         with open(output_path, 'w') as f:
             json.dump(results_data, f, indent=2)
         
-        print(f"Replay results saved to {output_path}")
+        log.info(f"Replay results saved to {output_path}")
 
 
 if __name__ == "__main__":
@@ -193,6 +196,6 @@ if __name__ == "__main__":
         # Save results
         harness.save_replay_results(Path("engine/out/shadow_replay_results.json"))
         
-        print(f"Replayed {len(results)} incidents")
+        log.info(f"Replayed {len(results)} incidents")
     else:
-        print("Required files not found. Run engine pipeline first.")
+        log.warning("Required files not found. Run engine pipeline first.")

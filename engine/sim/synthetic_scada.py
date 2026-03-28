@@ -20,6 +20,10 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime, timedelta
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class SensorType(Enum):
     """ICS sensor types with realistic value ranges."""
@@ -360,7 +364,7 @@ def save_synthetic_plant(
     df.to_csv(output_dir / "synthetic_scada.csv")
     with open(output_dir / "ground_truth.json", "w") as f:
         json.dump(metadata, f, indent=2)
-    print(f"Synthetic plant saved: {len(df)} samples, {len(df.columns)} sensors -> {output_dir}")
+    log.info(f"Synthetic plant saved: {len(df)} samples, {len(df.columns)} sensors -> {output_dir}")
 
 
 if __name__ == "__main__":

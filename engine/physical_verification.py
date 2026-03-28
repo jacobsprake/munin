@@ -20,6 +20,10 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 from datetime import datetime
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class PhysicalSignalType(Enum):
     """Types of physical signals that can be measured."""
@@ -297,30 +301,28 @@ if __name__ == "__main__":
         physical_signal=physical_signal
     )
     
-    print("="*60)
-    print("Return to Atoms: Physical Verification")
-    print("="*60)
-    print(f"\nAsset: pump_alpha")
-    print(f"Digital Reading: {digital_reading.value} {digital_reading.unit} ({digital_reading.value * 1/60:.2f} Hz expected)")
-    print(f"Physical Signal: {physical_signal.frequency_hz} Hz (acoustic)")
-    print(f"\nVerification Result: {verification.verification_result.value}")
-    print(f"Confidence: {verification.confidence:.1%}")
-    print(f"Discrepancy: {verification.discrepancy:.2f} Hz" if verification.discrepancy else "No discrepancy")
-    print(f"\nReasoning: {verification.reasoning}")
-    
-    print("\n" + "="*60)
-    print("Narrative:")
-    print("="*60)
-    print("The digital signal says the pump is at 50% RPM (1500 RPM = 25 Hz),")
-    print("but Munin's acoustic sensor detects a 60 Hz vibration (3600 RPM),")
-    print("meaning the sensor has been hijacked. We verify the bits against the atoms.")
-    
-    print("\n" + "="*60)
-    print("Summary:")
-    print("="*60)
+    log.info("=" * 60)
+    log.info("Return to Atoms: Physical Verification")
+    log.info("=" * 60)
+    log.info(f"Asset: pump_alpha")
+    log.info(f"Digital Reading: {digital_reading.value} {digital_reading.unit} ({digital_reading.value * 1/60:.2f} Hz expected)")
+    log.info(f"Physical Signal: {physical_signal.frequency_hz} Hz (acoustic)")
+    log.info(f"Verification Result: {verification.verification_result.value}")
+    log.info(f"Confidence: {verification.confidence:.1%}")
+    log.info(f"Discrepancy: {verification.discrepancy:.2f} Hz" if verification.discrepancy else "No discrepancy")
+    log.info(f"Reasoning: {verification.reasoning}")
+    log.info("=" * 60)
+    log.info("Narrative:")
+    log.info("=" * 60)
+    log.info("The digital signal says the pump is at 50% RPM (1500 RPM = 25 Hz),")
+    log.info("but Munin's acoustic sensor detects a 60 Hz vibration (3600 RPM),")
+    log.info("meaning the sensor has been hijacked. We verify the bits against the atoms.")
+    log.info("=" * 60)
+    log.info("Summary:")
+    log.info("=" * 60)
     summary = engine.get_verification_summary()
-    print(f"Total Verifications: {summary['total_verifications']}")
-    print(f"Mismatches Detected: {summary['mismatches']}")
-    print(f"Mismatch Rate: {summary['mismatch_rate']:.1%}")
+    log.info(f"Total Verifications: {summary['total_verifications']}")
+    log.info(f"Mismatches Detected: {summary['mismatches']}")
+    log.info(f"Mismatch Rate: {summary['mismatch_rate']:.1%}")
 
 

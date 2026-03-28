@@ -18,6 +18,10 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 from datetime import datetime
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class AssetPriority(Enum):
     """Priority levels for assets during emergency."""
@@ -319,32 +323,32 @@ if __name__ == "__main__":
     # Set emergency level to WAR
     engine.set_emergency_level(EmergencyLevel.WAR)
     
-    print("="*60)
-    print("CMI Prioritization During WAR")
-    print("="*60)
-    
+    log.info("=" * 60)
+    log.info("CMI Prioritization During WAR")
+    log.info("=" * 60)
+
     # Get prioritization for each asset
     for asset_id in ["hospital_power_substation_01", "military_base_power_01", "commercial_district_power_01"]:
         prioritization = engine.prioritize_asset(asset_id)
-        print(f"\nAsset: {asset_id}")
-        print(f"  Base Priority: {prioritization.base_priority.value}")
-        print(f"  Adjusted Priority: {prioritization.adjusted_priority.value}")
-        print(f"  Priority Multiplier: {prioritization.priority_multiplier}x")
-        print(f"  Should Preserve: {prioritization.should_preserve}")
-        print(f"  Reasoning: {prioritization.reasoning}")
-    
-    print("\n" + "="*60)
-    print("Load Shedding Plan:")
-    print("="*60)
+        log.info(f"Asset: {asset_id}")
+        log.info(f"  Base Priority: {prioritization.base_priority.value}")
+        log.info(f"  Adjusted Priority: {prioritization.adjusted_priority.value}")
+        log.info(f"  Priority Multiplier: {prioritization.priority_multiplier}x")
+        log.info(f"  Should Preserve: {prioritization.should_preserve}")
+        log.info(f"  Reasoning: {prioritization.reasoning}")
+
+    log.info("=" * 60)
+    log.info("Load Shedding Plan:")
+    log.info("=" * 60)
     shed_plan = engine.get_load_shedding_plan()
     for asset in shed_plan:
-        print(f"  {asset['asset_id']} (Order: {asset['load_shedding_order']}) - {asset['reasoning']}")
-    
-    print("\n" + "="*60)
-    print("Preservation Plan:")
-    print("="*60)
+        log.info(f"  {asset['asset_id']} (Order: {asset['load_shedding_order']}) - {asset['reasoning']}")
+
+    log.info("=" * 60)
+    log.info("Preservation Plan:")
+    log.info("=" * 60)
     preserve_plan = engine.get_preservation_plan()
     for asset in preserve_plan:
-        print(f"  {asset['asset_id']} (Priority: {asset['priority']}) - {asset['reasoning']}")
+        log.info(f"  {asset['asset_id']} (Priority: {asset['priority']}) - {asset['reasoning']}")
 
 

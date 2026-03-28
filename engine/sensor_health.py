@@ -5,6 +5,10 @@ from pathlib import Path
 from typing import Dict, List
 import json
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 def detect_missingness(series: pd.Series, threshold: float = 0.1) -> bool:
     """
     Detect if series has excessive missing values.
@@ -321,5 +325,5 @@ if __name__ == "__main__":
     with open(out_dir / "evidence.json", 'w') as f:
         json.dump(evidence_data, f, indent=2)
     
-    print(f"Evidence saved: {len(evidence_windows)} windows")
+    log.info(f"Evidence saved: {len(evidence_windows)} windows")
 

@@ -24,6 +24,10 @@ from enum import Enum
 from datetime import datetime, timedelta
 from logic_lock_engine import LogicLockEngine, Command as LogicLockCommand
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class PhysicalInvariantType(Enum):
     """Types of physical invariants."""
@@ -510,44 +514,44 @@ if __name__ == "__main__":
         }
     }
     
-    print("=" * 60)
-    print("SAFETY PLC: PHYSICAL INVARIANT GUARDRAILS")
-    print("=" * 60)
-    
+    log.info("=" * 60)
+    log.info("SAFETY PLC: PHYSICAL INVARIANT GUARDRAILS")
+    log.info("=" * 60)
+
     check = safety_plc.check_command('cmd_dangerous_001', dangerous_command)
-    
-    print(f"\nCommand ID: {check.command_id}")
-    print(f"Safety Level: {check.safety_level.value}")
-    print(f"Blocked: {check.safety_level == SafetyLevel.BLOCKED}")
-    
+
+    log.info(f"Command ID: {check.command_id}")
+    log.info(f"Safety Level: {check.safety_level.value}")
+    log.info(f"Blocked: {check.safety_level == SafetyLevel.BLOCKED}")
+
     if check.safety_level == SafetyLevel.BLOCKED:
-        print(f"\n✗ COMMAND BLOCKED BY SAFETY PLC")
-        print(f"  Reason: {check.block_reason}")
-        print(f"  Violated Invariants: {', '.join(check.violated_invariants)}")
-        
+        log.warning(f"COMMAND BLOCKED BY SAFETY PLC")
+        log.warning(f"  Reason: {check.block_reason}")
+        log.warning(f"  Violated Invariants: {', '.join(check.violated_invariants)}")
+
         for inv_id in check.violated_invariants:
             inv = safety_plc.invariants.get(inv_id)
             if inv:
-                print(f"    - {inv.name}: {inv.description}")
+                log.warning(f"    - {inv.name}: {inv.description}")
     else:
-        print(f"\n✓ COMMAND ALLOWED")
-    
+        log.info(f"COMMAND ALLOWED")
+
     # Get statistics
     stats = safety_plc.get_safety_statistics()
-    print(f"\n{'=' * 60}")
-    print("SAFETY PLC STATISTICS")
-    print(f"{'=' * 60}")
-    print(f"Total Commands Checked: {stats['total_commands_checked']}")
-    print(f"Blocked Commands: {stats['blocked_commands']}")
-    print(f"Block Rate: {stats['block_rate']:.1%}")
-    print(f"Invariants Enforced: {stats['invariants_enforced']}")
-    print(f"Physics-Gated: {stats['physics_gated']}")
-    print(f"Last Line of Defense: {stats['last_line_of_defense']}")
-    
+    log.info("=" * 60)
+    log.info("SAFETY PLC STATISTICS")
+    log.info("=" * 60)
+    log.info(f"Total Commands Checked: {stats['total_commands_checked']}")
+    log.info(f"Blocked Commands: {stats['blocked_commands']}")
+    log.info(f"Block Rate: {stats['block_rate']:.1%}")
+    log.info(f"Invariants Enforced: {stats['invariants_enforced']}")
+    log.info(f"Physics-Gated: {stats['physics_gated']}")
+    log.info(f"Last Line of Defense: {stats['last_line_of_defense']}")
+
     # Generate certificate
     certificate = safety_plc.generate_physics_gated_certificate()
-    print(f"\n{'=' * 60}")
-    print("PHYSICS-GATED CERTIFICATE")
-    print(f"{'=' * 60}")
-    print(certificate['security_guarantee'])
+    log.info("=" * 60)
+    log.info("PHYSICS-GATED CERTIFICATE")
+    log.info("=" * 60)
+    log.info(certificate['security_guarantee'])
 

@@ -22,6 +22,10 @@ from datetime import datetime, timedelta
 from enum import Enum
 import uuid
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class MeshNodeType(Enum):
     """Types of mesh nodes in the sovereign network."""
@@ -403,6 +407,6 @@ if __name__ == "__main__":
         {'type': 'telemetry', 'value': 42.0}
     )
     
-    print(json.dumps(mesh.get_network_status(), indent=2))
-    print(f"\nMessage sent: {message['id']} via {len(message['path'])} hops")
+    log.info(json.dumps(mesh.get_network_status(), indent=2))
+    log.info(f"Message sent: {message['id']} via {len(message['path'])} hops")
 

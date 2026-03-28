@@ -21,6 +21,10 @@ from datetime import datetime
 from dataclasses import dataclass, asdict
 from enum import Enum
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class MinistryType(Enum):
     """Different ministries that must sign for high-consequence actions."""
@@ -554,9 +558,9 @@ if __name__ == "__main__":
         n=3
     )
     
-    print(f"Created Quorum-Logic requirement for: {multi_sig.action_description}")
-    print(f"  Quorum: {multi_sig.threshold}-of-{len(multi_sig.required_ministries)}")
-    print(f"  Requires biometric handshakes: {multi_sig.requires_biometric_handshake}")
+    log.info(f"Created Quorum-Logic requirement for: {multi_sig.action_description}")
+    log.info(f"  Quorum: {multi_sig.threshold}-of-{len(multi_sig.required_ministries)}")
+    log.info(f"  Requires biometric handshakes: {multi_sig.requires_biometric_handshake}")
     
     # Add signatures with biometric handshakes
     quorum_controller.add_quorum_signature_with_handshake(
@@ -574,10 +578,10 @@ if __name__ == "__main__":
         token_verified=True
     )
     
-    print(f"\nAfter Water Authority handshake:")
+    log.info(f"After Water Authority handshake:")
     status = quorum_controller.get_quorum_status(action_id)
-    print(f"  Authorized: {status['authorized']}")
-    print(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
+    log.info(f"  Authorized: {status['authorized']}")
+    log.info(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
     
     quorum_controller.add_quorum_signature_with_handshake(
         action_id=action_id,
@@ -594,10 +598,10 @@ if __name__ == "__main__":
         token_verified=True
     )
     
-    print(f"\nAfter Power Grid Operator handshake:")
+    log.info(f"After Power Grid Operator handshake:")
     status = quorum_controller.get_quorum_status(action_id)
-    print(f"  Authorized: {status['authorized']}")
-    print(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
+    log.info(f"  Authorized: {status['authorized']}")
+    log.info(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
     
     quorum_controller.add_quorum_signature_with_handshake(
         action_id=action_id,
@@ -614,11 +618,11 @@ if __name__ == "__main__":
         token_verified=True
     )
     
-    print(f"\nAfter National Security handshake (3-of-3 complete):")
+    log.info(f"After National Security handshake (3-of-3 complete):")
     status = quorum_controller.get_quorum_status(action_id)
-    print(f"  Authorized: {status['authorized']}")
-    print(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
-    print(f"  Handshake details: {len(status['handshakeDetails'])} verified handshakes")
+    log.info(f"  Authorized: {status['authorized']}")
+    log.info(f"  Signatures: {status['signatures_received']}/{status['threshold_required']}")
+    log.info(f"  Handshake details: {len(status['handshakeDetails'])} verified handshakes")
     for h in status['handshakeDetails']:
-        print(f"    - {h['ministry']}: {h['operatorId']} via {h['tabletSerial']}")
+        log.info(f"    - {h['ministry']}: {h['operatorId']} via {h['tabletSerial']}")
 

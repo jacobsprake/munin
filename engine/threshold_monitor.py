@@ -9,6 +9,10 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import pandas as pd
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 try:
     from live_match import evaluate_playbook_triggers, match_live_to_scenario
     LIVE_MATCH_AVAILABLE = True
@@ -114,4 +118,4 @@ def run_threshold_check(
 
 if __name__ == '__main__':
     result = run_threshold_check()
-    print(json.dumps(result, indent=2))
+    log.info(json.dumps(result, indent=2))

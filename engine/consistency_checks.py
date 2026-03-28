@@ -11,6 +11,10 @@ import hashlib
 
 from provenance_ledger import ProvenanceLedger, ProvenanceStatus
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 def compute_packet_receipt_hash(packet: Dict) -> str:
     """Compute receipt hash for a packet."""
@@ -232,4 +236,4 @@ if __name__ == "__main__":
     ledger = ProvenanceLedger()
     report = run_all_consistency_checks(ledger, audit_log_path, packets_dir)
     
-    print(json.dumps(report, indent=2))
+    log.info(json.dumps(report, indent=2))

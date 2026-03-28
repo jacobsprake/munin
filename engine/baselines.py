@@ -16,6 +16,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Set
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 @dataclass
 class BaselineResult:
@@ -186,7 +190,7 @@ if __name__ == "__main__":
     out_dir = script_dir / "out" / "demo_carlisle"
 
     if not (out_dir / "graph.json").exists():
-        print("Run 'munin demo carlisle' first.")
+        log.error("Run 'munin demo carlisle' first.")
         sys.exit(1)
 
     report = compare_and_report(
@@ -194,4 +198,4 @@ if __name__ == "__main__":
         out_dir / "incidents.json",
         out_dir / "packets",
     )
-    print(report)
+    log.info(report)

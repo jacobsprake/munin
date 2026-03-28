@@ -21,6 +21,10 @@ from enum import Enum
 from datetime import datetime
 from collections import defaultdict, deque
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class GraphState(Enum):
     """Possible states of the dependency graph."""
@@ -509,30 +513,30 @@ if __name__ == "__main__":
         ]
     }
     
-    print("=" * 60)
-    print("FORMAL VERIFICATION ENGINE")
-    print("=" * 60)
-    
+    log.info("=" * 60)
+    log.info("FORMAL VERIFICATION ENGINE")
+    log.info("=" * 60)
+
     verification_report = engine.verify_graph(safe_graph)
-    
-    print(f"\nVerification Status: {verification_report['overall_status']}")
-    print(f"Mathematical Certainty: {verification_report['mathematical_certainty']}")
-    print(f"\nInvariants Checked: {len(verification_report['invariants_checked'])}")
-    
+
+    log.info(f"Verification Status: {verification_report['overall_status']}")
+    log.info(f"Mathematical Certainty: {verification_report['mathematical_certainty']}")
+    log.info(f"Invariants Checked: {len(verification_report['invariants_checked'])}")
+
     for inv in verification_report['invariants_checked']:
-        status = "✓ VERIFIED" if inv['verified'] else "✗ VIOLATED"
-        print(f"  {status}: {inv['name']}")
+        status = "VERIFIED" if inv['verified'] else "VIOLATED"
+        log.info(f"  {status}: {inv['name']}")
         if inv.get('proof'):
-            print(f"    Proof: {inv['proof']}")
-    
-    print(f"\nFormal Proofs Generated: {len(verification_report['proofs'])}")
+            log.info(f"    Proof: {inv['proof']}")
+
+    log.info(f"Formal Proofs Generated: {len(verification_report['proofs'])}")
     for proof in verification_report['proofs']:
-        print(f"  - {proof['property_name']}: {proof['conclusion']}")
-    
+        log.info(f"  - {proof['property_name']}: {proof['conclusion']}")
+
     # Generate certificate
     certificate = engine.generate_verification_certificate()
-    print(f"\n{'=' * 60}")
-    print("VERIFICATION CERTIFICATE")
-    print(f"{'=' * 60}")
-    print(certificate['certification_statement'])
+    log.info("=" * 60)
+    log.info("VERIFICATION CERTIFICATE")
+    log.info("=" * 60)
+    log.info(certificate['certification_statement'])
 

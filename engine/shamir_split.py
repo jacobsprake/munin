@@ -21,6 +21,10 @@ import os
 import sys
 from typing import List, Tuple
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 # ---------------------------------------------------------------------------
 # GF(2^8) arithmetic  (irreducible polynomial: x^8 + x^4 + x^3 + x + 1)
 # This is the same field used by AES (Rijndael).
@@ -188,65 +192,63 @@ def reconstruct_secret(shares: List[Tuple[int, bytes]]) -> bytes:
 if __name__ == "__main__":
     import json
 
-    print("=" * 60)
-    print("Shamir Secret Sharing over GF(256) — Self-Test")
-    print("=" * 60)
+    log.info("=" * 60)
+    log.info("Shamir Secret Sharing over GF(256) -- Self-Test")
+    log.info("=" * 60)
 
     # --- GF(256) arithmetic sanity ---
     assert gf_mul(0, 53) == 0, "multiply by zero"
     assert gf_mul(1, 53) == 53, "multiply by one"
     for a in range(1, 256):
         assert gf_mul(a, gf_inv(a)) == 1, f"inverse failed for {a}"
-    print("[PASS] GF(256) arithmetic")
+    log.info("[PASS] GF(256) arithmetic")
 
     # --- Basic split / reconstruct ---
     secret = b"TEST-SECRET-DO-NOT-USE"
     n, k = 5, 3
     shares = split_secret(secret, n, k)
     assert len(shares) == n
-    print(f"[INFO] Split {len(secret)}-byte secret into {n} shares (threshold={k})")
+    log.info(f"Split {len(secret)}-byte secret into {n} shares (threshold={k})")
 
     # Reconstruct with exactly k shares (first k)
     recovered = reconstruct_secret(shares[:k])
     assert recovered == secret, "reconstruction with first k shares failed"
-    print("[PASS] Reconstruct with first k shares")
+    log.info("[PASS] Reconstruct with first k shares")
 
     # Reconstruct with different k-subset
     recovered2 = reconstruct_secret([shares[0], shares[2], shares[4]])
     assert recovered2 == secret, "reconstruction with alternate subset failed"
-    print("[PASS] Reconstruct with alternate subset")
+    log.info("[PASS] Reconstruct with alternate subset")
 
     # Reconstruct with all shares
     recovered3 = reconstruct_secret(shares)
     assert recovered3 == secret, "reconstruction with all shares failed"
-    print("[PASS] Reconstruct with all shares")
+    log.info("[PASS] Reconstruct with all shares")
 
     # Insufficient shares should produce wrong result
     try:
         bad = reconstruct_secret(shares[:k - 1])
         # With only k-1 shares the result is almost certainly wrong
         if bad == secret:
-            print("[WARN] Got lucky with k-1 shares (astronomically unlikely)")
+            log.warning("Got lucky with k-1 shares (astronomically unlikely)")
         else:
-            print("[PASS] k-1 shares produce incorrect result (as expected)")
+            log.info("[PASS] k-1 shares produce incorrect result (as expected)")
     except Exception:
-        print("[PASS] k-1 shares raised exception (acceptable)")
+        log.info("[PASS] k-1 shares raised exception (acceptable)")
 
     # --- Edge cases ---
     one_byte = split_secret(b"\x42", 3, 2)
     assert reconstruct_secret(one_byte[:2]) == b"\x42"
-    print("[PASS] Single-byte secret")
+    log.info("[PASS] Single-byte secret")
 
     big = os.urandom(256)
     big_shares = split_secret(big, 10, 5)
     assert reconstruct_secret(big_shares[:5]) == big
-    print("[PASS] 256-byte random secret (10,5)")
+    log.info("[PASS] 256-byte random secret (10,5)")
 
-    print()
-    print("All tests passed.")
-    print()
+    log.info("All tests passed.")
 
     # --- Demo output ---
-    print("Demo share listing (hex):")
+    log.info("Demo share listing (hex):")
     for idx, share_data in shares:
-        print(f"  Share {idx}: {share_data.hex()}")
+        log.info(f"  Share {idx}: {share_data.hex()}")

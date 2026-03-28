@@ -29,6 +29,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 import uuid
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 class ScenarioType(Enum):
     """Types of stress test scenarios."""
@@ -637,12 +640,12 @@ if __name__ == "__main__":
     # Run simulation
     result = twin.run_simulation(scenario)
     
-    print(f"Simulation completed: {result.simulation_id}")
-    print(f"Survival probability: {result.survival_probability:.2%}")
-    print(f"Affected nodes: {len(result.affected_nodes)}")
-    print(f"Recovery time: {result.recovery_time_hours:.1f} hours")
-    
+    log.info(f"Simulation completed: {result.simulation_id}")
+    log.info(f"Survival probability: {result.survival_probability:.2%}")
+    log.info(f"Affected nodes: {len(result.affected_nodes)}")
+    log.info(f"Recovery time: {result.recovery_time_hours:.1f} hours")
+
     # Generate audit report
     report = twin.generate_resilience_audit_report()
-    print(f"\nAudit report: {json.dumps(report['summary'], indent=2)}")
+    log.info(f"Audit report: {json.dumps(report['summary'], indent=2)}")
 

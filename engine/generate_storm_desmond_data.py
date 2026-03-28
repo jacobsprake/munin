@@ -11,6 +11,10 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime, timedelta
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 def generate_storm_desmond_data(
     output_dir: Path,
@@ -44,7 +48,7 @@ def generate_storm_desmond_data(
     peak_time = datetime(2015, 12, 6, 9, 15, 0)
     
     # Generate Eden data (main river - slower rise, higher peak)
-    print("Generating Eden at Sands Centre data...")
+    log.info("Generating Eden at Sands Centre data...")
     eden_data = generate_river_level_curve(
         timestamps=timestamps,
         peak_time=peak_time,
@@ -55,7 +59,7 @@ def generate_storm_desmond_data(
     )
     
     # Generate Petteril data (tributary - faster rise, lower peak, earlier peak)
-    print("Generating Petteril at Botcherby data...")
+    log.info("Generating Petteril at Botcherby data...")
     petteril_peak_time = peak_time - timedelta(hours=2)  # Tributary peaks earlier
     petteril_data = generate_river_level_curve(
         timestamps=timestamps,
@@ -86,12 +90,12 @@ def generate_storm_desmond_data(
     eden_df.to_csv(eden_file, index=False)
     petteril_df.to_csv(petteril_file, index=False)
     
-    print(f"\n✅ Generated Storm Desmond data:")
-    print(f"   Eden: {len(eden_df)} readings, peak {eden_df['value'].max():.3f}m at {eden_df.loc[eden_df['value'].idxmax(), 'timestamp']}")
-    print(f"   Petteril: {len(petteril_df)} readings, peak {petteril_df['value'].max():.3f}m at {petteril_df.loc[petteril_df['value'].idxmax(), 'timestamp']}")
-    print(f"\n💾 Saved to:")
-    print(f"   {eden_file}")
-    print(f"   {petteril_file}")
+    log.info(f"Generated Storm Desmond data:")
+    log.info(f"  Eden: {len(eden_df)} readings, peak {eden_df['value'].max():.3f}m at {eden_df.loc[eden_df['value'].idxmax(), 'timestamp']}")
+    log.info(f"  Petteril: {len(petteril_df)} readings, peak {petteril_df['value'].max():.3f}m at {petteril_df.loc[petteril_df['value'].idxmax(), 'timestamp']}")
+    log.info(f"Saved to:")
+    log.info(f"  {eden_file}")
+    log.info(f"  {petteril_file}")
     
     return eden_df, petteril_df
 
@@ -158,20 +162,20 @@ def generate_river_level_curve(
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("STORM DESMOND DATA GENERATOR")
-    print("=" * 60)
-    print("\nGenerating realistic flood level data for:")
-    print("  - River Eden at Sands Centre (peak: 7.912m on Dec 6, 2015 09:15)")
-    print("  - River Petteril at Botcherby Bridge (estimated peak: 2.7m)")
-    print("  - Date range: Dec 5-7, 2015")
+    log.info("=" * 60)
+    log.info("STORM DESMOND DATA GENERATOR")
+    log.info("=" * 60)
+    log.info("Generating realistic flood level data for:")
+    log.info("  - River Eden at Sands Centre (peak: 7.912m on Dec 6, 2015 09:15)")
+    log.info("  - River Petteril at Botcherby Bridge (estimated peak: 2.7m)")
+    log.info("  - Date range: Dec 5-7, 2015")
     
     script_dir = Path(__file__).parent
     output_dir = script_dir / "sample_data" / "carlisle_storm_desmond"
     
     eden_df, petteril_df = generate_storm_desmond_data(output_dir)
     
-    print(f"\n✅ Storm Desmond data generation complete!")
-    print(f"\nTo use this data, run:")
-    print(f"  python3 carlisle_demo.py")
-    print(f"\nOr manually copy files to engine/sample_data/carlisle/")
+    log.info(f"Storm Desmond data generation complete!")
+    log.info(f"To use this data, run:")
+    log.info(f"  python3 carlisle_demo.py")
+    log.info(f"Or manually copy files to engine/sample_data/carlisle/")

@@ -21,6 +21,10 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 @dataclass
 class BiometricHandshake:
@@ -167,11 +171,10 @@ def create_biometric_handshake(operator_id: str, tablet_id: str,
 
 def main():
     """Demonstrate Byzantine Fault Tolerant Handshake Protocol."""
-    print("=" * 70)
-    print("SOVEREIGN HANDSHAKE: Byzantine Fault Tolerant Authorization")
-    print("=" * 70)
-    print()
-    
+    log.info("=" * 70)
+    log.info("SOVEREIGN HANDSHAKE: Byzantine Fault Tolerant Authorization")
+    log.info("=" * 70)
+
     # Simulate critical infrastructure action: "Black Start" after grid collapse
     action_id = "black_start_20260115_020000"
     action_description = "Initiate Black Start: Restore grid after total collapse"
@@ -193,10 +196,9 @@ def main():
         requires_biometric=True
     )
     
-    print(f"Action: {action_description}")
-    print(f"Quorum Requirement: {threshold}-of-{len(required_ministries)} ministries")
-    print(f"Requires Biometric Handshakes: Yes")
-    print()
+    log.info(f"Action: {action_description}")
+    log.info(f"Quorum Requirement: {threshold}-of-{len(required_ministries)} ministries")
+    log.info(f"Requires Biometric Handshakes: Yes")
     
     # Add signatures from different ministries
     ministries_to_sign = [
@@ -206,7 +208,7 @@ def main():
     ]
     
     for ministry, signer_id, tablet_id, tablet_serial in ministries_to_sign:
-        print(f"Adding signature from {ministry}...")
+        log.info(f"Adding signature from {ministry}...")
         
         # Create biometric handshake
         biometric = create_biometric_handshake(signer_id, tablet_id, tablet_serial)
@@ -227,41 +229,37 @@ def main():
         )
         
         status = handshake.get_status()
-        print(f"  ✓ Signature added from {ministry}")
-        print(f"  ✓ Biometric handshake verified (Iris + Palm + Token + Air-Gap)")
-        print(f"  Status: {status['signatures_received']}/{status['threshold_required']} signatures")
-        print(f"  Authorized: {status['authorized']}")
-        print()
+        log.info(f"  Signature added from {ministry}")
+        log.info(f"  Biometric handshake verified (Iris + Palm + Token + Air-Gap)")
+        log.info(f"  Status: {status['signatures_received']}/{status['threshold_required']} signatures")
+        log.info(f"  Authorized: {status['authorized']}")
     
     # Final status
     final_status = handshake.get_status()
-    print("=" * 70)
-    print("FINAL AUTHORIZATION STATUS")
-    print("=" * 70)
-    print(json.dumps(final_status, indent=2))
-    print()
-    
+    log.info("=" * 70)
+    log.info("FINAL AUTHORIZATION STATUS")
+    log.info("=" * 70)
+    log.info(json.dumps(final_status, indent=2))
+
     if final_status['authorized']:
-        print("✓ HANDSHAKE AUTHORIZED")
-        print(f"  {final_status['quorum_type']} quorum satisfied")
-        print(f"  All biometric handshakes verified")
-        print(f"  Action can proceed: {action_description}")
+        log.info("HANDSHAKE AUTHORIZED")
+        log.info(f"  {final_status['quorum_type']} quorum satisfied")
+        log.info(f"  All biometric handshakes verified")
+        log.info(f"  Action can proceed: {action_description}")
     else:
-        print("✗ HANDSHAKE NOT AUTHORIZED")
-        print(f"  Missing signatures from: {', '.join(final_status['ministries_missing'])}")
-    
-    print()
-    print("=" * 70)
-    print("BYZANTINE FAULT TOLERANCE VERIFIED")
-    print("=" * 70)
-    print("This handshake demonstrates:")
-    print("  1. M-of-N quorum prevents single-point-of-failure")
-    print("  2. Biometric verification prevents remote sabotage")
-    print("  3. Physically separated ministries prevent collusion")
-    print("  4. Air-gapped terminals ensure hardware-rooted trust")
-    print()
-    print("Even if one ministry is compromised, the action cannot be")
-    print("authorized without valid signatures from other ministries.")
+        log.warning("HANDSHAKE NOT AUTHORIZED")
+        log.warning(f"  Missing signatures from: {', '.join(final_status['ministries_missing'])}")
+
+    log.info("=" * 70)
+    log.info("BYZANTINE FAULT TOLERANCE VERIFIED")
+    log.info("=" * 70)
+    log.info("This handshake demonstrates:")
+    log.info("  1. M-of-N quorum prevents single-point-of-failure")
+    log.info("  2. Biometric verification prevents remote sabotage")
+    log.info("  3. Physically separated ministries prevent collusion")
+    log.info("  4. Air-gapped terminals ensure hardware-rooted trust")
+    log.info("Even if one ministry is compromised, the action cannot be")
+    log.info("authorized without valid signatures from other ministries.")
 
 
 if __name__ == "__main__":

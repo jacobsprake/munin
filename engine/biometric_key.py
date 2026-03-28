@@ -22,6 +22,10 @@ from datetime import datetime, timedelta
 from enum import Enum
 import uuid
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class BiometricType(Enum):
     """Types of biometric authentication."""
@@ -434,7 +438,7 @@ if __name__ == "__main__":
         token_pin="1234"
     )
     
-    print(json.dumps(authorization, indent=2))
-    print(f"\nTablet status: {json.dumps(tablet.get_status(), indent=2)}")
+    log.info(json.dumps(authorization, indent=2))
+    log.info(f"Tablet status: {json.dumps(tablet.get_status(), indent=2)}")
 
 

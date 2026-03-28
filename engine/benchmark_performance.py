@@ -8,6 +8,9 @@ from typing import Dict, List
 from infer_graph import build_graph
 from config import get_config
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 def generate_synthetic_dataset(n_nodes: int, n_samples: int, seed: int = 42) -> pd.DataFrame:
     """Generate synthetic time-series data for benchmarking."""
@@ -28,7 +31,7 @@ def generate_synthetic_dataset(n_nodes: int, n_samples: int, seed: int = 42) -> 
 
 def benchmark_graph_inference(n_nodes: int, n_samples: int, output_dir: Path) -> Dict:
     """Benchmark graph inference for given dataset size."""
-    print(f"Benchmarking: {n_nodes} nodes, {n_samples} samples...")
+    log.info(f"Benchmarking: {n_nodes} nodes, {n_samples} samples...")
     
     # Generate synthetic data
     df = generate_synthetic_dataset(n_nodes, n_samples)
@@ -85,9 +88,9 @@ def run_benchmarks(output_dir: Path):
         try:
             result = benchmark_graph_inference(n_nodes, n_samples, output_dir)
             results.append(result)
-            print(f"  Completed: {result['elapsed_seconds']:.2f}s, {result['edges_inferred']} edges")
+            log.info(f"  Completed: {result['elapsed_seconds']:.2f}s, {result['edges_inferred']} edges")
         except Exception as e:
-            print(f"  Failed: {e}")
+            log.error(f"  Failed: {e}")
             results.append({
                 'n_nodes': n_nodes,
                 'n_samples': n_samples,
@@ -105,7 +108,7 @@ def run_benchmarks(output_dir: Path):
     with open(output_path, 'w') as f:
         json.dump(perf_profile, f, indent=2)
     
-    print(f"\nPerformance profile saved to {output_path}")
+    log.info(f"Performance profile saved to {output_path}")
     return perf_profile
 
 

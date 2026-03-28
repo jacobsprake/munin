@@ -10,6 +10,10 @@ import pandas as pd
 import csv
 from abc import ABC, abstractmethod
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class HistorianConnector(ABC):
     """Base class for historian connectors."""
@@ -258,7 +262,7 @@ def backfill_historian_data(
             batch_num += 1
         
         except Exception as e:
-            print(f"Error in batch {batch_num}: {e}")
+            log.error(f"Error in batch {batch_num}: {e}")
             continue
     
     return total_points

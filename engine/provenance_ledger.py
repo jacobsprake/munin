@@ -23,6 +23,10 @@ from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class ProvenanceStatus(Enum):
     """Status of data provenance verification."""
@@ -396,18 +400,18 @@ class ProvenanceLedger:
 
 
 if __name__ == "__main__":
-    print("="*70)
-    print("Data Provenance Ledger: Anti-Treason Architecture")
-    print("="*70)
-    print("\nThe 2026 Threat: Synthetic Corruption")
-    print("  - AI agents faking sensor data")
-    print("  - AI agents generating fake legal authorizations")
-    print("  - Adversaries tricking officials into destroying infrastructure")
-    print("\nThe Solution: Hardware-Rooted Provenance")
-    print("  - Every data bit cryptographically hashed at source")
-    print("  - Merkle-tree linked trust layer")
-    print("  - Unprovenanced data flagged as suspicious")
-    print("\n" + "="*70)
+    log.info("=" * 70)
+    log.info("Data Provenance Ledger: Anti-Treason Architecture")
+    log.info("=" * 70)
+    log.info("The 2026 Threat: Synthetic Corruption")
+    log.info("  - AI agents faking sensor data")
+    log.info("  - AI agents generating fake legal authorizations")
+    log.info("  - Adversaries tricking officials into destroying infrastructure")
+    log.info("The Solution: Hardware-Rooted Provenance")
+    log.info("  - Every data bit cryptographically hashed at source")
+    log.info("  - Merkle-tree linked trust layer")
+    log.info("  - Unprovenanced data flagged as suspicious")
+    log.info("=" * 70)
     
     # Create ledger
     ledger = ProvenanceLedger()
@@ -435,17 +439,17 @@ if __name__ == "__main__":
         hardware_signature=hardware_signature
     )
     
-    print(f"\nCreated Provenance Record:")
-    print(f"  Data ID: {record.data_id}")
-    print(f"  Status: {record.status.value}")
-    print(f"  Merkle Proof: {record.merkle_proof[:50]}...")
+    log.info(f"Created Provenance Record:")
+    log.info(f"  Data ID: {record.data_id}")
+    log.info(f"  Status: {record.status.value}")
+    log.info(f"  Merkle Proof: {record.merkle_proof[:50]}...")
     
     # Verify provenance
     is_valid, status, reason = ledger.verify_provenance("data_001", data_content)
-    print(f"\nVerification Result:")
-    print(f"  Valid: {is_valid}")
-    print(f"  Status: {status.value}")
-    print(f"  Reason: {reason}")
+    log.info(f"Verification Result:")
+    log.info(f"  Valid: {is_valid}")
+    log.info(f"  Status: {status.value}")
+    log.info(f"  Reason: {reason}")
     
     # Test synthetic corruption detection
     fake_data = '{"sensor_id": "sensor_water_pressure_01", "value": 999.9, "unit": "psi"}'  # Fake flood reading
@@ -456,22 +460,22 @@ if __name__ == "__main__":
         hardware_signature="FAKE-SIGNATURE"  # Missing hardware signature
     )
     
-    print(f"\nSynthetic Corruption Test:")
-    print(f"  Fake Data Status: {fake_record.status.value}")
-    
+    log.info(f"Synthetic Corruption Test:")
+    log.info(f"  Fake Data Status: {fake_record.status.value}")
+
     corruption = ledger.detect_synthetic_corruption("data_002", fake_data)
-    print(f"  Corruption Detected: {corruption['corruption_detected']}")
-    print(f"  Reason: {corruption['reason']}")
+    log.info(f"  Corruption Detected: {corruption['corruption_detected']}")
+    log.info(f"  Reason: {corruption['reason']}")
     
     # Summary
-    print("\n" + "="*70)
-    print("Ledger Summary")
-    print("="*70)
+    log.info("=" * 70)
+    log.info("Ledger Summary")
+    log.info("=" * 70)
     summary = ledger.get_ledger_summary()
-    print(json.dumps(summary, indent=2))
-    
-    print("\n" + "="*70)
-    print("The Trust Layer: Munin flags unprovenanced data as suspicious")
-    print("="*70)
+    log.info(json.dumps(summary, indent=2))
+
+    log.info("=" * 70)
+    log.info("The Trust Layer: Munin flags unprovenanced data as suspicious")
+    log.info("=" * 70)
 
 

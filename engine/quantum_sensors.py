@@ -21,6 +21,9 @@ from datetime import datetime
 from enum import Enum
 import uuid
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 class PQCAlgorithm(Enum):
     """Post-Quantum Cryptography algorithms."""
@@ -351,8 +354,8 @@ if __name__ == "__main__":
     reading1 = network.collect_reading("qsensor_001", 42.5)
     reading2 = network.collect_reading("qsensor_002", 120.0)
     
-    print(f"Encrypted reading 1: {reading1['id']}")
-    print(f"Encrypted reading 2: {reading2['id']}")
-    print(f"\nNetwork status: {json.dumps(network.get_network_status(), indent=2)}")
+    log.info(f"Encrypted reading 1: {reading1['id']}")
+    log.info(f"Encrypted reading 2: {reading2['id']}")
+    log.info(f"Network status: {json.dumps(network.get_network_status(), indent=2)}")
 
 

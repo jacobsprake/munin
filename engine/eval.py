@@ -17,6 +17,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 @dataclass
 class GraphReconstructionMetrics:
@@ -114,23 +118,20 @@ class BenchmarkResult:
 
     def print_summary(self) -> None:
         """Print a human-readable summary."""
-        print(f"\n--- Benchmark: {self.scenario_name} ---\n")
-        print("  Graph Reconstruction:")
-        print(f"    Precision: {self.graph_metrics.precision:.3f}")
-        print(f"    Recall:    {self.graph_metrics.recall:.3f}")
-        print(f"    F1:        {self.graph_metrics.f1:.3f}")
-        print(f"    TP/FP/FN:  {self.graph_metrics.true_positives}/{self.graph_metrics.false_positives}/{self.graph_metrics.false_negatives}")
-        print(f"    Mean Lag Error: {self.graph_metrics.mean_lag_error_seconds:.1f}s")
-        print()
-        print("  Cascade Prediction:")
-        print(f"    Jaccard:   {self.cascade_metrics.jaccard_similarity:.3f}")
-        print(f"    Precision: {self.cascade_metrics.precision:.3f}")
-        print(f"    Recall:    {self.cascade_metrics.recall:.3f}")
-        print()
-        print("  Playbook Impact:")
-        print(f"    Node Reduction: {self.playbook_metrics.reduction_pct:.1f}%")
-        print(f"    Traditional: {self.playbook_metrics.avg_response_time_traditional_hours}h -> Munin: {self.playbook_metrics.avg_response_time_munin_minutes}min")
-        print()
+        log.info(f"--- Benchmark: {self.scenario_name} ---")
+        log.info("  Graph Reconstruction:")
+        log.info(f"    Precision: {self.graph_metrics.precision:.3f}")
+        log.info(f"    Recall:    {self.graph_metrics.recall:.3f}")
+        log.info(f"    F1:        {self.graph_metrics.f1:.3f}")
+        log.info(f"    TP/FP/FN:  {self.graph_metrics.true_positives}/{self.graph_metrics.false_positives}/{self.graph_metrics.false_negatives}")
+        log.info(f"    Mean Lag Error: {self.graph_metrics.mean_lag_error_seconds:.1f}s")
+        log.info("  Cascade Prediction:")
+        log.info(f"    Jaccard:   {self.cascade_metrics.jaccard_similarity:.3f}")
+        log.info(f"    Precision: {self.cascade_metrics.precision:.3f}")
+        log.info(f"    Recall:    {self.cascade_metrics.recall:.3f}")
+        log.info("  Playbook Impact:")
+        log.info(f"    Node Reduction: {self.playbook_metrics.reduction_pct:.1f}%")
+        log.info(f"    Traditional: {self.playbook_metrics.avg_response_time_traditional_hours}h -> Munin: {self.playbook_metrics.avg_response_time_munin_minutes}min")
 
 
 def _edge_key(source: str, target: str) -> Tuple[str, str]:

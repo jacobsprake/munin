@@ -28,6 +28,10 @@ import uuid
 import tarfile
 import gzip
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class VaultStatus(Enum):
     """Status of the digital asset vault."""
@@ -429,12 +433,12 @@ if __name__ == "__main__":
         graph_data=graph_data
     )
     
-    print(f"Created snapshot: {snapshot['id']}")
+    log.info(f"Created snapshot: {snapshot['id']}")
     
     # Seal vault
     vault.seal("PHYSICAL_KEY_12345")
     
     # Get status
     status = vault.get_status()
-    print(json.dumps(status, indent=2))
+    log.info(json.dumps(status, indent=2))
 

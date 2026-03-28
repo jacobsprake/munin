@@ -22,6 +22,9 @@ from packetize import packetize_incidents
 from config import get_config, EngineConfig, ENGINE_CONFIG_VERSION
 from structured_logging import get_logger
 from safety_guard import assert_read_only
+from engine.logger import get_logger as get_module_logger
+
+log = get_module_logger(__name__)
 
 # region agent log
 def _agent_log(run_id: str, hypothesis_id: str, location: str, message: str, data: dict):
@@ -93,11 +96,11 @@ def main(
     random.seed(config.rng.base_seed)
     np.random.seed(config.rng.base_seed)
     
-    print("=" * 60)
-    print("SOVEREIGN ORCHESTRATION PROTOTYPE - ENGINE PIPELINE")
-    print(f"Engine Config Version: {ENGINE_CONFIG_VERSION}")
-    print(f"Random Seed: {config.rng.base_seed}")
-    print("=" * 60)
+    log.info("=" * 60)
+    log.info("SOVEREIGN ORCHESTRATION PROTOTYPE - ENGINE PIPELINE")
+    log.info(f"Engine Config Version: {ENGINE_CONFIG_VERSION}")
+    log.info(f"Random Seed: {config.rng.base_seed}")
+    log.info("=" * 60)
     
     script_dir = Path(__file__).parent
     if data_dir is None:
@@ -137,7 +140,7 @@ def main(
     # Initialize structured logger
     logger = get_logger(run_id, out_dir)
 
-    print("\n[1/8] Ingesting historian data...")
+    log.info("[1/8] Ingesting historian data...")
     logger.start_phase("ingest", {'data_dir': str(data_dir)})
     _agent_log(run_id, "H2", "engine/run.py:ingest:start", "Starting ingest_historian_data", {})
     # DB path for sensor_readings (when app has pushed data via POST /api/sensors/data)
@@ -167,7 +170,7 @@ def main(
     except Exception:
         pass  # Optional: carlisle_config may not be available
 
-    print("\n[2/8] Inferring dependency graph...")
+    log.info("[2/8] Inferring dependency graph...")
     logger.start_phase("graph_inference")
     _agent_log(run_id, "H3", "engine/run.py:graph:start", "Starting build_graph", {})
     build_graph(out_dir / "normalized_timeseries.csv", out_dir / "graph.json", config=config.graph)
@@ -185,7 +188,7 @@ def main(
         "graphPath": str(out_dir / "graph.json"),
     })
 
-    print("\n[3/8] Assessing sensor health and building evidence...")
+    log.info("[3/8] Assessing sensor health and building evidence...")
     logger.start_phase("sensor_health")
     import pandas as pd
     _agent_log(run_id, "H1", "engine/run.py:pandas_import", "Imported pandas for health stage", {})
@@ -213,9 +216,9 @@ def main(
         "numEvidenceWindows": len(evidence_windows),
         "evidencePath": str(out_dir / "evidence.json"),
     })
-    print(f"Evidence saved: {len(evidence_windows)} windows")
+    log.info(f"Evidence saved: {len(evidence_windows)} windows")
 
-    print("\n[4/8] Building incident simulations (exhaustive scenario space)...")
+    log.info("[4/8] Building incident simulations (exhaustive scenario space)...")
     logger.start_phase("incident_simulation")
     _n_jobs = max(1, (cpu_count() or 4) - 1) if n_jobs == 0 else n_jobs
     _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {
@@ -254,7 +257,7 @@ def main(
     except Exception:
         pass  # Optional: live_match may not have carlisle_config
 
-    print("\n[5/8] Generating authoritative handshake packets...")
+    log.info("[5/8] Generating authoritative handshake packets...")
     logger.start_phase("packet_generation")
     packetize_incidents(
         out_dir / "incidents.json",
@@ -276,7 +279,7 @@ def main(
 
     # === INTELLIGENCE LAYERS (6-8) ===
     # Layer 2: Anomaly Detection
-    print("\n[6/8] Running anomaly detection (Layer 2)...")
+    log.info("[6/8] Running anomaly detection (Layer 2)...")
     logger.start_phase("anomaly_detection")
     anomaly_results = None
     try:
@@ -309,16 +312,16 @@ def main(
         logger.end_phase("anomaly_detection", {
             'anomalies_detected': total_anomalies
         })
-        print(f"  Anomalies detected: {total_anomalies}")
+        log.info(f"Anomalies detected: {total_anomalies}")
     except ImportError:
-        print("  [SKIP] torch not installed — run: pip install torch scikit-learn")
+        log.warning("torch not installed — run: pip install torch scikit-learn")
         logger.end_phase("anomaly_detection", {'skipped': True})
     except Exception as e:
-        print(f"  [WARN] Anomaly detection failed: {e}")
+        log.warning(f"Anomaly detection failed: {e}")
         logger.end_phase("anomaly_detection", {'error': str(e)})
 
     # Layer 3: GNN Cascade Prediction
-    print("\n[7/8] Running GNN cascade prediction (Layer 3)...")
+    log.info("[7/8] Running GNN cascade prediction (Layer 3)...")
     logger.start_phase("cascade_prediction")
     try:
         from intelligence.cascade.predictor import CascadePredictor, CascadeConfig, GraphData
@@ -382,19 +385,19 @@ def main(
                 }
                 with open(out_dir / "cascade_prediction.json", 'w') as f:
                     json.dump(cascade_output, f, indent=2, default=str)
-                print(f"  Cascade paths predicted: {len(pred.cascade_paths)}")
+                log.info(f"Cascade paths predicted: {len(pred.cascade_paths)}")
             else:
-                print("  [SKIP] No valid edges for GNN")
+                log.warning("No valid edges for GNN")
         logger.end_phase("cascade_prediction", {'completed': True})
     except ImportError:
-        print("  [SKIP] torch not installed — run: pip install torch")
+        log.warning("torch not installed — run: pip install torch")
         logger.end_phase("cascade_prediction", {'skipped': True})
     except Exception as e:
-        print(f"  [WARN] Cascade prediction failed: {e}")
+        log.warning(f"Cascade prediction failed: {e}")
         logger.end_phase("cascade_prediction", {'error': str(e)})
 
     # Layer 7: Model Governance (audit trail for this run)
-    print("\n[8/8] Recording model governance audit...")
+    log.info("[8/8] Recording model governance audit...")
     logger.start_phase("governance")
     try:
         from intelligence.governance.audit_trail import MLAuditTrail
@@ -411,25 +414,25 @@ def main(
                 'anomalies': int(anomaly_results.flags.sum()) if anomaly_results is not None and anomaly_results.flags is not None else 0,
             }
         )
-        print(f"  Audit trail: {out_dir / 'ml_audit'}")
+        log.info(f"Audit trail: {out_dir / 'ml_audit'}")
         logger.end_phase("governance", {'completed': True})
     except Exception as e:
-        print(f"  [WARN] Governance audit failed: {e}")
+        log.warning(f"Governance audit failed: {e}")
         logger.end_phase("governance", {'error': str(e)})
 
-    print("\n" + "=" * 60)
-    print("PIPELINE COMPLETE (Layers 1-7)")
-    print("=" * 60)
-    print(f"Output directory: {out_dir}")
-    print(f"Run ID: {run_id}")
-    print(f"  - graph.json            (Layer 1: Shadow Links)")
-    print(f"  - evidence.json         (Layer 1: Evidence Windows)")
-    print(f"  - incidents.json        (Layer 1: Cascade Simulation)")
-    print(f"  - packets/              (Layer 1: Authorization Packets)")
-    print(f"  - anomaly_report.json   (Layer 2: Anomaly Detection)")
-    print(f"  - cascade_prediction.json (Layer 3: GNN Cascade)")
-    print(f"  - ml_audit/             (Layer 7: Governance Audit)")
-    print(f"  - audit.jsonl")
+    log.info("=" * 60)
+    log.info("PIPELINE COMPLETE (Layers 1-7)")
+    log.info("=" * 60)
+    log.info(f"Output directory: {out_dir}")
+    log.info(f"Run ID: {run_id}")
+    log.info(f"  - graph.json            (Layer 1: Shadow Links)")
+    log.info(f"  - evidence.json         (Layer 1: Evidence Windows)")
+    log.info(f"  - incidents.json        (Layer 1: Cascade Simulation)")
+    log.info(f"  - packets/              (Layer 1: Authorization Packets)")
+    log.info(f"  - anomaly_report.json   (Layer 2: Anomaly Detection)")
+    log.info(f"  - cascade_prediction.json (Layer 3: GNN Cascade)")
+    log.info(f"  - ml_audit/             (Layer 7: Governance Audit)")
+    log.info(f"  - audit.jsonl")
 
     # Copy key outputs to engine/out for app compatibility (app and sync read engine/out/graph.json, incidents.json, etc.)
     parent_out = out_dir.parent
@@ -488,7 +491,7 @@ if __name__ == "__main__":
                 max_scenarios=args.scenarios,
                 n_jobs=args.parallel if args.parallel > 0 else 0,
             )
-            print(f"\nContinuous mode: sleeping {args.interval}s until next run...")
+            log.info(f"Continuous mode: sleeping {args.interval}s until next run...")
             time.sleep(args.interval)
     else:
         main(

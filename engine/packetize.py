@@ -8,6 +8,9 @@ from typing import Dict, List, Optional, Any, Set
 from liability_shield import LiabilityShield
 from byzantine_resilience import ByzantineResilienceEngine, integrate_byzantine_multi_sig_into_packet
 from audit_log import get_audit_log
+from engine.logger import get_logger
+
+log = get_logger(__name__)
 
 # Optional: Import decision integration (requires Next.js API to be running)
 try:
@@ -15,7 +18,7 @@ try:
     DECISION_INTEGRATION_AVAILABLE = True
 except ImportError:
     DECISION_INTEGRATION_AVAILABLE = False
-    print("Note: Decision integration not available (decision_integration.py not found)")
+    log.info("Note: Decision integration not available (decision_integration.py not found)")
 
 def compute_data_hash(data: str) -> str:
     """Compute SHA-256 hash of data."""
@@ -434,12 +437,12 @@ def packetize_incidents(
                     playbook_path = fallback_path
                     with open(playbook_path, 'r') as f:
                         playbook = yaml.safe_load(f)
-                    print(f"Using fallback playbook: {fallback_id}")
+                    log.info(f"Using fallback playbook: {fallback_id}")
                 else:
-                    print(f"Warning: Playbook {playbook_id} and fallback {fallback_id} not found, using default")
+                    log.warning(f"Playbook {playbook_id} and fallback {fallback_id} not found, using default")
                     playbook_id = 'default.yaml'
             else:
-                print(f"Warning: Playbook {playbook_id} not found, using default")
+                log.warning(f"Playbook {playbook_id} not found, using default")
                 playbook_id = 'default.yaml'
         
         packet = generate_packet(incident, playbook_id, graph, evidence)
@@ -477,7 +480,7 @@ def packetize_incidents(
         with open(packet_path, 'w') as f:
             json.dump(packet, f, indent=2)
         
-        print(f"Packet generated: {packet['id']} (Merkle: {merkle_receipt['receiptHash'][:16]}...)")
+        log.info(f"Packet generated: {packet['id']} (Merkle: {merkle_receipt['receiptHash'][:16]}...)")
         
         # Integrate with decision system (if available)
         if DECISION_INTEGRATION_AVAILABLE:
@@ -489,9 +492,9 @@ def packetize_incidents(
                     output_dir.parent  # Pass parent dir to create decisions/ subdirectory
                 )
                 if decision_id:
-                    print(f"   Decision created: {decision_id}")
+                    log.info(f"   Decision created: {decision_id}")
             except Exception as e:
-                print(f"   ⚠️  Decision integration failed: {e}")
+                log.warning(f"Decision integration failed: {e}")
         
         # Log packet creation to audit log
         audit_log.append(
@@ -509,9 +512,9 @@ def packetize_incidents(
     # Verify audit log chain
     verification = audit_log.verify_chain()
     if verification['valid']:
-        print(f"\n✅ Audit log chain verified: {verification['entries_checked']} entries")
+        log.info(f"Audit log chain verified: {verification['entries_checked']} entries")
     else:
-        print(f"\n⚠️  Audit log verification failed: {verification.get('errors', [])}")
+        log.warning(f"Audit log verification failed: {verification.get('errors', [])}")
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent

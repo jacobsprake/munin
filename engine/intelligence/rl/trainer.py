@@ -27,6 +27,10 @@ from .agents import (
 from .environment import ResponseEnvironment
 from .reward import compute_reward_detailed
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 @dataclass
 class TrainingMetrics:
@@ -147,7 +151,7 @@ class RLTrainer:
             # Logging
             if episode % log_interval == 0:
                 summary = self.metrics.summary(last_n=log_interval)
-                print(
+                log.info(
                     f"[Episode {episode}/{n_episodes}] "
                     f"reward={summary['mean_reward']:.1f} +/- {summary['std_reward']:.1f}  "
                     f"length={summary['mean_length']:.0f}"
@@ -157,13 +161,13 @@ class RLTrainer:
             if episode % eval_interval == 0:
                 eval_reward = self._evaluate(n_episodes=eval_episodes)
                 self.metrics.eval_rewards.append(eval_reward)
-                print(f"  [Eval] mean_reward={eval_reward:.1f}")
+                log.info(f"[Eval] mean_reward={eval_reward:.1f}")
 
                 # Checkpoint best model
                 if checkpoint_dir is not None and eval_reward > best_eval_reward:
                     best_eval_reward = eval_reward
                     self.save(os.path.join(checkpoint_dir, "best"))
-                    print(f"  [Checkpoint] New best: {best_eval_reward:.1f}")
+                    log.info(f"[Checkpoint] New best: {best_eval_reward:.1f}")
 
         # Final checkpoint
         if checkpoint_dir is not None:

@@ -10,6 +10,9 @@ script_dir = Path(__file__).parent
 sys.path.insert(0, str(script_dir))
 
 from packetize import determine_multi_sig_requirements
+from engine.logger import get_logger
+
+log = get_logger(__name__)
 
 # Load the Carlisle playbook
 playbook_path = script_dir.parent / "playbooks" / "carlisle_flood_gate_coordination.yaml"
@@ -28,26 +31,24 @@ test_incident = {
 # Test the multi-sig requirements
 result = determine_multi_sig_requirements(playbook, test_incident)
 
-print("=" * 60)
-print("SINGLE SIGN-OFF VERIFICATION")
-print("=" * 60)
-print(f"\nPlaybook: {playbook_path.name}")
-print(f"Playbook approval_required:")
+log.info("=" * 60)
+log.info("SINGLE SIGN-OFF VERIFICATION")
+log.info("=" * 60)
+log.info(f"Playbook: {playbook_path.name}")
+log.info(f"Playbook approval_required:")
 for role in playbook.get('approval_required', []):
     if isinstance(role, dict):
-        print(f"  - {role.get('role')}: minimum_sign_off={role.get('minimum_sign_off', False)}")
+        log.info(f"  - {role.get('role')}: minimum_sign_off={role.get('minimum_sign_off', False)}")
     else:
-        print(f"  - {role}")
+        log.info(f"  - {role}")
 
-print(f"\nMulti-Sig Requirements Result:")
-print(f"  Required: {result.get('required')}")
-print(f"  Threshold: {result.get('threshold')}")
-print(f"  Minimum Sign-Off: {result.get('minimumSignOff', False)}")
-print(f"  Minimum Sign-Off Role: {result.get('minimumSignOffRole', 'N/A')}")
+log.info(f"Multi-Sig Requirements Result:")
+log.info(f"  Required: {result.get('required')}")
+log.info(f"  Threshold: {result.get('threshold')}")
+log.info(f"  Minimum Sign-Off: {result.get('minimumSignOff', False)}")
+log.info(f"  Minimum Sign-Off Role: {result.get('minimumSignOffRole', 'N/A')}")
 
 if result.get('threshold') == 1:
-    print(f"\n✅ SUCCESS: Single sign-off is working!")
-    print(f"   EA Duty Officer can authorize with single tick-box.")
+    log.info(f"SUCCESS: Single sign-off is working! EA Duty Officer can authorize with single tick-box.")
 else:
-    print(f"\n⚠️  WARNING: Threshold is {result.get('threshold')}, expected 1")
-    print(f"   Check playbook configuration.")
+    log.warning(f"Threshold is {result.get('threshold')}, expected 1. Check playbook configuration.")

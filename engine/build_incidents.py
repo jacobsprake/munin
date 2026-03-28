@@ -11,6 +11,9 @@ from typing import List, Dict, Set, Optional, Tuple
 from multiprocessing import Pool, cpu_count
 from cmi_prioritization import CMIPrioritizationEngine, EmergencyLevel, AssetPriority
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 # Caps for scenario enumeration (raised for 10,000s coverage)
 MAX_SINGLE_ORIGIN_PER_TYPE = 500
 MAX_CHAOS_MULTI_FAULT = 5000
@@ -291,7 +294,7 @@ def build_incidents(
         if max_scenarios is not None and original_count > max_scenarios:
             rng = random.Random(seed)
             scenarios = rng.sample(scenarios, max_scenarios)
-            print(f"Sampled {max_scenarios} from {original_count} conceivable scenarios")
+            log.info(f"Sampled {max_scenarios} from {original_count} conceivable scenarios")
         use_parallel = n_jobs > 1
         if use_parallel:
             n_workers = min(n_jobs, cpu_count() if cpu_count() else 4) if n_jobs > 1 else 1
@@ -306,7 +309,7 @@ def build_incidents(
                     'startTs': res['startTs'],
                     'timeline': res['timeline'],
                 })
-            print(f"Simulated {len(incidents)} scenarios (parallel, {n_workers} workers)")
+            log.info(f"Simulated {len(incidents)} scenarios (parallel, {n_workers} workers)")
         else:
             for idx, (incident_type, initial_nodes, start_time, title, delay_min) in enumerate(scenarios):
                 timeline = simulate_cascade(
@@ -322,7 +325,7 @@ def build_incidents(
                     'startTs': start_time.isoformat(),
                     'timeline': timeline,
                 })
-            print(f"Simulated {len(incidents)} conceivable + chaos scenarios")
+            log.info(f"Simulated {len(incidents)} conceivable + chaos scenarios")
     else:
         # Quick mode: original 3 incidents only
         flood_nodes = [n['id'] for n in nodes if 'pump' in n['id'].lower() or 'reservoir' in n['id'].lower()][:2]
@@ -362,7 +365,7 @@ def build_incidents(
     incidents_data = {'incidents': incidents}
     with open(output_path, 'w') as f:
         json.dump(incidents_data, f, indent=2)
-    print(f"Incidents saved to {output_path}: {len(incidents)} incidents")
+    log.info(f"Incidents saved to {output_path}: {len(incidents)} incidents")
 
 if __name__ == "__main__":
     script_dir = Path(__file__).parent

@@ -27,6 +27,10 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from enum import Enum
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class SignalType(Enum):
     """Types of physical signals we can measure."""
@@ -322,13 +326,13 @@ def simulate_physics_verification_example():
         acoustic_signal=acoustic_signal
     )
     
-    print(f"Hardware Hack Detection:")
-    print(f"  Digital signal says: {digital_signal.value} (Open)")
-    print(f"  Acoustic signal says: {acoustic_signal.value} (Closed)")
-    print(f"  Hack detected: {is_hack}")
-    print(f"  Confidence: {confidence:.2%}")
-    print(f"  Type: {hack_type}")
-    print(f"  Detection time: not benchmarked (no RT guarantee in Python)")
+    log.info(f"Hardware Hack Detection:")
+    log.info(f"  Digital signal says: {digital_signal.value} (Open)")
+    log.info(f"  Acoustic signal says: {acoustic_signal.value} (Closed)")
+    log.info(f"  Hack detected: {is_hack}")
+    log.info(f"  Confidence: {confidence:.2%}")
+    log.info(f"  Type: {hack_type}")
+    log.info(f"  Detection time: not benchmarked (no RT guarantee in Python)")
     
     return engine
 

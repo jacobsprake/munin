@@ -6,6 +6,10 @@ from datetime import datetime
 import sqlite3
 import os
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 def ingest_historian_data(data_dir: Path, db_path: Path | None = None, recursive: bool = True) -> pd.DataFrame:
     """Load and normalize all CSV files from data_dir, optionally merging DB sensor_readings."""
     all_data = []
@@ -27,7 +31,7 @@ def ingest_historian_data(data_dir: Path, db_path: Path | None = None, recursive
             df['source_file'] = csv_file.stem
             all_data.append(df)
         except Exception as e:
-            print(f"Warning: skip {csv_file}: {e}")
+            log.warning(f"skip {csv_file}: {e}")
 
     # Load from SQLite sensor_readings if DB path provided
     if db_path and db_path.exists():
@@ -43,7 +47,7 @@ def ingest_historian_data(data_dir: Path, db_path: Path | None = None, recursive
                 df_db['source_file'] = 'sensor_readings'
                 all_data.append(df_db)
         except Exception as e:
-            print(f"Warning: DB ingest failed: {e}")
+            log.warning(f"DB ingest failed: {e}")
 
     if not all_data:
         raise ValueError(
@@ -72,7 +76,7 @@ def normalize_timeseries(df: pd.DataFrame, output_path: Path):
     
     # Save as CSV (simpler than parquet for prototype)
     normalized.to_csv(output_path)
-    print(f"Normalized time-series saved to {output_path}")
+    log.info(f"Normalized time-series saved to {output_path}")
     
     return normalized
 

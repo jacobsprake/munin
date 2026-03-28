@@ -8,6 +8,10 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 # Confounder test names
 COMMON_CAUSE_RULED_OUT = "common_cause_ruled_out"
 TEMPORAL_PRECEDENCE = "temporal_precedence"
@@ -97,33 +101,27 @@ class EvidenceQualityDashboard:
         low = sum(1 for a in display if a.get("confidence") == "LOW")
         total = len(display)
 
-        print("")
-        print("=" * 60)
-        print("  EVIDENCE QUALITY DASHBOARD")
-        print("=" * 60)
-        print("")
-        print("  Shadow link confidence distribution")
-        print("  ------------------------------------")
+        log.info("=" * 60)
+        log.info("  EVIDENCE QUALITY DASHBOARD")
+        log.info("=" * 60)
+        log.info("  Shadow link confidence distribution")
+        log.info("  ------------------------------------")
         if total:
-            print(f"    HIGH:   {high:3d}  ({100 * high / total:.0f}%)")
-            print(f"    MEDIUM: {med:3d}  ({100 * med / total:.0f}%)")
-            print(f"    LOW:    {low:3d}  ({100 * low / total:.0f}%)  ← flagged for human review")
+            log.info(f"    HIGH:   {high:3d}  ({100 * high / total:.0f}%)")
+            log.info(f"    MEDIUM: {med:3d}  ({100 * med / total:.0f}%)")
+            log.info(f"    LOW:    {low:3d}  ({100 * low / total:.0f}%)  <- flagged for human review")
         else:
-            print("    No edges to analyse.")
-        print("")
-        print("  Confounder analysis (sample)")
-        print("  ------------------------------------")
+            log.info("    No edges to analyse.")
+        log.info("  Confounder analysis (sample)")
+        log.info("  ------------------------------------")
         for a in display[:5]:
             ct = a.get("confounder_tests", {})
-            print(f"    {a.get('source', '')} → {a.get('target', '')}: "
-                  f"common_cause_ok={ct.get(COMMON_CAUSE_RULED_OUT)}, "
-                  f"temporal_ok={ct.get(TEMPORAL_PRECEDENCE)}, "
-                  f"dose_response_ok={ct.get(DOSE_RESPONSE)}")
+            log.info(f"    {a.get('source', '')} -> {a.get('target', '')}: "
+                     f"common_cause_ok={ct.get(COMMON_CAUSE_RULED_OUT)}, "
+                     f"temporal_ok={ct.get(TEMPORAL_PRECEDENCE)}, "
+                     f"dose_response_ok={ct.get(DOSE_RESPONSE)}")
         if len(display) > 5:
-            print(f"    ... and {len(display) - 5} more")
-        print("")
+            log.info(f"    ... and {len(display) - 5} more")
         low_pct = (100 * low / total) if total else 0
-        print(f"  We flag {low_pct:.0f}% as LOW confidence for human review.")
-        print("")
-        print("=" * 60)
-        print("")
+        log.info(f"  We flag {low_pct:.0f}% as LOW confidence for human review.")
+        log.info("=" * 60)

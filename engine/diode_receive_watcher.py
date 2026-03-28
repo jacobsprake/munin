@@ -22,6 +22,9 @@ try:
 except ImportError:
     HAS_REQUESTS = False
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 API_BASE = os.environ.get("MUNIN_API_URL", "http://localhost:3000")
 WATCH_DIR = Path(os.environ.get("MUNIN_DIODE_RECEIVE_DIR", "/var/munin/diode/receive"))
 POLL_INTERVAL = int(os.environ.get("MUNIN_DIODE_POLL_SEC", "5"))
@@ -91,7 +94,7 @@ def process_file(path: Path) -> int:
         if r.status_code == 200:
             return len(rows)
     except Exception as e:
-        print(f"  [error] POST failed: {e}")
+        log.error(f"POST failed: {e}")
     return 0
 
 
@@ -99,7 +102,7 @@ def run_watcher():
     """Watch directory and process new files."""
     WATCH_DIR.mkdir(parents=True, exist_ok=True)
     processed = set()
-    print(f"Diode receive watcher: {WATCH_DIR} -> {API_BASE}/api/sensors/data")
+    log.info(f"Diode receive watcher: {WATCH_DIR} -> {API_BASE}/api/sensors/data")
     while True:
         for f in WATCH_DIR.glob("*"):
             if f.is_file() and f.suffix.lower() in (".csv", ".json", ".jsonl"):
@@ -107,13 +110,13 @@ def run_watcher():
                 if key not in processed:
                     count = process_file(f)
                     if count > 0:
-                        print(f"  [{time.strftime('%H:%M:%S')}] {f.name}: {count} readings")
+                        log.info(f"[{time.strftime('%H:%M:%S')}] {f.name}: {count} readings")
                     processed.add(key)
         time.sleep(POLL_INTERVAL)
 
 
 if __name__ == "__main__":
     if not HAS_REQUESTS:
-        print("Install requests: pip install requests")
+        log.error("Install requests: pip install requests")
         sys.exit(1)
     run_watcher()

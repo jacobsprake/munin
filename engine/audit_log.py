@@ -15,6 +15,9 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+log = get_logger(__name__)
+
 
 @dataclass
 class AuditLogEntry:
@@ -72,9 +75,9 @@ class ImmutableAuditLog:
                         entry = AuditLogEntry(**data)
                         self._entries.append(entry)
                     except Exception as e:
-                        print(f"Warning: Failed to parse audit log entry {line_num}: {e}")
+                        log.warning(f"Failed to parse audit log entry {line_num}: {e}")
         except Exception as e:
-            print(f"Warning: Failed to load audit log: {e}")
+            log.warning(f"Failed to load audit log: {e}")
     
     def _compute_hash(self, data: str) -> str:
         """Compute SHA-256 hash of data."""
@@ -318,19 +321,19 @@ if __name__ == "__main__":
     test_dir = Path(__file__).parent / "out" / "test_audit"
     test_dir.mkdir(parents=True, exist_ok=True)
     
-    log = ImmutableAuditLog(test_dir / "audit.jsonl")
-    
+    audit = ImmutableAuditLog(test_dir / "audit.jsonl")
+
     # Add test entries
-    log.append('create', 'system', 'packet_001', {'playbook': 'flood_coordination'})
-    log.append('approve', 'operator_001', 'packet_001', {'role': 'EA Duty Officer'})
-    log.append('authorize', 'system', 'packet_001', {'signatures': 1, 'threshold': 1})
-    
+    audit.append('create', 'system', 'packet_001', {'playbook': 'flood_coordination'})
+    audit.append('approve', 'operator_001', 'packet_001', {'role': 'EA Duty Officer'})
+    audit.append('authorize', 'system', 'packet_001', {'signatures': 1, 'threshold': 1})
+
     # Verify chain
-    result = log.verify_chain()
-    print(f"Chain verification: {result}")
-    
+    result = audit.verify_chain()
+    log.info(f"Chain verification: {result}")
+
     # Get entries
-    entries = log.get_entries(limit=10)
-    print(f"\nTotal entries: {len(entries)}")
+    entries = audit.get_entries(limit=10)
+    log.info(f"Total entries: {len(entries)}")
     for entry in entries:
-        print(f"  {entry.sequence_number}: {entry.action} by {entry.actor} for {entry.packet_id}")
+        log.info(f"  {entry.sequence_number}: {entry.action} by {entry.actor} for {entry.packet_id}")

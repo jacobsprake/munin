@@ -18,6 +18,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from enum import Enum
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class ThreatType(Enum):
     """Types of autonomous AI threats."""
@@ -592,7 +596,7 @@ if __name__ == "__main__":
         with open(output_path, 'w') as f:
             json.dump(result, f, indent=2)
         
-        print(f"Agentic recovery plan generated: {output_path}")
-        print(f"Reasoning steps: {len(result['reasoning_steps'])}")
-        print(f"Recommended action: {result['recommended_action']}")
+        log.info(f"Agentic recovery plan generated: {output_path}")
+        log.info(f"Reasoning steps: {len(result['reasoning_steps'])}")
+        log.info(f"Recommended action: {result['recommended_action']}")
 

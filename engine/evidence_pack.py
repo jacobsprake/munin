@@ -4,6 +4,10 @@ import hashlib
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 def compute_provenance_hash(data: Dict) -> str:
     """Compute provenance hash for data."""
     json_str = json.dumps(data, sort_keys=True)
@@ -89,7 +93,7 @@ def export_evidence_pack_json(evidence_pack: Dict, output_path: Path):
     """Export evidence pack as JSON."""
     with open(output_path, 'w') as f:
         json.dump(evidence_pack, f, indent=2)
-    print(f"Evidence pack exported to {output_path}")
+    log.info(f"Evidence pack exported to {output_path}")
 
 def export_evidence_pack_summary(evidence_pack: Dict) -> str:
     """Generate a human-readable summary of the evidence pack."""

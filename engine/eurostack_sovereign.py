@@ -24,6 +24,10 @@ from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, asdict
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 
 class DependencyType(Enum):
     """Types of dependencies that must be verified."""
@@ -392,16 +396,16 @@ if __name__ == "__main__":
     # Run sovereignty audit
     audit = node.run_sovereignty_audit("auditor_001")
     
-    print(f"Sovereignty Audit Results:")
-    print(f"  Node: {node.node_id}")
-    print(f"  Sovereignty Level: {audit.sovereignty_level.value}")
-    print(f"  Total Dependencies: {audit.total_dependencies}")
-    print(f"  Foreign Dependencies: {audit.foreign_dependencies}")
-    print(f"  Critical Foreign: {audit.critical_foreign_dependencies}")
-    print(f"  Certification: {audit.certification_status}")
-    
+    log.info(f"Sovereignty Audit Results:")
+    log.info(f"  Node: {node.node_id}")
+    log.info(f"  Sovereignty Level: {audit.sovereignty_level.value}")
+    log.info(f"  Total Dependencies: {audit.total_dependencies}")
+    log.info(f"  Foreign Dependencies: {audit.foreign_dependencies}")
+    log.info(f"  Critical Foreign: {audit.critical_foreign_dependencies}")
+    log.info(f"  Certification: {audit.certification_status}")
+
     # Get sovereignty report
     report = node.get_sovereignty_report()
-    print(f"\nSovereignty Report: {json.dumps(report, indent=2)}")
+    log.info(f"Sovereignty Report: {json.dumps(report, indent=2)}")
 
 

@@ -7,6 +7,10 @@ import requests
 from typing import Dict, Optional
 from pathlib import Path
 
+from engine.logger import get_logger
+
+log = get_logger(__name__)
+
 # API base URL (adjust for your environment)
 API_BASE_URL = "http://localhost:3000/api"
 
@@ -73,18 +77,18 @@ def create_decision_from_packet(
             decision = result.get('decision')
             
             # Log decision creation
-            print(f"✅ Decision created: {decision.get('decision_id')}")
-            print(f"   Policy: {threshold}-of-{required} from {len(signers)} signers")
+            log.info(f"Decision created: {decision.get('decision_id')}")
+            log.info(f"   Policy: {threshold}-of-{required} from {len(signers)} signers")
             
             return decision
         else:
-            print(f"⚠️  Failed to create decision: {response.status_code}")
-            print(f"   Response: {response.text}")
+            log.warning(f"Failed to create decision: {response.status_code}")
+            log.warning(f"   Response: {response.text}")
             return None
             
     except requests.exceptions.RequestException as e:
-        print(f"⚠️  Error calling decision API: {e}")
-        print(f"   Make sure Next.js server is running: npm run dev")
+        log.warning(f"Error calling decision API: {e}")
+        log.warning(f"   Make sure Next.js server is running: npm run dev")
         return None
 
 def sign_decision(
@@ -126,20 +130,20 @@ def sign_decision(
         
         if response.status_code == 200:
             result = response.json()
-            print(f"✅ Decision signed by {signer_id}")
+            log.info(f"Decision signed by {signer_id}")
             if result.get('decision', {}).get('authorized'):
-                print(f"   🎉 Decision AUTHORIZED! Threshold met.")
+                log.info(f"   Decision AUTHORIZED! Threshold met.")
             else:
                 sigs_received = result.get('decision', {}).get('signatures_received', 0)
                 threshold = result.get('decision', {}).get('threshold', 0)
-                print(f"   Status: {sigs_received}/{threshold} signatures")
+                log.info(f"   Status: {sigs_received}/{threshold} signatures")
             return result
         else:
-            print(f"⚠️  Failed to sign decision: {response.status_code}")
+            log.warning(f"Failed to sign decision: {response.status_code}")
             return None
             
     except requests.exceptions.RequestException as e:
-        print(f"⚠️  Error calling sign API: {e}")
+        log.warning(f"Error calling sign API: {e}")
         return None
 
 def integrate_packet_with_decisions(
@@ -195,11 +199,11 @@ def integrate_packet_with_decisions(
             'policy': decision.get('policy')
         }, f, indent=2)
     
-    print(f"📝 Decision metadata saved: {decision_meta_path}")
+    log.info(f"Decision metadata saved: {decision_meta_path}")
     
     return decision_id
 
 if __name__ == '__main__':
     # Example usage
-    print("Decision Integration Module")
-    print("Use integrate_packet_with_decisions() to connect packets to decisions")
+    log.info("Decision Integration Module")
+    log.info("Use integrate_packet_with_decisions() to connect packets to decisions")

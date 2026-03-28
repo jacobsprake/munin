@@ -15,6 +15,9 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ea_flood_client import EAFloodClient
+from engine.logger import get_logger
+
+log = get_logger(__name__)
 
 # Import carlisle config (handle different export formats)
 try:
@@ -51,7 +54,7 @@ class ThresholdMonitor:
             # Find level measure for station
             measure_id = self.client.find_level_measure(station_id)
             if not measure_id:
-                print(f"⚠️  No level measure found for station {station_id}")
+                log.warning(f"No level measure found for station {station_id}")
                 return None
             
             # Get latest reading
@@ -77,7 +80,7 @@ class ThresholdMonitor:
             return None
             
         except Exception as e:
-            print(f"⚠️  Error checking station {station_id}: {e}")
+            log.error(f"Error checking station {station_id}: {e}")
             return None
     
     def check_all_stations(self) -> List[Dict]:
@@ -145,36 +148,36 @@ class ThresholdMonitor:
                 )
                 
                 if response.status_code == 200:
-                    print(f"✅ Playbook triggered for {alert['node_id']}")
+                    log.info(f"Playbook triggered for {alert['node_id']}")
                     self.triggered_incidents.add(incident_id)
                     return True
                 else:
-                    print(f"⚠️  API returned status {response.status_code}")
-                    
+                    log.warning(f"API returned status {response.status_code}")
+
             except requests.exceptions.RequestException as e:
-                print(f"⚠️  API not available: {e}")
-                print(f"   Incident saved to: {incident_path}")
-                print(f"   Run manually: python3 packetize.py")
+                log.warning(f"API not available: {e}")
+                log.info(f"Incident saved to: {incident_path}")
+                log.info(f"Run manually: python3 packetize.py")
             
             return True
             
         except Exception as e:
-            print(f"❌ Error triggering playbook: {e}")
+            log.error(f"Error triggering playbook: {e}")
             return False
     
     def run_once(self) -> Dict:
         """Run one polling cycle."""
-        print(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Checking thresholds...")
-        
+        log.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Checking thresholds...")
+
         alerts = self.check_all_stations()
-        
+
         if alerts:
-            print(f"⚠️  {len(alerts)} threshold breach(es) detected:")
+            log.warning(f"{len(alerts)} threshold breach(es) detected:")
             for alert in alerts:
-                print(f"   - {alert['node_id']}: {alert['value']:.2f} > {alert['threshold']:.2f}")
+                log.warning(f"  - {alert['node_id']}: {alert['value']:.2f} > {alert['threshold']:.2f}")
                 self.trigger_playbook(alert)
         else:
-            print("✓ All stations within thresholds")
+            log.info("All stations within thresholds")
         
         return {
             'timestamp': datetime.now().isoformat(),
@@ -184,23 +187,23 @@ class ThresholdMonitor:
     
     def run_continuous(self):
         """Run continuous polling loop."""
-        print("=" * 60)
-        print("EA API Polling Monitor")
-        print("=" * 60)
-        print(f"Poll interval: {self.poll_interval / 60:.0f} minutes")
-        print(f"Stations monitored: {len(STATIONS)}")
-        print("Press Ctrl+C to stop")
-        print("=" * 60)
+        log.info("=" * 60)
+        log.info("EA API Polling Monitor")
+        log.info("=" * 60)
+        log.info(f"Poll interval: {self.poll_interval / 60:.0f} minutes")
+        log.info(f"Stations monitored: {len(STATIONS)}")
+        log.info("Press Ctrl+C to stop")
+        log.info("=" * 60)
         
         try:
             while True:
                 self.run_once()
-                print(f"\nNext check in {self.poll_interval / 60:.0f} minutes...")
+                log.info(f"Next check in {self.poll_interval / 60:.0f} minutes...")
                 time.sleep(self.poll_interval)
-                
+
         except KeyboardInterrupt:
-            print("\n\nStopping monitor...")
-            print(f"Total incidents triggered: {len(self.triggered_incidents)}")
+            log.info("Stopping monitor...")
+            log.info(f"Total incidents triggered: {len(self.triggered_incidents)}")
 
 if __name__ == '__main__':
     import argparse
