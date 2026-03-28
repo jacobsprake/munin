@@ -10,7 +10,7 @@ interface CardProps {
   variant?: 'default' | 'evidence' | 'playbook' | 'node' | 'packet';
 }
 
-export default function Card({ children, className, title, variant = 'default' }: CardProps) {
+export function Card({ children, className, title, variant = 'default' }: CardProps) {
   return (
     <div
       className={cn(
@@ -28,4 +28,16 @@ export default function Card({ children, className, title, variant = 'default' }
   );
 }
 
+export function CardHeader({ children, className }: { children?: ReactNode; className?: string }) {
+  return <div className={cn('mb-3', className)}>{children}</div>;
+}
 
+export function CardTitle({ children, className }: { children?: ReactNode; className?: string }) {
+  return <h3 className={cn('text-panel-title mono font-semibold text-text-primary', className)}>{children}</h3>;
+}
+
+export function CardContent({ children, className }: { children?: ReactNode; className?: string }) {
+  return <div className={cn(className)}>{children}</div>;
+}
+
+export default Card;

@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       );
       const matchId = match.id || match.incident_id;
       const packetFile = packetFiles.find(
-        (f: string) => f.endsWith('.json') && f.includes(matchId)
+        (f: string) => f.endsWith('.json') && f.includes(matchId as string)
       );
       if (!packetFile) {
         const anyPacket = packetFiles.find((f: string) => f.endsWith('.json'));

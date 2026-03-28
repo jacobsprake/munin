@@ -113,7 +113,7 @@ describe('GET /api/airgap/verify — network probe results', () => {
     // In a normal CI/dev environment, DNS resolves => NOT air-gapped
     // This validates we are getting REAL results, not hardcoded stubs.
     expect(data.verification.airGapStatus).toBeDefined();
-    expect(['air_gapped', 'connected']).toContain(
+    expect(['air_gapped', 'not_air_gapped']).toContain(
       data.verification.airGapStatus
     );
 

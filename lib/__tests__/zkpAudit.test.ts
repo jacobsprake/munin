@@ -20,8 +20,8 @@ describe('Zero-Knowledge Proof Audit', () => {
   it('generates grid stability ZKP', async () => {
     const zkp = await generateGridStabilityZKP(
       [50.0, 50.1, 49.9, 50.0],
-      49.5,
-      50.5
+      { min: 49.5, max: 50.5 },
+      ['node_01']
     );
     expect(zkp).toBeDefined();
     expect(zkp.claim).toBeTruthy();

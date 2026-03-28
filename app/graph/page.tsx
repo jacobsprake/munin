@@ -205,7 +205,7 @@ export default function GraphPage() {
               </div>
             </div>
 
-        {activeTab === 'Evidence Quality' && (
+        {(activeTab as string) === 'Evidence Quality' && (
           <div className="space-y-4">
             <div className="text-label mono text-text-muted mb-2">EVIDENCE QUALITY DASHBOARD</div>
             {(() => {

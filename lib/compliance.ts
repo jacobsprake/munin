@@ -44,6 +44,8 @@ export interface ComplianceMapping {
 
 export interface ComplianceReport {
   reportId: string;
+  /** Alias for reportId, used by certificate consumers */
+  certificateId?: string;
   issuedAt: string;
   packetId: string;
   playbookId: string;

@@ -12,7 +12,7 @@ export type UserRole = 'operator' | 'supervisor' | 'regulator' | 'sovereign_arch
 
 export interface Permission {
   resource: string;
-  action: 'read' | 'write' | 'execute' | 'approve' | 'configure';
+  action: 'read' | 'write' | 'execute' | 'approve' | 'configure' | 'admin';
 }
 
 export interface RolePermissions {

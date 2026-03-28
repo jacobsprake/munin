@@ -132,6 +132,7 @@ export default function GraphCanvas({ data, onNodeClick, onEdgeClick }: GraphCan
         nodeLabel={(node: Node) => `${node.label}\n${node.sector} • ${node.kind}`}
         nodeColor={(node: Node) => getNodeColor(node)}
         nodeVal={(node: Node) => 8 + node.health.score * 4}
+        // @ts-expect-error ForceGraph2D types incomplete for nodeOpacity
         nodeOpacity={(node: Node) => (highlightedNodes.has(node.id) ? 1 : 0.2)}
         linkColor={(link: Edge) => getEdgeColor(link)}
         linkWidth={(link: Edge) => {

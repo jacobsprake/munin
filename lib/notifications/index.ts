@@ -6,14 +6,16 @@
 import { getDb } from '../db';
 import { randomBytes } from 'crypto';
 
-export type NotificationType = 
+export type NotificationType =
   | 'incident_created'
   | 'incident_updated'
+  | 'incident_detected'
   | 'decision_created'
   | 'decision_authorized'
   | 'decision_rejected'
   | 'packet_created'
   | 'packet_authorized'
+  | 'packet_pending'
   | 'threshold_breach'
   | 'sensor_alert'
   | 'system_alert';

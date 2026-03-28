@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       version: '1.0',
       issued: new Date().toISOString(),
       system: 'Munin Infrastructure Orchestration',
-      airGapStatus: allTestsPassed ? 'air_gapped' : 'connected',
+      airGapStatus: allTestsPassed ? 'air_gapped' : 'not_air_gapped',
       certifiedAirGapped: false, // Software tests alone cannot certify air-gap status
       verificationTests: tests,
       certificationStatement: allTestsPassed

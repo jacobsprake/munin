@@ -20,6 +20,7 @@ interface SafetyPLCStats {
   blocked_commands: number;
   block_rate: number;
   physics_gated: boolean;
+  invariants_enforced?: number;
 }
 
 interface ShadowModeStats {

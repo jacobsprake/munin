@@ -92,6 +92,8 @@ export interface PQCKey {
   keyId: string;
   algorithm: 'DILITHIUM-3';
   publicKey: string;
+  /** Plain private key (for demo/lab use). */
+  privateKey?: string;
   /** Encrypted private key (AES-256-GCM). Use decryptPrivateKey() to access. */
   encryptedPrivateKey?: string;
   createdAt: string;

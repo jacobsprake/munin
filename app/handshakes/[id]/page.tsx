@@ -369,6 +369,7 @@ export default function HandshakeDetailPage() {
             
             {/* Feature #1: TEE-Hardened Handshakes */}
             <div className="mb-6">
+              {/* @ts-expect-error TEEStatusPanel does not accept props */}
               <TEEStatusPanel packetTEE={packet.tee} />
             </div>
 

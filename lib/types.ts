@@ -3,8 +3,8 @@ export type NodeKind = "substation" | "pump" | "tower" | "reservoir" | "plant" |
 export type HealthStatus = "ok" | "degraded" | "warning";
 export type IncidentType = "flood" | "drought" | "power_instability" | "unknown";
 export type PacketStatus = "draft" | "ready" | "authorized" | "executed" | "verified" | "closed";
-export type DeploymentMode = "on_prem_ot" | "sovereign_cloud" | "lab_demo";
-export type ConnectivityState = "connected" | "degraded" | "disconnected";
+export type DeploymentMode = "on_prem_ot" | "sovereign_cloud" | "lab_demo" | "pilot";
+export type ConnectivityState = "connected" | "degraded" | "disconnected" | "air_gapped";
 export type SupportType = "support" | "counterexample";
 
 export interface Node {
@@ -217,16 +217,6 @@ export interface LocalNode {
   region: string;
   lastSyncTs: string;
   health: HealthStatus;
-}
-
-export interface ProtocolFrame {
-  timestamp: string;
-  hex: string;
-  protocol: string;
-  address: string;
-  functionCode: string;
-  payload: string;
-  retries?: number;
 }
 
 export interface ExpansionStep {

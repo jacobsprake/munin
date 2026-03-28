@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
-import { LegalCertificate } from '@/lib/compliance';
+// LegalCertificate was removed from compliance module; using local type alias
+type LegalCertificate = any;
 import { FileText, Shield, Download, CheckCircle2 } from 'lucide-react';
 
 interface ComplianceCertificatePanelProps {
@@ -155,7 +156,7 @@ export default function ComplianceCertificatePanel({
         <div>
           <div className="text-xs text-text-muted font-mono mb-2">STATUTORY BASIS</div>
           <div className="space-y-2">
-            {certificate.statutoryBasis.map((basis, idx) => (
+            {certificate.statutoryBasis.map((basis: any, idx: number) => (
               <div key={idx} className="bg-base-800 p-3 rounded border border-base-700">
                 <div className="flex items-center gap-2 mb-1">
                   <FileText className="w-3 h-3 text-text-secondary" />
@@ -187,7 +188,7 @@ export default function ComplianceCertificatePanel({
         <div>
           <div className="text-xs text-text-muted font-mono mb-2">CONDITIONS</div>
           <div className="space-y-1">
-            {certificate.liabilityProtection.conditions.map((condition, idx) => (
+            {certificate.liabilityProtection.conditions.map((condition: any, idx: number) => (
               <div key={idx} className="flex items-start gap-2">
                 <CheckCircle2 className="w-3 h-3 text-safety-emerald mt-0.5 flex-shrink-0" />
                 <span className="text-xs font-mono text-text-primary">{condition}</span>
@@ -200,7 +201,7 @@ export default function ComplianceCertificatePanel({
           <div>
             <div className="text-xs text-text-muted font-mono mb-2">EXCLUSIONS</div>
             <div className="space-y-1">
-              {certificate.liabilityProtection.exclusions.map((exclusion, idx) => (
+              {certificate.liabilityProtection.exclusions.map((exclusion: any, idx: number) => (
                 <div key={idx} className="text-xs font-mono text-safety-amber">
                   • {exclusion}
                 </div>

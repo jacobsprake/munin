@@ -2,10 +2,11 @@
 
 import { cn } from '@/lib/utils';
 
-type BadgeStatus = 'ok' | 'warning' | 'active' | 'degraded' | 'disconnected' | 'authorized' | 'error';
+type BadgeStatus = 'ok' | 'warning' | 'active' | 'degraded' | 'disconnected' | 'authorized' | 'error' | 'unknown';
 
 export interface BadgeProps {
   status?: BadgeStatus;
+  variant?: string;
   children?: React.ReactNode;
   className?: string;
 }
@@ -19,6 +20,7 @@ export default function Badge({ status, children, className }: BadgeProps) {
     disconnected: 'bg-safety-amber/20 border-safety-amber text-safety-amber',
     authorized: 'bg-safety-emerald/20 border-safety-emerald text-safety-emerald',
     error: 'bg-red-900/30 border-red-600 text-red-400',
+    unknown: 'bg-base-800 border-base-600 text-text-secondary',
   };
 
   return (
@@ -34,4 +36,4 @@ export default function Badge({ status, children, className }: BadgeProps) {
   );
 }
 
-
+export { Badge };

@@ -277,10 +277,10 @@ export function verifyChainIntegrity(): {
 /**
  * Verify Ed25519 signature on an entry
  */
-export function verifySignature(
+export async function verifySignature(
   entry: AuditLogEntry,
   publicKey: string
-): boolean {
+): Promise<boolean> {
   if (!entry.signature || !entry.signer_id) {
     return false; // No signature to verify
   }

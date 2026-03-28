@@ -2,6 +2,7 @@
  * Component test: GlobalSearch
  */
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GlobalSearch from '@/components/GlobalSearch';

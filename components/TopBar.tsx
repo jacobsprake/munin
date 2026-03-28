@@ -48,22 +48,25 @@ export default function TopBar() {
     return () => clearInterval(interval);
   }, []);
 
-  const deploymentModeLabels = {
+  const deploymentModeLabels: Record<string, string> = {
     on_prem_ot: 'ON-PREM OT',
     sovereign_cloud: 'SOVEREIGN CLOUD',
     lab_demo: 'LAB DEMO',
+    pilot: 'PILOT',
   };
 
-  const connectivityLabels = {
+  const connectivityLabels: Record<string, string> = {
     connected: 'CONNECTED',
     degraded: 'DEGRADED',
     disconnected: 'DISCONNECTED',
+    air_gapped: 'AIR-GAPPED',
   };
 
-  const connectivityColors = {
+  const connectivityColors: Record<string, string> = {
     connected: 'text-safety-emerald',
     degraded: 'text-safety-amber',
     disconnected: 'text-slate-500',
+    air_gapped: 'text-blue-400',
   };
 
   return (

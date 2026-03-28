@@ -91,11 +91,11 @@ class AlertingService {
   private async sendSMS(alert: Alert, config: AlertConfig['sms']): Promise<void> {
     // In production, would call SMS gateway API
     try {
-      const response = await fetch(config.gatewayUrl, {
+      const response = await fetch(config!.gatewayUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.apiKey}`,
+          'Authorization': `Bearer ${config!.apiKey}`,
         },
         body: JSON.stringify({
           to: alert.metadata?.phoneNumber || '',
@@ -115,11 +115,11 @@ class AlertingService {
 
   private async sendToGateway(alert: Alert, config: AlertConfig['onPremGateway']): Promise<void> {
     try {
-      const response = await fetch(config.endpoint, {
+      const response = await fetch(config!.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.apiKey}`,
+          'Authorization': `Bearer ${config!.apiKey}`,
         },
         body: JSON.stringify(alert),
       });
