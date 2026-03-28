@@ -202,36 +202,42 @@ def infer_edges(
             edge_id = f"edge_{edge_id_counter:04d}"
             edge_id_counter += 1
             
-            # Determine direction based on correlation sign and lag
-            # Positive correlation with lag suggests source -> target
-            if corr_data['correlation'] > 0:
-                # Count evidence windows (simplified: use data length)
-                window_count = max(1, len(df) // (24 * 60))  # Approximate windows per day
-                
-                # Filter by stability threshold
-                if corr_data['stability'] < config.min_stability:
-                    continue
-                
-                # Generate confounder notes
-                confounder_notes = []
-                if corr_data['stability'] < 0.5:
-                    confounder_notes.append("Low stability across windows")
-                if abs(corr_data['correlation']) < 0.7:
-                    confounder_notes.append("Moderate correlation strength")
-                
-                edges.append({
-                    'id': edge_id,
-                    'source': source,
-                    'target': corr_data['target'],
-                    'confidenceScore': abs(corr_data['correlation']),
-                    'inferredLagSeconds': int(corr_data['lag']),
-                    'condition': None,
-                    'evidenceRefs': [f"ev_{edge_id_counter}"],
-                    'isShadowLink': corr_data['is_shadow'],
-                    'stabilityScore': corr_data['stability'],
-                    'evidenceWindowCount': window_count,
-                    'confounderNotes': confounder_notes if confounder_notes else None
-                })
+            # Use absolute correlation — negative correlations are physically
+            # meaningful (e.g. flood rises → power drops, inverse dependencies)
+            abs_corr = abs(corr_data['correlation'])
+
+            # Count evidence windows (simplified: use data length)
+            window_count = max(1, len(df) // (24 * 60))  # Approximate windows per day
+
+            # Filter by stability threshold
+            if corr_data['stability'] < config.min_stability:
+                continue
+
+            # Generate confounder notes
+            confounder_notes = []
+            if corr_data['stability'] < 0.5:
+                confounder_notes.append("Low stability across windows")
+            if abs_corr < 0.7:
+                confounder_notes.append("Moderate correlation strength")
+            if corr_data['correlation'] < 0:
+                confounder_notes.append("Inverse dependency (negative correlation)")
+
+            # Direction: positive correlation + positive lag → source drives target
+            # Negative correlation → inverse dependency (still a real link)
+            edges.append({
+                'id': edge_id,
+                'source': source,
+                'target': corr_data['target'],
+                'confidenceScore': abs_corr,
+                'inferredLagSeconds': int(corr_data['lag']),
+                'condition': None,
+                'evidenceRefs': [f"ev_{edge_id_counter}"],
+                'isShadowLink': corr_data['is_shadow'],
+                'stabilityScore': corr_data['stability'],
+                'evidenceWindowCount': window_count,
+                'correlationSign': 'positive' if corr_data['correlation'] > 0 else 'inverse',
+                'confounderNotes': confounder_notes if confounder_notes else None
+            })
     
     return edges
 

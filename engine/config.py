@@ -73,6 +73,84 @@ class IncidentSimulationConfig:
 
 
 @dataclass
+class AnomalyDetectionConfig:
+    """Layer 2: Physics-Informed Anomaly Detection."""
+    hidden_dim: int = 128
+    latent_dim: int = 32
+    n_layers: int = 2
+    dropout: float = 0.1
+    window_size: int = 60  # samples per window
+    physics_lambda: float = 0.1
+    svm_nu: float = 0.05
+    anomaly_percentile: float = 95.0
+    epochs: int = 100
+    learning_rate: float = 1e-3
+
+
+@dataclass
+class CascadePredictionConfig:
+    """Layer 3: GNN Cascade Prediction (PI-GN-JODE)."""
+    node_dim: int = 16
+    edge_dim: int = 8
+    hidden_dim: int = 64
+    gnn_layers: int = 3
+    ode_hidden_dim: int = 64
+    dropout: float = 0.1
+    n_mc_samples: int = 100
+    epochs: int = 200
+    learning_rate: float = 1e-3
+
+
+@dataclass
+class DigitalTwinConfig:
+    """Layer 4: Enhanced Digital Twin with Data Assimilation."""
+    ensemble_size: int = 50
+    assimilation_interval_seconds: int = 60
+    divergence_threshold: float = 3.0
+    scenario_batch_size: int = 1000
+    adversarial_scenarios: int = 100
+    simulation_dt: float = 1.0  # seconds
+
+
+@dataclass
+class RLResponseConfig:
+    """Layer 5: RL Response Optimisation."""
+    strategic_lr: float = 3e-4
+    tactical_lr: float = 3e-4
+    resource_lr: float = 3e-4
+    gamma: float = 0.99
+    ppo_clip: float = 0.2
+    n_episodes: int = 10000
+    eval_episodes: int = 100
+
+
+@dataclass
+class FederatedConfig:
+    """Layer 6: Federated Sovereign Training."""
+    n_rounds: int = 100
+    local_epochs: int = 5
+    learning_rate: float = 0.01
+    epsilon_per_round: float = 1.0
+    delta: float = 1e-5
+    max_grad_norm: float = 1.0
+    compression_ratio: float = 0.1
+    min_participants: int = 3
+    byzantine_tolerance: int = 1
+
+
+@dataclass
+class GovernanceConfig:
+    """Layer 7: Model Governance & Continuous Learning."""
+    drift_threshold_kl: float = 0.15
+    drift_threshold_psi: float = 0.2
+    revalidation_interval_days: int = 90
+    min_precision: float = 0.95
+    min_recall: float = 0.90
+    max_fpr: float = 0.05
+    feedback_retrain_threshold: int = 50  # incidents before retrain
+
+
+@dataclass
 class RNGConfig:
     """Random number generator configuration for deterministic execution."""
     base_seed: int = 42  # Base seed for entire pipeline
@@ -118,7 +196,14 @@ class EngineConfig:
     evidence: EvidenceConfig = None
     incidents: IncidentSimulationConfig = None
     rng: RNGConfig = None
-    
+    # Intelligence layers (Layers 2-7)
+    anomaly: AnomalyDetectionConfig = None
+    cascade: CascadePredictionConfig = None
+    digital_twin: DigitalTwinConfig = None
+    rl_response: RLResponseConfig = None
+    federated: FederatedConfig = None
+    governance: GovernanceConfig = None
+
     def __post_init__(self):
         """Initialize default configs if not provided."""
         if self.graph is None:
@@ -131,6 +216,18 @@ class EngineConfig:
             self.incidents = IncidentSimulationConfig()
         if self.rng is None:
             self.rng = RNGConfig()
+        if self.anomaly is None:
+            self.anomaly = AnomalyDetectionConfig()
+        if self.cascade is None:
+            self.cascade = CascadePredictionConfig()
+        if self.digital_twin is None:
+            self.digital_twin = DigitalTwinConfig()
+        if self.rl_response is None:
+            self.rl_response = RLResponseConfig()
+        if self.federated is None:
+            self.federated = FederatedConfig()
+        if self.governance is None:
+            self.governance = GovernanceConfig()
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -140,7 +237,13 @@ class EngineConfig:
             'sensor_health': asdict(self.sensor_health),
             'evidence': asdict(self.evidence),
             'incidents': asdict(self.incidents),
-            'rng': asdict(self.rng)
+            'rng': asdict(self.rng),
+            'anomaly': asdict(self.anomaly),
+            'cascade': asdict(self.cascade),
+            'digital_twin': asdict(self.digital_twin),
+            'rl_response': asdict(self.rl_response),
+            'federated': asdict(self.federated),
+            'governance': asdict(self.governance),
         }
     
     @classmethod
@@ -157,6 +260,18 @@ class EngineConfig:
             config.incidents = IncidentSimulationConfig(**data['incidents'])
         if 'rng' in data:
             config.rng = RNGConfig(**data['rng'])
+        if 'anomaly' in data:
+            config.anomaly = AnomalyDetectionConfig(**data['anomaly'])
+        if 'cascade' in data:
+            config.cascade = CascadePredictionConfig(**data['cascade'])
+        if 'digital_twin' in data:
+            config.digital_twin = DigitalTwinConfig(**data['digital_twin'])
+        if 'rl_response' in data:
+            config.rl_response = RLResponseConfig(**data['rl_response'])
+        if 'federated' in data:
+            config.federated = FederatedConfig(**data['federated'])
+        if 'governance' in data:
+            config.governance = GovernanceConfig(**data['governance'])
         return config
     
     def save(self, path: Path):

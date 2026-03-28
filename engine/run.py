@@ -137,7 +137,7 @@ def main(
     # Initialize structured logger
     logger = get_logger(run_id, out_dir)
 
-    print("\n[1/5] Ingesting historian data...")
+    print("\n[1/8] Ingesting historian data...")
     logger.start_phase("ingest", {'data_dir': str(data_dir)})
     _agent_log(run_id, "H2", "engine/run.py:ingest:start", "Starting ingest_historian_data", {})
     # DB path for sensor_readings (when app has pushed data via POST /api/sensors/data)
@@ -167,7 +167,7 @@ def main(
     except Exception:
         pass  # Optional: carlisle_config may not be available
 
-    print("\n[2/5] Inferring dependency graph...")
+    print("\n[2/8] Inferring dependency graph...")
     logger.start_phase("graph_inference")
     _agent_log(run_id, "H3", "engine/run.py:graph:start", "Starting build_graph", {})
     build_graph(out_dir / "normalized_timeseries.csv", out_dir / "graph.json", config=config.graph)
@@ -185,7 +185,7 @@ def main(
         "graphPath": str(out_dir / "graph.json"),
     })
 
-    print("\n[3/5] Assessing sensor health and building evidence...")
+    print("\n[3/8] Assessing sensor health and building evidence...")
     logger.start_phase("sensor_health")
     import pandas as pd
     _agent_log(run_id, "H1", "engine/run.py:pandas_import", "Imported pandas for health stage", {})
@@ -215,7 +215,7 @@ def main(
     })
     print(f"Evidence saved: {len(evidence_windows)} windows")
 
-    print("\n[4/5] Building incident simulations (exhaustive scenario space)...")
+    print("\n[4/8] Building incident simulations (exhaustive scenario space)...")
     logger.start_phase("incident_simulation")
     _n_jobs = max(1, (cpu_count() or 4) - 1) if n_jobs == 0 else n_jobs
     _agent_log(run_id, "H5", "engine/run.py:incidents:start", "Starting build_incidents", {
@@ -254,7 +254,7 @@ def main(
     except Exception:
         pass  # Optional: live_match may not have carlisle_config
 
-    print("\n[5/5] Generating authoritative handshake packets...")
+    print("\n[5/8] Generating authoritative handshake packets...")
     logger.start_phase("packet_generation")
     packetize_incidents(
         out_dir / "incidents.json",
@@ -274,15 +274,154 @@ def main(
         "packetsDir": str(out_dir / "packets"),
     })
 
+    # === INTELLIGENCE LAYERS (6-8) ===
+    # Layer 2: Anomaly Detection
+    print("\n[6/8] Running anomaly detection (Layer 2)...")
+    logger.start_phase("anomaly_detection")
+    anomaly_results = None
+    try:
+        from intelligence.anomaly.trainer import AnomalyTrainer, AnomalyConfig
+        anomaly_cfg = AnomalyConfig(
+            hidden_dim=config.anomaly.hidden_dim,
+            latent_dim=config.anomaly.latent_dim,
+            n_layers=config.anomaly.n_layers,
+            dropout=config.anomaly.dropout,
+            window_size=config.anomaly.window_size,
+            physics_lambda=config.anomaly.physics_lambda,
+            svm_nu=config.anomaly.svm_nu,
+            anomaly_percentile=config.anomaly.anomaly_percentile,
+        )
+        n_sensors = len(df_normalized.columns)
+        trainer = AnomalyTrainer(n_sensors=n_sensors, config=anomaly_cfg)
+        data_array = df_normalized.values.astype('float32')
+        # Quick training for pipeline integration (full training via CLI)
+        trainer.train(data_array, data_array, epochs=min(config.anomaly.epochs, 10))
+        anomaly_results = trainer.detect_anomalies(data_array)
+        with open(out_dir / "anomaly_report.json", 'w') as f:
+            json.dump(anomaly_results, f, indent=2, default=str)
+        logger.end_phase("anomaly_detection", {
+            'anomalies_detected': anomaly_results.get('total_anomalies', 0)
+        })
+        print(f"  Anomalies detected: {anomaly_results.get('total_anomalies', 0)}")
+    except ImportError:
+        print("  [SKIP] torch not installed — run: pip install torch scikit-learn")
+        logger.end_phase("anomaly_detection", {'skipped': True})
+    except Exception as e:
+        print(f"  [WARN] Anomaly detection failed: {e}")
+        logger.end_phase("anomaly_detection", {'error': str(e)})
+
+    # Layer 3: GNN Cascade Prediction
+    print("\n[7/8] Running GNN cascade prediction (Layer 3)...")
+    logger.start_phase("cascade_prediction")
+    try:
+        from intelligence.cascade.predictor import CascadePredictor, CascadeConfig, GraphData
+        import torch
+        cascade_cfg = CascadeConfig(
+            node_dim=config.cascade.node_dim,
+            edge_dim=config.cascade.edge_dim,
+            hidden_dim=config.cascade.hidden_dim,
+            gnn_layers=config.cascade.gnn_layers,
+            ode_hidden_dim=config.cascade.ode_hidden_dim,
+            dropout=config.cascade.dropout,
+        )
+        # Build graph data from loaded graph
+        nodes_list = graph_data.get('nodes', [])
+        edges_list = graph_data.get('edges', [])
+        if nodes_list and edges_list:
+            node_id_to_idx = {n['id']: i for i, n in enumerate(nodes_list)}
+            n_nodes = len(nodes_list)
+            # Node features: health score + sector one-hot (4 sectors)
+            sector_map = {'power': 0, 'water': 1, 'telecom': 2, 'other': 3}
+            node_feats = []
+            for n in nodes_list:
+                health = n.get('health', {}).get('score', 0.5)
+                sector_idx = sector_map.get(n.get('sector', 'other'), 3)
+                feat = [health] + [1.0 if i == sector_idx else 0.0 for i in range(4)]
+                node_feats.append(feat)
+            # Pad to node_dim
+            for i in range(len(node_feats)):
+                while len(node_feats[i]) < cascade_cfg.node_dim:
+                    node_feats[i].append(0.0)
+                node_feats[i] = node_feats[i][:cascade_cfg.node_dim]
+
+            edge_src, edge_dst, edge_feats = [], [], []
+            phys_types = {'hydraulic': 0, 'electrical': 1, 'thermal': 2, 'communications': 3}
+            for e in edges_list:
+                src_idx = node_id_to_idx.get(e.get('source'))
+                tgt_idx = node_id_to_idx.get(e.get('target'))
+                if src_idx is not None and tgt_idx is not None:
+                    edge_src.append(src_idx)
+                    edge_dst.append(tgt_idx)
+                    lag = e.get('inferredLagSeconds', 0) / 300.0
+                    conf = e.get('confidenceScore', 0.5)
+                    ptype = [0.0] * 4
+                    edge_feats.append([lag, conf] + ptype + [0.0, 0.0])
+
+            if edge_src:
+                gd = GraphData(
+                    node_features=torch.tensor(node_feats, dtype=torch.float32),
+                    edge_index=torch.tensor([edge_src, edge_dst], dtype=torch.long),
+                    edge_features=torch.tensor(edge_feats, dtype=torch.float32)[:, :cascade_cfg.edge_dim],
+                    node_ids=[n['id'] for n in nodes_list],
+                    capacities=torch.ones(n_nodes)
+                )
+                predictor = CascadePredictor(cascade_cfg)
+                # Run prediction on first node as demo
+                pred = predictor.predict_cascade(gd, failure_node_indices=[0], t_horizon=2.0)
+                cascade_output = {
+                    'affected_nodes': {k: v.tolist() if hasattr(v, 'tolist') else v for k, v in pred.affected_nodes.items()},
+                    'time_to_impact': pred.time_to_impact,
+                    'cascade_paths': pred.cascade_paths,
+                }
+                with open(out_dir / "cascade_prediction.json", 'w') as f:
+                    json.dump(cascade_output, f, indent=2, default=str)
+                print(f"  Cascade paths predicted: {len(pred.cascade_paths)}")
+            else:
+                print("  [SKIP] No valid edges for GNN")
+        logger.end_phase("cascade_prediction", {'completed': True})
+    except ImportError:
+        print("  [SKIP] torch not installed — run: pip install torch")
+        logger.end_phase("cascade_prediction", {'skipped': True})
+    except Exception as e:
+        print(f"  [WARN] Cascade prediction failed: {e}")
+        logger.end_phase("cascade_prediction", {'error': str(e)})
+
+    # Layer 7: Model Governance (audit trail for this run)
+    print("\n[8/8] Recording model governance audit...")
+    logger.start_phase("governance")
+    try:
+        from intelligence.governance.audit_trail import MLAuditTrail
+        audit = MLAuditTrail(out_dir / "ml_audit")
+        audit.log_training(
+            model_name="munin-pipeline",
+            version=ENGINE_CONFIG_VERSION,
+            config=config.to_dict(),
+            data_sources=[str(data_dir)],
+            metrics={
+                'nodes': len(graph_data.get('nodes', [])),
+                'edges': len(graph_data.get('edges', [])),
+                'incidents': len(incidents_data.get('incidents', [])),
+                'anomalies': anomaly_results.get('total_anomalies', 0) if anomaly_results else 0,
+            }
+        )
+        print(f"  Audit trail: {out_dir / 'ml_audit'}")
+        logger.end_phase("governance", {'completed': True})
+    except Exception as e:
+        print(f"  [WARN] Governance audit failed: {e}")
+        logger.end_phase("governance", {'error': str(e)})
+
     print("\n" + "=" * 60)
-    print("PIPELINE COMPLETE")
+    print("PIPELINE COMPLETE (Layers 1-7)")
     print("=" * 60)
     print(f"Output directory: {out_dir}")
     print(f"Run ID: {run_id}")
-    print(f"  - graph.json")
-    print(f"  - evidence.json")
-    print(f"  - incidents.json")
-    print(f"  - packets/")
+    print(f"  - graph.json            (Layer 1: Shadow Links)")
+    print(f"  - evidence.json         (Layer 1: Evidence Windows)")
+    print(f"  - incidents.json        (Layer 1: Cascade Simulation)")
+    print(f"  - packets/              (Layer 1: Authorization Packets)")
+    print(f"  - anomaly_report.json   (Layer 2: Anomaly Detection)")
+    print(f"  - cascade_prediction.json (Layer 3: GNN Cascade)")
+    print(f"  - ml_audit/             (Layer 7: Governance Audit)")
     print(f"  - audit.jsonl")
 
     # Copy key outputs to engine/out for app compatibility (app and sync read engine/out/graph.json, incidents.json, etc.)

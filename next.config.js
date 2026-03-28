@@ -3,10 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   typescript: {
-    // TODO: Fix TypeScript errors and set this to false
-    // Unable to verify error count — build blocked by environment issue
-    // (better-sqlite3 native compilation failure on Node 25 / macOS).
-    // Once dependencies install cleanly, run `npx next build` to audit.
+    // better-sqlite3 v12 now supports Node 25. Leaving true until all
+    // TS strict errors are resolved across the codebase.
     ignoreBuildErrors: true,
   },
 }
