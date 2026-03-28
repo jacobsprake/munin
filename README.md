@@ -8,7 +8,7 @@
 
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
 
-**Built from an empty repo to a full working platform in 10 weeks, solo.** Started January 9, 2026. 96 passing tests, 2 real-data demos on live Environment Agency data, 90+ files of technical documentation.
+**Built from an empty repo to a full working platform in 11 weeks, solo.** Started January 9, 2026. 382 passing tests (129 Python + 253 JS), 7-layer intelligence stack with working ML pipeline, 2 real-data demos on live Environment Agency data, 124 files of technical documentation.
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
@@ -21,11 +21,13 @@ Munin is **decision support** for critical infrastructure operators. It reduces 
 ```bash
 git clone https://github.com/jacobsprake/munin.git && cd munin
 npm ci
-pip install pandas numpy pyyaml
-./scripts/munin demo carlisle
+pip install pandas numpy pyyaml torch scikit-learn scipy
+./demo.sh
 ```
 
-This runs the full pipeline — ingest, graph inference, cascade simulation, playbook matching, packet generation — and produces a self-contained report at `engine/out/demo_carlisle/report.md`. See [docs/internal/DEMO_WALKTHROUGH.md](docs/internal/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
+This runs the full 8-stage intelligence pipeline on Carlisle Storm Desmond data — ingest, shadow link discovery (including inverse dependencies), evidence construction, cascade simulation, packet generation, **LSTM anomaly detection**, **GNN cascade prediction**, and **governance audit trail** — and produces a self-contained report at `engine/out/demo_carlisle/report.md`.
+
+> **Note**: `torch scikit-learn scipy` are required for the ML intelligence layers (Layers 2-7). Without them, the pipeline still runs Layers 1-5 (statistical inference through packet generation) but skips the neural network stages. See [docs/internal/DEMO_WALKTHROUGH.md](docs/internal/DEMO_WALKTHROUGH.md) for the full scripted walkthrough.
 
 ## What to look at next
 
@@ -141,6 +143,26 @@ python3 engine/detect_shadow_link.py
 
 ---
 
+## Intelligence Stack
+
+Munin's intelligence is a 7-layer system — each layer builds on the ones below. Every layer has working code, tests, and pipeline integration. See [AI Architecture](docs/AI_ARCHITECTURE.md) for full technical details and [AI Roadmap](docs/AI_ROADMAP.md) for the strategic progression.
+
+| Layer | Capability | What It Does | Status |
+|-------|-----------|-------------|--------|
+| **1** | Statistical Inference | Discovers cross-sector Shadow Links from temporal correlation with lag detection | **Production** |
+| **2** | Anomaly Detection | LSTM-Autoencoder with physics-informed loss + One-Class SVM | **Code complete** |
+| **3** | Cascade Prediction | Physics-Informed GNN + Neural ODE + Jump Process (PI-GN-JODE) | **Code complete** |
+| **4** | Digital Twin | Multi-physics simulation + Ensemble Kalman Filter + scenario generation | **Code complete** |
+| **5** | RL Response Optimisation | Hierarchical RL (PPO/SAC/DDPG) for authorization routing | **Code complete** |
+| **6** | Federated Training | Differential privacy (ε ≤ 1.0/round) + Byzantine-robust aggregation | **Code complete** |
+| **7** | Model Governance | Drift detection, model cards, revalidation, SHA-256 hash-chain audit | **Code complete** |
+
+**What the demo shows**: A single pipeline run on Carlisle Storm Desmond data discovers 8 cross-sector shadow links (including inverse dependencies where flood level rises → power drops), detects 13 anomalies across 8 SCADA sensors, predicts cascade paths through the GNN, generates Merkle-chained authorization packets, and records a hash-chain governance audit trail. The system discovers that `reservoir_castle_carrock` is inversely correlated with `substation_north_carlisle` (lag: 240s) and `tower_carlisle_central` (lag: 180s) — the physics of flood → power failure → telecom loss, found automatically from data.
+
+**38 Python ML modules** in `engine/intelligence/` with **33 dedicated tests**. 382 total tests across the platform.
+
+---
+
 ## One-Command Demo (Show Don't Tell)
 
 Run the full Carlisle flood demo start-to-finish so reviewers can see Munin in 5 minutes:
@@ -148,16 +170,19 @@ Run the full Carlisle flood demo start-to-finish so reviewers can see Munin in 5
 ```bash
 ./demo.sh
 # or
-./scripts/munin demo carlisle-2011
+./scripts/munin demo carlisle
 ```
 
-Output includes: Shadow Links found, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin &lt; 4 minutes**, lives/damage impact, and authorization flow. Optional: `./scripts/munin viz cascade` then open `engine/out/demo_carlisle/cascade_animation.html` for side-by-side cascade animation. If you see a connection-refused message for `localhost:3000`, that’s the optional decision API; the demo still completes—start the app with `npm run dev` if you want the full flow.
+Output includes: 8 shadow links discovered (including inverse dependencies), 13 anomalies detected, cascade paths predicted, scenarios simulated, playbooks generated, **Traditional 2–6 hours vs Munin < 4 minutes**, lives/damage impact, authorization flow, and governance audit trail. If you see a connection-refused message for `localhost:3000`, that’s the optional decision API — the demo still completes. Start the app with `npm run dev` if you want the full flow.
 
 **CLI reference:**
-- `munin demo carlisle` – full pipeline demo
-- `munin scenarios analyze [--output scenarios_analysis.md]` – scenario library with quantified outcomes
-- `munin evidence-quality` – evidence quality dashboard (HIGH/MEDIUM/LOW confidence, confounder analysis)
-- `munin applicability` – when Munin does / doesn’t apply (Katrina ✓, Texas 2021 ✗, Dubai 2024 ✗)
+- `munin demo carlisle` – full 8-stage intelligence pipeline demo
+- `munin anomaly train/detect` – Layer 2: train anomaly detector or detect on live data
+- `munin cascade predict/train` – Layer 3: GNN cascade prediction
+- `munin governance model-card/drift/audit` – Layer 7: model governance
+- `munin scenarios analyze` – scenario library with quantified outcomes
+- `munin evidence-quality` – evidence quality dashboard
+- `munin applicability` – when Munin does / doesn’t apply
 - `munin viz cascade` – generate cascade animation HTML
 - `munin perf` – performance benchmarks
 - `munin regulatory [UK|US|EU]` – regulatory compliance mapper
@@ -328,6 +353,8 @@ Full technical documentation is in [`docs/`](docs/). Key entry points:
 
 | Document | What it covers |
 |----------|---------------|
+| [AI Architecture](docs/AI_ARCHITECTURE.md) | 7-layer intelligence stack — technical implementation, data flow, diagrams |
+| [AI Roadmap](docs/AI_ROADMAP.md) | Intelligence progression, competitive positioning, timeline |
 | [Munin Doctrine](docs/MUNIN_DOCTRINE.md) | Vision, contrarian thesis, 10-year view |
 | [Safety Case](docs/SAFETY_CASE.md) | GSN claims, evidence, residual risks |
 | [Threat Model](docs/THREAT_MODEL.md) | NIST 800-82 / STRIDE, attacker profiles, mitigations |

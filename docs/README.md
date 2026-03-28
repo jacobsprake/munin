@@ -34,11 +34,13 @@ For the main README and quick start, see the [repository root](../README.md).
 | [OPERATOR_HANDBOOK.md](OPERATOR_HANDBOOK.md) | Written for frontline operators. Daily workflow, incident response steps, when to override Munin. |
 | [INGESTION_AT_SCALE.md](INGESTION_AT_SCALE.md) | How Munin handles 10,000+ SCADA sensors. Protocol unification, scaling model, data volume math. |
 
-## Architecture and evaluation (30 minutes)
+## Intelligence stack and architecture (30 minutes)
 
 | Document | What it tells you |
 |----------|-------------------|
-| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Full technical architecture. |
+| [AI_ARCHITECTURE.md](AI_ARCHITECTURE.md) | **7-layer intelligence stack.** LSTM anomaly detection, GNN cascade prediction, digital twin, RL, federated learning, governance. Technical diagrams, data flow, hardware requirements. |
+| [AI_ROADMAP.md](AI_ROADMAP.md) | **Strategic roadmap.** Design philosophy, competitive positioning vs Palantir/Dragos/Everbridge/Anduril, implementation timeline. |
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Full system architecture (protocol translation, decision flow, crypto). |
 | [DIGITAL_TWIN.md](DIGITAL_TWIN.md) | Physics-based simulation: power, water, telecom subsystems. |
 | [TEE_DESIGN.md](TEE_DESIGN.md) | Multi-vendor TEE attestation architecture. |
 | [HUMAN_FACTORS.md](HUMAN_FACTORS.md) | Operator personas, cognitive load, automation bias. |
