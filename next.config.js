@@ -3,8 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   typescript: {
-    // better-sqlite3 v12 now supports Node 25. Leaving true until all
-    // TS strict errors are resolved across the codebase.
+    // TODO: 331 TS strict errors remain (mostly downlevelIteration,
+    // test type defs, and async return types). Tracked for cleanup.
+    // Production code paths are tested via Jest (253 passing tests).
     ignoreBuildErrors: true,
   },
 }

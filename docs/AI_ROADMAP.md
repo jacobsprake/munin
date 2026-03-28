@@ -136,28 +136,31 @@ This is the core intelligence that makes Munin unlike anything in the market:
 
 **Critical path**: Layer 4 (digital twin) unlocks everything else. Without simulation, there's no training data for ML.
 
+**Data honesty**: Layer 1 is validated on real Environment Agency flood telemetry. Layers 2-7 are code-complete with all tests passing on synthetic/simulated data. Real-data validation requires pilot deployment — no claims of production accuracy are made for these layers yet.
+
 ---
 
 ## Competitive Position
 
+> **Caveat**: This table reflects publicly available information as of early 2026. Incumbents have large teams, production deployments, and capabilities not visible from outside. Munin's advantage is architectural (integrated cross-sector stack), not resource-based.
+
 | Capability | Palantir | Dragos | Everbridge | Anduril | **Munin** |
 |-----------|----------|--------|------------|---------|-----------|
-| Cross-sector cascade prediction | Manual ontology | Single-domain | None | Military-only | **Automated, multi-domain** |
-| Physics-informed ML | No | No | No | Partial | **Yes** |
-| Federated sovereign training | No | No | No | No | **Yes** |
-| Formal verification on predictions | No | No | No | Partial | **Yes** |
-| Human-in-the-loop authorization | Analyst-driven | Analyst-driven | Alert routing | Commander-driven | **Cryptographic multi-ministry** |
-| Digital twin with data assimilation | Limited | No | No | Simulation | **Multi-physics, continuously calibrated** |
+| Cross-sector cascade prediction | Manual ontology mapping | Single-domain (ICS) | Not a focus | Military/defence | **Automated from telemetry** |
+| Physics-informed ML | Foundry supports custom models | ICS-specific signatures | Not a focus | Some simulation | **Built-in, multi-domain** |
+| Federated sovereign training | Enterprise data integration | Not public | Not applicable | Not public | **Designed in from day one** |
+| Human-in-the-loop authorization | Analyst-driven workflows | Analyst-driven | Alert routing | Commander-driven | **Cryptographic multi-ministry** |
+| Digital twin with data assimilation | Partners/integrations | Not a focus | Not applicable | Simulation capabilities | **Multi-physics, continuously calibrated** |
 
-**Munin's moat**: No competitor combines automated cross-sector dependency discovery + physics-informed cascade prediction + sovereign federated training + cryptographic multi-ministry authorization into a single platform. Each piece exists in isolation across different vendors. Munin integrates them.
+**Munin's thesis**: No single platform we've found combines automated cross-sector dependency discovery + physics-informed cascade prediction + sovereign federated training + cryptographic multi-ministry authorization. Each piece exists in some form across different vendors. Munin integrates them into one stack purpose-built for civilian infrastructure. Whether that integration advantage outweighs incumbent distribution is the bet.
 
 ---
 
 ## Technical References
 
-- Physics-Informed Graph Neural Jump ODEs for cascade prediction: arXiv:2603.20838
-- GNN power failure cascade prediction: arXiv:2404.16134
+- GNN power failure cascade prediction: [arXiv:2404.16134](https://arxiv.org/abs/2404.16134)
+- Coordinating disaster emergency response with heuristic RL: [arXiv:1811.05010](https://arxiv.org/abs/1811.05010)
 - DARPA CyPhER Forge (digital twin + AI safety): darpa.mil/programs/cypher-forge
-- Heuristic RL for disaster response: arXiv:1811.05010
 - Autoencoder anomaly detection on SWaT testbed: Taylor & Francis
 - NIST federated learning privacy analysis: nist.gov/cybersecurity-insights
+- Munin's PI-GN-JODE architecture draws on the above; no dedicated Munin paper published yet

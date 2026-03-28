@@ -8,7 +8,7 @@
 
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
 
-**Built from an empty repo to a full working platform in 11 weeks, solo.** Started January 9, 2026. 382 passing tests (129 Python + 253 JS), 7-layer intelligence stack with working ML pipeline, 2 real-data demos on live Environment Agency data, 124 files of technical documentation.
+**Built from an empty repo to a full working platform in 11 weeks, solo.** Started January 9, 2026. 423 passing tests (170 Python + 253 JS), 7-layer intelligence stack with working ML pipeline, 2 real-data demos on live Environment Agency data, 124 files of technical documentation.
 
 *Humans still decide.* Munin does not execute actions autonomously; it recommends, humans authorise.
 
@@ -159,7 +159,9 @@ Munin's intelligence is a 7-layer system — each layer builds on the ones below
 
 **What the demo shows**: A single pipeline run on Carlisle Storm Desmond data discovers 8 cross-sector shadow links (including inverse dependencies where flood level rises → power drops), detects 13 anomalies across 8 SCADA sensors, predicts cascade paths through the GNN, generates Merkle-chained authorization packets, and records a hash-chain governance audit trail. The system discovers that `reservoir_castle_carrock` is inversely correlated with `substation_north_carlisle` (lag: 240s) and `tower_carlisle_central` (lag: 180s) — the physics of flood → power failure → telecom loss, found automatically from data.
 
-**38 Python ML modules** in `engine/intelligence/` with **33 dedicated tests**. 382 total tests across the platform.
+**38 Python ML modules** in `engine/intelligence/` with **33 dedicated tests**. 423 total tests across the platform (170 Python + 253 JS).
+
+> **Data qualifier**: Layer 1 (statistical inference) is validated on real Environment Agency flood data. Layers 2-7 are code-complete with tests passing on synthetic/simulated data; validation on real operational data requires a pilot deployment partner.
 
 ---
 
