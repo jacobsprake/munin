@@ -49,19 +49,8 @@ venv/
 ENV/
 .venv
 
-# engine outputs (keep key outputs for reviewers, ignore run artifacts)
-/engine/out/run_*/
-/engine/out/demo_carlisle/
-/engine/out/carlisle_demo/
-/engine/out/normalized_timeseries.csv
-/engine/out/*.parquet
-/engine/out/shadow_links.json
-/engine/out/agentic_recovery.json
-/engine/out/temp_command.json
-/engine/out/test_audit/
-/engine/out/test_audit.jsonl
-/engine/out/test_report.md
-/engine/out/certificates/
+# engine outputs (all generated — regenerate with ./demo.sh)
+/engine/out/
 
 # debug logs
 .cursor/debug.log
@@ -74,6 +63,7 @@ scenarios_analysis.md
 /data/*.db
 /data/*.db-wal
 /data/*.db-shm
+/data/.fuse_hidden*
 
 # generated / internal
 playbooks/generated/
