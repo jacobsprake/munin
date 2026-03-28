@@ -1,16 +1,16 @@
 """
-Agentic AI Orchestration Layer - 2026 End-State Feature
-AI vs. AI: Autonomous Countermeasures for Agentic Sabotage
+Agentic AI Orchestration Layer - Threat Detection & Recommendation Engine
+
+All countermeasures are RECOMMENDATIONS requiring human approval.
+Munin never executes defensive actions autonomously.
 
 By 2026, cyberattacks aren't launched by humans; they are launched by
-Autonomous AI Agents. Munin doesn't wait for a human to see an alert. It
-deploys its own AI Agents at the edge to "quarantine" compromised substations
-or reroute water flow in milliseconds—faster than any human-led cyber-command
-could react.
+Autonomous AI Agents. Munin detects these threats at wire-speed and
+RECOMMENDS countermeasures for human operators to approve and execute.
+Humans decide — Munin advises.
 
-The Feature: Agentic Countermeasures
-The Advantage: You've moved from "Monitoring" to "Autonomous Governance."
-You are the only one who can fight a 2026-era war.
+The Feature: Agentic Threat Detection & Recommended Countermeasures
+The Advantage: AI-speed threat detection with human-in-the-loop governance.
 """
 import json
 from typing import Dict, List, Optional, Tuple
@@ -33,18 +33,18 @@ class ThreatType(Enum):
 
 
 class CountermeasureAction(Enum):
-    """Autonomous countermeasure actions."""
-    QUARANTINE_NODE = "quarantine_node"  # Isolate compromised node
-    REROUTE_FLOW = "reroute_flow"  # Reroute critical flows
-    ACTIVATE_BACKUP = "activate_backup"  # Activate backup systems
-    BLOCK_COMMANDS = "block_commands"  # Block malicious command stream
+    """Recommended countermeasure actions (all require human approval)."""
+    RECOMMEND_QUARANTINE = "recommend_quarantine"  # Recommend isolating compromised node
+    RECOMMEND_REROUTE = "recommend_reroute"  # Recommend rerouting critical flows
+    RECOMMEND_BACKUP = "recommend_backup"  # Recommend activating backup systems
+    RECOMMEND_BLOCK = "recommend_block"  # Recommend blocking malicious command stream
     CROSS_VERIFY = "cross_verify"  # Cross-verify with physical sensors
     ALERT_HUMAN = "alert_human"  # Escalate to human operators
 
 
 class AgenticCountermeasure:
-    """Represents an autonomous countermeasure deployed by Munin."""
-    
+    """Represents a recommended countermeasure pending human approval. Munin never executes autonomously."""
+
     def __init__(
         self,
         threat_id: str,
@@ -53,7 +53,8 @@ class AgenticCountermeasure:
         action: CountermeasureAction,
         confidence: float,
         reasoning: str,
-        deployed_at: datetime
+        recommended_at: datetime,
+        requires_human_approval: bool = True
     ):
         self.threat_id = threat_id
         self.threat_type = threat_type
@@ -61,10 +62,11 @@ class AgenticCountermeasure:
         self.action = action
         self.confidence = confidence
         self.reasoning = reasoning
-        self.deployed_at = deployed_at
-        self.status = "active"
+        self.recommended_at = recommended_at
+        self.requires_human_approval = requires_human_approval
+        self.status = "pending_approval"
         self.effectiveness_score = 0.0
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -74,8 +76,9 @@ class AgenticCountermeasure:
             'action': self.action.value,
             'confidence': self.confidence,
             'reasoning': self.reasoning,
-            'deployedAt': self.deployed_at.isoformat(),
+            'recommendedAt': self.recommended_at.isoformat(),
             'status': self.status,
+            'requiresHumanApproval': self.requires_human_approval,
             'effectivenessScore': self.effectiveness_score
         }
 
@@ -95,7 +98,7 @@ class AgenticReasoningEngine:
         self.evidence = evidence_data
         self.incidents = incidents_data
         self.reasoning_steps = []
-        self.active_countermeasures: List[AgenticCountermeasure] = []
+        self.recommended_countermeasures: List[AgenticCountermeasure] = []
         self.threat_history: List[Dict] = []
         
     def reason_through_incident(self, incident_id: str, broken_sensor_id: Optional[str] = None) -> Dict:
@@ -402,8 +405,8 @@ class AgenticReasoningEngine:
         anomaly_score: float
     ) -> Optional[AgenticCountermeasure]:
         """
-        Detect autonomous AI agent threats and deploy countermeasures.
-        This is the "AI vs. AI" capability - Munin fights back at wire-speed.
+        Detect autonomous AI agent threats and recommend countermeasures.
+        Munin detects at wire-speed but all actions require human approval.
         """
         threat_type = None
         confidence = 0.0
@@ -436,8 +439,8 @@ class AgenticReasoningEngine:
         if not threat_type:
             return None
         
-        # Deploy autonomous countermeasure
-        countermeasure = self._deploy_countermeasure(
+        # Recommend countermeasure for human approval
+        countermeasure = self._recommend_countermeasure(
             threat_type=threat_type,
             target_node_id=node_id,
             confidence=confidence,
@@ -501,26 +504,26 @@ class AgenticReasoningEngine:
         
         return natural_rate / actual_rate  # >1.0 means faster than natural
     
-    def _deploy_countermeasure(
+    def _recommend_countermeasure(
         self,
         threat_type: ThreatType,
         target_node_id: str,
         confidence: float,
         reasoning: str
     ) -> AgenticCountermeasure:
-        """Deploy an autonomous countermeasure."""
-        # Determine action based on threat type
-        action = CountermeasureAction.QUARANTINE_NODE
-        
+        """Recommend a countermeasure for human approval. Does not execute."""
+        # Determine recommended action based on threat type
+        action = CountermeasureAction.RECOMMEND_QUARANTINE
+
         if threat_type == ThreatType.SENSOR_SPOOFING:
             action = CountermeasureAction.CROSS_VERIFY
         elif threat_type == ThreatType.COMMAND_INJECTION:
-            action = CountermeasureAction.BLOCK_COMMANDS
+            action = CountermeasureAction.RECOMMEND_BLOCK
         elif threat_type == ThreatType.CASCADE_AMPLIFICATION:
-            action = CountermeasureAction.REROUTE_FLOW
-        
+            action = CountermeasureAction.RECOMMEND_REROUTE
+
         threat_id = f"threat_{datetime.now().strftime('%Y%m%d%H%M%S')}_{target_node_id}"
-        
+
         countermeasure = AgenticCountermeasure(
             threat_id=threat_id,
             threat_type=threat_type,
@@ -528,28 +531,28 @@ class AgenticReasoningEngine:
             action=action,
             confidence=confidence,
             reasoning=reasoning,
-            deployed_at=datetime.now()
+            recommended_at=datetime.now()
         )
-        
-        self.active_countermeasures.append(countermeasure)
+
+        self.recommended_countermeasures.append(countermeasure)
         self.threat_history.append({
             'threat_id': threat_id,
             'detected_at': datetime.now().isoformat(),
             'threat_type': threat_type.value,
             'countermeasure': countermeasure.to_dict()
         })
-        
+
         return countermeasure
-    
-    def get_active_countermeasures(self) -> List[Dict]:
-        """Get all active countermeasures."""
-        return [cm.to_dict() for cm in self.active_countermeasures if cm.status == "active"]
-    
+
+    def get_recommended_countermeasures(self) -> List[Dict]:
+        """Get all recommended countermeasures pending human approval."""
+        return [cm.to_dict() for cm in self.recommended_countermeasures if cm.status == "pending_approval"]
+
     def get_threat_summary(self) -> Dict:
-        """Get summary of detected threats and countermeasures."""
+        """Get summary of detected threats and recommended countermeasures."""
         return {
             'total_threats_detected': len(self.threat_history),
-            'active_countermeasures': len([cm for cm in self.active_countermeasures if cm.status == "active"]),
+            'pending_countermeasures': len([cm for cm in self.recommended_countermeasures if cm.status == "pending_approval"]),
             'threats_by_type': {
                 threat_type.value: sum(
                     1 for h in self.threat_history

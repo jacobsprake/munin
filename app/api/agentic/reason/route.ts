@@ -55,7 +55,11 @@ export async function POST(request: Request) {
     try {
       const agenticData = await readFile(agenticPath, 'utf-8');
       const result = JSON.parse(agenticData);
-      return NextResponse.json(result);
+      return NextResponse.json({
+        ...result,
+        humanApprovalRequired: true,
+        disclaimer: 'All actions are recommendations only. Human approval is required before execution.'
+      });
     } catch (error: any) {
       // If file doesn't exist, generate a mock response for demo
       return NextResponse.json({
@@ -113,7 +117,9 @@ export async function POST(request: Request) {
         ],
         recommended_action: 'Isolate pump stations and activate backup systems',
         confidence: 0.85,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
+        humanApprovalRequired: true,
+        disclaimer: 'All actions are recommendations only. Human approval is required before execution.'
       });
     }
   } catch (error: any) {

@@ -15,8 +15,8 @@ export async function GET(request: Request) {
       },
       servers: [
         {
-          url: 'http://localhost:3000',
-          description: 'Local development server'
+          url: '/api',
+          description: 'Current server (relative URL)'
         }
       ],
       paths: {

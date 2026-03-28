@@ -16,9 +16,16 @@ import { createHmac, randomBytes } from 'crypto';
 import { getDb } from '../db';
 
 const SESSION_TTL_HOURS = parseInt(process.env.SESSION_TTL_HOURS || '8', 10);
-const SESSION_SECRET = process.env.SESSION_SECRET || (() => {
-  console.warn('⚠️  SESSION_SECRET not set — using random fallback (sessions will not persist across restarts)');
-  return randomBytes(32).toString('hex');
+const SESSION_SECRET = (() => {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SESSION_SECRET must be set in production. Refusing to use fallback.');
+    }
+    console.warn('WARNING: SESSION_SECRET not set. Using random fallback. NOT SAFE FOR PRODUCTION.');
+    return randomBytes(32).toString('hex');
+  }
+  return secret;
 })();
 
 export interface Session {

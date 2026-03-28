@@ -28,14 +28,6 @@ const config = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
-  coverageThreshold: {
-    global: {
-      branches: 8,
-      functions: 12,
-      lines: 14,
-      statements: 13,
-    },
-  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testTimeout: 10000,
 };

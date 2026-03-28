@@ -1,10 +1,6 @@
 # Munin: Sovereign Infrastructure Orchestration Platform
 
-[![Build](https://github.com/jacobsprake/munin/actions/workflows/build.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/build.yml)
-[![Test](https://github.com/jacobsprake/munin/actions/workflows/test.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/test.yml)
-[![CodeQL](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml/badge.svg)](https://github.com/jacobsprake/munin/actions/workflows/codeql.yml)
-
-**[munin-site.vercel.app](https://munin-site.vercel.app)** | [Doctrine](docs/MUNIN_DOCTRINE.md) | [Demo Walkthrough](docs/internal/DEMO_WALKTHROUGH.md) | [Safety Case](docs/SAFETY_CASE.md)
+[Doctrine](docs/MUNIN_DOCTRINE.md) | [Demo Walkthrough](docs/internal/DEMO_WALKTHROUGH.md) | [Safety Case](docs/SAFETY_CASE.md)
 
 Munin is **decision support** for critical infrastructure operators. It reduces crisis response time by turning ad-hoc cross-agency coordination into pre-simulated, pre-packaged response options that humans can approve quickly. Munin discovers cross-sector dependencies from operational telemetry, stress-tests incident playbooks in shadow mode, and generates an **authorisation packet** containing evidence, uncertainty, safety constraints, and an audit trail. Operators and agencies still decide and sign; Munin's job is to make the decision defensible and fast.
 
@@ -79,6 +75,8 @@ The current focus is **flood and water infrastructure** (reservoirs, pumps, floo
 ### Trust: why the packet is defensible
 
 The authorisation packet is built for **trust**: an evidence bundle (which dependencies, correlation windows, confounders), explicit uncertainty (e.g. confidence intervals, counterexample windows), safety constraints (Logic-Lock, playbook invariants), and a full audit trail. Operators and agencies see what the recommendation is based on and can reject or approve; Munin never executes.
+
+> **Crypto implementation status**: v1 uses Ed25519 for packet signing (real, verified). Post-quantum (ML-DSA), TEE attestation, ZKP proofs, and Byzantine multi-sig are **simulated** — the interfaces and data structures are production-shaped but backed by SHA-256 stubs, not real cryptographic verification. This is documented in [SECURITY.md](docs/SECURITY_PRACTICES.md). Production cryptography requires hardware (HSMs, TEEs) and is on the [roadmap](docs/WHATS_NEXT.md).
 
 ---
 

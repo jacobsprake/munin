@@ -1,13 +1,9 @@
 /**
  * Federated Resource Locking System
- * 2026 Reality Feature: Cross-Sector Clearinghouse (The Institutional Moat)
- * 
- * Prevents "Double-Booking" of emergency assets during catastrophes.
- * Once Munin becomes the intermediary for how ministries share power,
- * water, and fuel during a crisis, it becomes the Central Nervous System.
- * 
- * This creates irreversible architectural lock-in: you cannot be replaced
- * without the entire state failing to coordinate.
+ *
+ * Prevents double-booking of emergency assets during catastrophes.
+ * Coordinates cross-sector resource allocation (power, water, fuel)
+ * across ministries during crisis response.
  */
 
 export type ResourceType = 'power' | 'water' | 'fuel' | 'generator' | 'bandwidth' | 'personnel';

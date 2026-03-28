@@ -37,11 +37,11 @@ function deriveEncryptionKey(passphrase: string, salt: Buffer): Buffer {
 function getPassphrase(): string {
   const passphrase = process.env[PQC_KEY_PASSPHRASE_ENV];
   if (!passphrase) {
-    console.warn(
-      'WARNING: PQC_KEY_PASSPHRASE is not set. Using insecure fallback passphrase. ' +
-      'Set PQC_KEY_PASSPHRASE in your environment for production use.'
-    );
-    return 'munin-demo-insecure-passphrase-change-me';
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('PQC_KEY_PASSPHRASE must be set in production. Refusing to use fallback.');
+    }
+    console.warn('WARNING: PQC_KEY_PASSPHRASE not set. Using demo passphrase. NOT SAFE FOR PRODUCTION.');
+    return 'munin-demo-passphrase-not-for-production';
   }
   return passphrase;
 }

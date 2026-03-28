@@ -7,10 +7,10 @@
 
 /**
  * Countermeasures API
- * 2026 End-State Feature: Automated Defense (rule-based demo)
+ * 2026 End-State Feature: Threat Detection & Recommended Countermeasures (rule-based demo)
  *
- * Returns simulated countermeasure responses based on threshold rules.
- * Does NOT deploy real autonomous countermeasures.
+ * Returns simulated countermeasure RECOMMENDATIONS based on threshold rules.
+ * All countermeasures require human approval before execution. Munin never acts autonomously.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call Python agentic reasoning engine to detect threats and deploy countermeasures
+    // Call Python agentic reasoning engine to detect threats and recommend countermeasures
     const enginePath = path.join(process.cwd(), 'engine', 'agentic_reasoning.py');
     
     // For now, return simulated response
@@ -37,21 +37,22 @@ export async function POST(request: NextRequest) {
       threatId: `threat_${Date.now()}_${nodeId}`,
       threatType: anomalyScore > 0.8 ? 'sensor_spoofing' : 'command_injection',
       targetNodeId: nodeId,
-      action: anomalyScore > 0.8 ? 'cross_verify' : 'quarantine_node',
+      action: anomalyScore > 0.8 ? 'cross_verify' : 'recommend_quarantine',
       confidence: Math.min(0.95, anomalyScore + 0.1),
-      reasoning: `Anomaly score ${anomalyScore} exceeds threshold. Rule-based countermeasure selected (not ML inference).`,
-      deployedAt: new Date().toISOString(),
-      status: 'active'
+      reasoning: `Anomaly score ${anomalyScore} exceeds threshold. Rule-based countermeasure recommended (not ML inference). Requires human approval.`,
+      recommendedAt: new Date().toISOString(),
+      status: 'pending_approval',
+      requiresHumanApproval: true
     };
 
     return NextResponse.json({
       success: true,
       countermeasure,
-      message: 'Simulated countermeasure (rule-based demo, not autonomous deployment)'
+      message: 'Simulated countermeasure recommendation (rule-based demo, requires human approval before execution)'
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || 'Failed to deploy countermeasure' },
+      { error: error.message || 'Failed to recommend countermeasure' },
       { status: 500 }
     );
   }
@@ -59,15 +60,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get active countermeasures
+    // Get recommended countermeasures pending human approval
     // In production, this would query the Python engine
     
     return NextResponse.json({
       success: true,
-      activeCountermeasures: [],
+      recommendedCountermeasures: [],
       threatSummary: {
         totalThreatsDetected: 0,
-        activeCountermeasures: 0,
+        pendingCountermeasures: 0,
         threatsByType: {}
       }
     });

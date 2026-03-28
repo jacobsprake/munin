@@ -70,7 +70,7 @@ playbooks/generated/
 .hypothesis/
 .pytest_cache/
 
-# business / fundraising (never commit to public repo)
+# business / fundraising / internal strategy (never commit to public repo)
 *.pptx
 *.docx
 CLAUDE_CODE_INSTRUCTIONS*.md
@@ -78,3 +78,6 @@ BRAND_SYSTEM.md
 *_market_research_*.md
 *_1517_*.md
 /fundraising/
+docs/internal/end-state-pillars.md
+docs/internal/sovereign-monopoly-features-2026.md
+docs/internal/monopoly-features.md

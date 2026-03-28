@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-w-[1280px]">
+      <body>
         <AuthGuard>{children}</AuthGuard>
       </body>
     </html>
