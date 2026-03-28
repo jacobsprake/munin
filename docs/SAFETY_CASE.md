@@ -8,13 +8,15 @@
 | **Date**           | 2026-03-18                                                   |
 | **Author**         | Munin Safety Engineering                                     |
 | **Approver**       | Chief Safety Officer (pending)                               |
-| **Status**         | DRAFT --- For Internal Review                                |
+| **Status**         | DRAFT — Pre-deployment. Formal review requires pilot deployment data and independent assessment. |
 | **Standard**       | GSN Community Standard v3 (Goal Structuring Notation)        |
 | **Related Docs**   | SA-001 (SAFETY_ANALYSIS_STPA.md), TM-001 (THREAT_MODEL.md), IC-001 (IEC62443_MAPPING.md), HL-001 (HAZARD_LOG.md) |
 
 ---
 
 ## 1. Purpose
+
+> **Draft status**: This safety case documents the safety argument structure, evidence references, and residual risks for Munin v1. All claims reference real test artefacts in the codebase. However, formal approval requires: (1) pilot deployment with real operational data, (2) independent safety assessment, and (3) sign-off by qualified safety roles. The approval table in Section 8 is intentionally unfilled until these conditions are met.
 
 This document presents the structured safety argument for Munin v1 using Goal
 Structuring Notation (GSN). It demonstrates that Munin v1 is acceptably safe
